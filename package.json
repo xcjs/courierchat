@@ -30,8 +30,8 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kylemoses/courierchat.git"
+    "url": "git://github.com/xcjs/courierchat.git"
   },
-  "author": "kylemoses",
+  "author": "kylemoses, xcjs",
   "license": ""
 }
