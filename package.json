@@ -23,7 +23,8 @@
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
     "boilerplate-h5bp": "~0.1.1",
-    "grunt-bower-task": "0.4.0"
+    "grunt-bower-task": "0.4.0",
+    "sails-redis": "*"
   },
   "scripts": {
     "start": "node app.js",
