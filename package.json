@@ -22,7 +22,8 @@
     "grunt-contrib-cssmin": "~0.9.0",
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
-    "boilerplate-h5bp": "~0.1.1"
+    "boilerplate-h5bp": "~0.1.1",
+    "sails-redis": "*"
   },
   "scripts": {
     "start": "node app.js",
