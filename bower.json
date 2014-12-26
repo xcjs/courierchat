@@ -1,0 +1,25 @@
+{
+  "name": "CourierChat",
+  "version": "0.0.0",
+  "homepage": "https://github.com/xcjs/courierchat",
+  "authors": [
+    "kylemoses",
+    "xcjs"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "html5-boilerplate": "~4.3.0"
+  },
+  "dependencies": {
+    "angular": "~1.3.8",
+    "animate.css": "~3.2.0"
+  }
+}
