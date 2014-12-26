@@ -22,7 +22,8 @@
     "grunt-contrib-cssmin": "~0.9.0",
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
-    "sails-redis": "*"
+    "sails-redis": "*",
+    "grunt-bowercopy": "~1.2.0"
   },
   "scripts": {
     "start": "node app.js",
