@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 	        stylesheets: {
 	        	options: {
 	        		srcPrefix: 'bower_components/',
-	        		destPrefix: 'assets/css/vendor/'
+	        		destPrefix: 'assets/styles/vendor/'
 	        	},
 	        	files: {
 	        		'animate.min.css': 'animate.css/animate.min.css'
