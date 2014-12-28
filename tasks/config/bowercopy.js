@@ -12,7 +12,8 @@ module.exports = function(grunt) {
 	        		destPrefix: 'assets/js/vendor/'
 	        	},
 	        	files: {
-	        		'angular.min.js': 'angular/angular.min.js'
+	        		'angular.min.js': 'angular/angular.min.js',
+	        		'modernizr.js': 'modernizr/modernizr.js'
 	        	}   
 	        },
 	        stylesheets: {
