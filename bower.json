@@ -21,6 +21,10 @@
   "dependencies": {
     "angular": "~1.3.8",
     "animate.css": "~3.2.0",
-    "modernizr": "~2.8.3"
+    "modernizr": "~2.8.3",
+    "angularSails": "~0.10.0-pre"
+  },
+  "resolutions": {
+    "angular": "~1.3.8"
   }
 }
