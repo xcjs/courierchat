@@ -79,7 +79,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="17.924377"
-     inkscape:cx="18.82321"
+     inkscape:cx="18.516365"
      inkscape:cy="24.072377"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
@@ -227,5 +227,16 @@
        id="path4029"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="sscccsss" />
+    <path
+       style="fill:#ff8a65;fill-opacity:1;stroke:none"
+       d="m 13.716824,25.014542 c -0.676421,3.435398 8.901043,6.043904 14.791838,6.304265 3.011897,0.13312 8.125824,-0.291579 8.424281,-3.291607 0.207845,-2.089214 -5.300044,-3.403187 -5.300044,-3.403187 0,0 -0.87852,-4.192205 -2.343178,-5.578994 -1.605998,-1.520614 -4.041565,-2.086514 -6.248474,-2.231598 -2.030908,-0.133513 -4.298218,0.434741 -5.411625,1.004219 -2.629629,1.344986 -2.629629,0.679961 -3.912798,7.196902 z"
+       id="path3990"
+       inkscape:connector-curvature="0"
+       transform="matrix(0.28222225,0,0,0.28222225,-1e-6,0)"
+       sodipodi:nodetypes="ssscssss" />
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Hat" />
 </svg>
