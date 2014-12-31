@@ -16,7 +16,10 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    viewBox="0 0 13.546666 13.546668"
-   sodipodi:docname="courierchat.svg">
+   sodipodi:docname="courierchat.svg"
+   inkscape:export-filename="/home/diaruemnus/Projects/diaruemnus/git/courierchat/assets/images/courierchat.png"
+   inkscape:export-xdpi="803.16266"
+   inkscape:export-ydpi="803.16266">
   <defs
      id="defs4">
     <linearGradient
@@ -79,10 +82,10 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="17.924377"
-     inkscape:cx="18.516365"
-     inkscape:cy="24.072377"
+     inkscape:cx="23.98378"
+     inkscape:cy="10.57121"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
      borderlayer="true"
@@ -198,16 +201,6 @@
      style="display:inline">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="path3211"
-       sodipodi:cx="9.2574129"
-       sodipodi:cy="38.180515"
-       sodipodi:rx="9.2574196"
-       sodipodi:ry="9.8194628"
-       d="m 18.514832,38.180515 c 0,5.42314 -4.144687,9.819463 -9.2574191,9.819463 -5.1127316,0 -9.2574195757202,-4.396323 -9.2574195757202,-9.819463 0,-5.423139 4.1446879757202,-9.819462 9.2574195757202,-9.819462 5.1127321,0 9.2574191,4.396323 9.2574191,9.819462 z"
-       transform="matrix(0.28222225,0,0,0.28222225,-38.119154,397.84494)" />
-    <path
-       sodipodi:type="arc"
        style="fill:#ff8a65;fill-opacity:1;stroke:none"
        id="path3219"
        sodipodi:cx="13.529058"
@@ -229,7 +222,7 @@
        sodipodi:nodetypes="sscccsss" />
     <path
        style="fill:#ff8a65;fill-opacity:1;stroke:none"
-       d="m 13.716824,25.014542 c -0.676421,3.435398 8.901043,6.043904 14.791838,6.304265 3.011897,0.13312 8.125824,-0.291579 8.424281,-3.291607 0.207845,-2.089214 -5.300044,-3.403187 -5.300044,-3.403187 0,0 -0.87852,-4.192205 -2.343178,-5.578994 -1.605998,-1.520614 -4.041565,-2.086514 -6.248474,-2.231598 -2.030908,-0.133513 -4.298218,0.434741 -5.411625,1.004219 -2.629629,1.344986 -2.629629,0.679961 -3.912798,7.196902 z"
+       d="m 13.716824,25.014542 c -0.676421,3.435398 8.901043,6.043904 14.791838,6.304265 3.011897,0.13312 8.125824,-0.291579 8.424281,-3.291607 0.207845,-2.089214 -5.300044,-3.403187 -5.300044,-3.403187 0,0 -0.87852,-4.192205 -2.343178,-5.578994 -1.605998,-1.520614 -4.041565,-2.086514 -6.248474,-2.231598 -2.030908,-0.133513 -3.868841,0.518122 -5.411625,1.394749 -1.885379,1.071293 -2.629629,0.289431 -3.912798,6.806372 z"
        id="path3990"
        inkscape:connector-curvature="0"
        transform="matrix(0.28222225,0,0,0.28222225,-1e-6,0)"
