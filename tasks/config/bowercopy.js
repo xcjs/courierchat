@@ -6,23 +6,31 @@ module.exports = function(grunt) {
 	        options: {
 	            
 	        },
-	        scripts: {
+	        devScripts: {
 	        	options: {
 	        		srcPrefix: 'bower_components/',
 	        		destPrefix: 'assets/js/vendor/'
 	        	},
 	        	files: {
-	        		'angular.min.js': 'angular/angular.min.js',
+	        		'console.js': 'html5-boilerplate/js/plugins.js',
+	        		'lodash.js': 'lodash/dist/lodash.js',
+	        		'angular.js': 'angular/angular.js',
+	        		'angular-animate.js': 'angular-animate/angular-animate.js',
+	        		'angular-cookies.js': 'angular-cookies/angular-cookies.js',
+	        		'angular-resource.js': 'angular-resource/angular-resource.js',
+	        		'angular-route.js': 'angular-route/angular-route.js',
+	        		'ngsails.io.js': 'angularSails/dist/ngsails.io.js',
 	        		'modernizr.js': 'modernizr/modernizr.js'
 	        	}   
 	        },
-	        stylesheets: {
+	        devStylesheets: {
 	        	options: {
 	        		srcPrefix: 'bower_components/',
 	        		destPrefix: 'assets/styles/vendor/'
 	        	},
 	        	files: {
-	        		'animate.min.css': 'animate.css/animate.min.css'
+	        		'normalize.css': 'html5-boilerplate/css/normalize.css',
+	        		'animate.css': 'animate.css/animate.css'
 	        	}
 	        }
 	    }
