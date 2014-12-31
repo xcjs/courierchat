@@ -118,6 +118,7 @@ header {
     background-color: #23B28F;
     display: table-cell;
     height: 100%;
+    min-width: 5em;
     width: 4%;
 }
 
