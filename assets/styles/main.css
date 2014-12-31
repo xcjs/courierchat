@@ -97,21 +97,47 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+* {
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+}
 
+html, body {
+    font-size: 11px;
+    height: 100%;
+}
 
+body {
+    border-collapse: collapse;
+    display: table;
+    width: 100%;
+}
 
+header {
+    background-color: #23B28F;
+    display: table-cell;
+    height: 100%;
+    width: 4%;
+}
 
+header a:link {
+    display: block;
+}
 
+header a:link:hover {
+    background-color: #65FFD8;
+}
 
+#logo {
+    width: 100%;
+}
 
-
-
-
-
-
-
-
-
+main h1 {
+    color: #FF8A65;
+    display: table-cell;
+    padding: 1em;
+}
 
 /* ==========================================================================
    Helper classes
