@@ -116,6 +116,9 @@ body {
 
 header {
     background-color: #23B28F;
+    -webkit-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:    0px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow:         0px 4px 5px 0px rgba(0, 0, 0, 0.5);
     display: table-cell;
     height: 100%;
     min-width: 5em;
@@ -124,6 +127,7 @@ header {
 
 header a:link {
     display: block;
+    margin-bottom: 1rem;
     position: relative;
 }
 
