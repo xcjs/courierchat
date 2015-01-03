@@ -132,11 +132,36 @@ header a:link > * {
     z-index: 3;
 }
 
-header a:link span.rotateInUpLeft, header a:visited span.rotateInUpLeft {
-    animation-play-state: paused;
+@keyframes rotateInUpLeftCustom {
+  0% {
+    -webkit-transform-origin: left center;
+    -ms-transform-origin: left center;
+    transform-origin: left center;
+    -webkit-transform: rotate3d(0, 0, 1, 90deg);
+    -ms-transform: rotate3d(0, 0, 1, 90deg);
+    transform: rotate3d(0, 0, 1, 90deg);
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform-origin: left center;
+    -ms-transform-origin: left center;
+    transform-origin: left center;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+header a:link span.rotateInUpLeftCustom, header a:visited span.rotateInUpLeftCustom {
     background-color: #FF8A65;
     border-radius: 1000000px;
+    -webkit-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:    0px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow:         0px 4px 5px 0px rgba(0, 0, 0, 0.5);
     color: #fff;
+    display: none;
     font-size: 5vh;
     height: 100%;
     left: 0;
@@ -149,19 +174,17 @@ header a:link span.rotateInUpLeft, header a:visited span.rotateInUpLeft {
     z-index: 2;
 }
 
-header a:link span.rotateInUpLeft .vertCenter {
+header a:link span.rotateInUpLeftCustom .vertCenter {
     display: block;
     margin-top: -25%;
     position: relative;
     top: 50%;
 }
 
-header a:link:hover {
-    
-}
-
-header a:link:hover span.rotateInUpLeft {
-    animation-play-state: running;
+header a:link:hover span.rotateInUpLeftCustom {
+    animation-duration: .5s;
+    -webkit-animation-name: rotateInUpLeftCustom;
+    animation-name: rotateInUpLeftCustom;
     display: block;
 }
 
