@@ -188,7 +188,7 @@ header a:link:hover span.rotateInUpLeftCustom {
     display: block;
 }
 
-#logo {
+header a:link img {
     width: 100%;
 }
 

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   viewBox="0 0 13.546666 13.546668"
+   sodipodi:docname="about.svg"
+   inkscape:export-filename="/home/diaruemnus/Projects/diaruemnus/git/courierchat/assets/images/courierchat.png"
+   inkscape:export-xdpi="767.57751"
+   inkscape:export-ydpi="767.57751">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient4016">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4018" />
+      <stop
+         id="stop4026"
+         offset="0.90804595"
+         style="stop-color:#585858;stop-opacity:1;" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop4020" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4004">
+      <stop
+         id="stop4012"
+         offset="0"
+         style="stop-color:#23b28f;stop-opacity:1;" />
+      <stop
+         style="stop-color:#23b28f;stop-opacity:1;"
+         offset="0.86206895"
+         id="stop4014" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop4008" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3996">
+      <stop
+         style="stop-color:#ff8a65;stop-opacity:1;"
+         offset="0"
+         id="stop3998" />
+      <stop
+         style="stop-color:#ff8a65;stop-opacity:0.5;"
+         offset="1"
+         id="stop4000" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3996"
+       id="radialGradient4002"
+       cx="24.12915"
+       cy="24.261379"
+       fx="24.12915"
+       fy="24.261379"
+       r="13.752221"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="17.924377"
+     inkscape:cx="13.355796"
+     inkscape:cy="22.316675"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer4"
+     showgrid="false"
+     inkscape:showpageshadow="false"
+     borderlayer="true"
+     units="px"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     showguides="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       position="-6.6748425e-06,47.999999"
+       orientation="47.999977,0"
+       id="guide4120" />
+    <sodipodi:guide
+       position="-6.6748425e-06,2.2810037e-05"
+       orientation="0,48.000004"
+       id="guide4122" />
+    <sodipodi:guide
+       position="47.999997,2.2810037e-05"
+       orientation="-47.999977,0"
+       id="guide4124" />
+    <sodipodi:guide
+       position="47.999997,47.999999"
+       orientation="0,-48.000004"
+       id="guide4126" />
+    <sodipodi:guide
+       position="3.9999733,44.000154"
+       orientation="39.999962,0"
+       id="guide4138" />
+    <sodipodi:guide
+       position="3.9999733,4.0001921"
+       orientation="0,40.000003"
+       id="guide4140" />
+    <sodipodi:guide
+       position="43.999976,4.0001921"
+       orientation="-39.999962,0"
+       id="guide4142" />
+    <sodipodi:guide
+       position="43.999976,44.000154"
+       orientation="0,-40.000003"
+       id="guide4144" />
+    <sodipodi:guide
+       position="6.9999922,47.999999"
+       orientation="39.999962,0"
+       id="guide4148" />
+    <sodipodi:guide
+       position="6.9999922,8.0000369"
+       orientation="0,34.000006"
+       id="guide4150" />
+    <sodipodi:guide
+       position="40.999998,8.0000369"
+       orientation="-39.999962,0"
+       id="guide4152" />
+    <sodipodi:guide
+       position="40.999998,47.999999"
+       orientation="0,-34.000006"
+       id="guide4154" />
+    <sodipodi:guide
+       position="14.999993,32.999986"
+       orientation="17.999951,0"
+       id="guide4158" />
+    <sodipodi:guide
+       position="14.999993,15.000036"
+       orientation="0,17.999998"
+       id="guide4160" />
+    <sodipodi:guide
+       position="32.999991,15.000036"
+       orientation="-17.999951,0"
+       id="guide4162" />
+    <sodipodi:guide
+       position="32.999991,32.999986"
+       orientation="0,-17.999998"
+       id="guide4164" />
+    <sodipodi:guide
+       position="1.9999969,44.000046"
+       orientation="39.999962,0"
+       id="guide3279" />
+    <sodipodi:guide
+       position="1.9999969,4.0000839"
+       orientation="0,44.000003"
+       id="guide3281" />
+    <sodipodi:guide
+       position="46,4.0000839"
+       orientation="-39.999962,0"
+       id="guide3283" />
+    <sodipodi:guide
+       position="46,44.000046"
+       orientation="0,-44.000003"
+       id="guide3285" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Outer Circle"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(38.119153,-397.84494)"
+     style="display:inline">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff8a65;fill-opacity:1;stroke:none"
+       id="path3219"
+       sodipodi:cx="13.529058"
+       sodipodi:cy="34.024609"
+       sodipodi:rx="13.529064"
+       sodipodi:ry="13.975369"
+       d="m 27.058123,34.024609 c 0,7.718383 -6.057169,13.975369 -13.529065,13.975369 -7.4718954,0 -13.5290637220459,-6.256986 -13.5290637220459,-13.975369 0,-7.718384 6.0571683220459,-13.97537 13.5290637220459,-13.97537 7.471896,0 13.529065,6.256986 13.529065,13.97537 z"
+       transform="matrix(0.46729054,0,0,0.46729054,-37.667821,388.7189)" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Chat Bubble">
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       d="m 6.7777431,1.9428207 c -2.6479118,0 -4.7977782,2.1410469 -4.7977782,4.7889588 0,1.9928492 1.2153167,3.7038175 2.9456947,4.4273625 -0.098231,0.500876 -0.6967362,1.164166 -0.6967362,1.164166 0,0 1.3363788,-0.175848 2.1343058,-0.820209 0.1359733,0.01159 0.2755407,0.02646 0.4145139,0.02646 2.6479119,0 4.7889579,-2.1498666 4.7889579,-4.7977785 0,-2.6479119 -2.141046,-4.7889588 -4.7889579,-4.7889598 z"
+       id="path4029"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="sscccsss" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Question Mark">
+    <text
+       xml:space="preserve"
+       style="font-size:11.28888988px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff8a65;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+       x="4.4695082"
+       y="10.822755"
+       id="text3169"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3171"
+         x="4.4695082"
+         y="10.822755"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ff8a65;fill-opacity:1;font-family:Droid Sans;-inkscape-font-specification:Droid Sans">?</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Hat" />
+</svg>
