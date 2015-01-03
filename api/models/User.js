@@ -10,14 +10,15 @@ module.exports = {
 	attributes: {
 		id: {
 			type: 'integer',
-			required: true
+			required: true,
+			primaryKey: true
 		},
 		name: {
 			type: 'string',
 			required: true
 		},
 		room: {
-			model: 'room'
+			model: 'Room'
 		},
 		creator: {
 			type: 'bool',

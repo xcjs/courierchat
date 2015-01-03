@@ -10,7 +10,8 @@ module.exports = {
 	attributes: {
 		id: {
 			type: 'integer',
-			required: true
+			required: true,
+			primaryKey: true
 		},
 		message: {
 			type: 'string',
@@ -19,7 +20,14 @@ module.exports = {
 		timestamp: {
 			type: 'datetime',
 			required: true
+		},
+		user: {
+			model: 'user'
+		},
+		room: {
+			model: 'room'
 		}
+
 	}
 };
 
