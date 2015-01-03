@@ -124,10 +124,45 @@ header {
 
 header a:link {
     display: block;
+    position: relative;
+}
+
+header a:link > * {
+    position: relative;
+    z-index: 3;
+}
+
+header a:link span.rotateInUpLeft, header a:visited span.rotateInUpLeft {
+    animation-play-state: paused;
+    background-color: #FF8A65;
+    border-radius: 1000000px;
+    color: #fff;
+    font-size: 5vh;
+    height: 100%;
+    left: 0;
+    padding: 0 1em 0 130%;
+    position: absolute;
+    text-decoration: none;
+    top: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+header a:link span.rotateInUpLeft .vertCenter {
+    display: block;
+    margin-top: -25%;
+    position: relative;
+    top: 50%;
 }
 
 header a:link:hover {
-    background-color: #65FFD8;
+    
+}
+
+header a:link:hover span.rotateInUpLeft {
+    animation-play-state: running;
+    display: block;
 }
 
 #logo {
