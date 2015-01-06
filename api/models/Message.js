@@ -1,5 +1,5 @@
 /**
-* Room.js
+* Message.js
 *
 * @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
@@ -13,28 +13,21 @@ module.exports = {
 			required: true,
 			primaryKey: true
 		},
-		name: {
+		message: {
 			type: 'string',
 			required: true
 		},
-		creationDate: {
+		timestamp: {
 			type: 'datetime',
 			required: true
 		},
-		ownerUserId: {
-			type: 'int',
-			required: true
+		user: {
+			model: 'user'
 		},
-		users: {
-			collection: 'user',
-			via: 'room',
-			required: true
-		},
-		messages: {
-			collection: 'message',
-			via: 'room',
-			required: true
+		room: {
+			model: 'room'
 		}
+
 	}
 };
 
