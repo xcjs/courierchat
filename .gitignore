@@ -68,8 +68,8 @@ config/local.js
 
 node_modules
 bower_components
-assets/js/vendor/
-assets/styles/vendor/
+www/assets/js/vendor/
+www/assets/styles/vendor/
 
 
 
