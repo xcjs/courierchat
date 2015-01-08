@@ -208,8 +208,8 @@ header a:link span.rotateInUpLeftCustom .vertCenter {
 }
 
 header a:link:hover span.rotateInUpLeftCustom {
-    -webkit-animation-duration: .5s
-    animation-duration: .5s;
+    -webkit-animation-duration: .25s
+    animation-duration: .25s;
     -webkit-animation-name: rotateInUpLeftCustom;
     animation-name: rotateInUpLeftCustom;
     display: block;
