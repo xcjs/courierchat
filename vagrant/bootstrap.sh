@@ -19,6 +19,7 @@ case $(id -u) in
 		cd courierchat/www/
 		npm install
 		bower install --config.interactive=false
+        screen -S courierchat -d -m `sails lift` &
  	;;
 esac
 
