@@ -118,3 +118,17 @@ npm-debug.log
 nbproject
 .idea
 .node_history
+
+
+
+
+
+################################################
+# Vagrant
+#
+# Files created by Vagrant that are too large
+# to push, change often, and are rebuilt with
+# the "vagrant up" command.
+################################################
+
+.vagrant
