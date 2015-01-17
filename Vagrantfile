@@ -5,62 +5,52 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define "courierchat" do |courierchat|
+    config.vm.provider "virtualbox"
+    config.vm.provider "linode"
 
-    # All Vagrant configuration is done here. The most common configuration
-    # options are documented and commented below. For a complete reference,
-    # please see the online documentation at vagrantup.com.
+    config.vm.define "courierchat" do |courierchat|
+        # All Vagrant configuration is done here. The most common configuration
+        # options are documented and commented below. For a complete reference,
+        # please see the online documentation at vagrantup.com.
 
-    # Every Vagrant virtual environment requires a box to build off of.
-    courierchat.vm.box = "ubuntu/trusty64"
+        # Every Vagrant virtual environment requires a box to build off of.
+        courierchat.vm.box = "ubuntu/trusty64"
 
-    # Disable automatic box update checking. If you disable this, then
-    # boxes will only be checked for updates when the user runs
-    # `vagrant box outdated`. This is not recommended.
-    # config.vm.box_check_update = false
+        # Create a forwarded port mapping which allows access to a specific port
+        # within the machine from a port on the host machine. In the example below,
+        # accessing "localhost:8080" will access port 80 on the guest machine.
+        courierchat.vm.network "forwarded_port", guest: 1337, host: 1337
+        courierchat.vm.network "forwarded_port", guest: 80, host: 8080
+        courierchat.vm.network "forwarded_port", guest: 443, host: 4343
 
-    # Create a forwarded port mapping which allows access to a specific port
-    # within the machine from a port on the host machine. In the example below,
-    # accessing "localhost:8080" will access port 80 on the guest machine.
-    courierchat.vm.network "forwarded_port", guest: 1337, host: 1337
-    courierchat.vm.network "forwarded_port", guest: 80, host: 8080
-    courierchat.vm.network "forwarded_port", guest: 443, host: 4343
+        # Share an additional folder to the guest VM. The first argument is
+        # the path on the host to the actual folder. The second argument is
+        # the path on the guest to mount the folder. And the optional third
+        # argument is a set of non-required options.
+        # config.vm.synced_folder "../data", "/vagrant_data"   
 
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
-    # config.vm.network "private_network", ip: "192.168.33.10"
+        config.vm.provider "virtualbox" do |vb|
+           vb.gui = false
+        end
 
-    # Create a public network, which generally matched to bridged network.
-    # Bridged networks make the machine appear as another physical device on
-    # your network.
-    # config.vm.network "public_network"
+        courierchat.vm.provider :linode do |provider, override|
+            courierchat.ssh.private_key_path = '~/.ssh/courierchat'
+            courierchat.ssh.forward_agent = true
 
-    # If true, then any SSH connections made will enable agent forwarding.
-    # Default value: false
-    # config.ssh.forward_agent = true
+            override.vm.box = 'linode'
+            override.vm.box_url = 'https://github.com/displague/vagrant-linode/raw/master/box/linode.box'
 
-    # Share an additional folder to the guest VM. The first argument is
-    # the path on the host to the actual folder. The second argument is
-    # the path on the guest to mount the folder. And the optional third
-    # argument is a set of non-required options.
-    # config.vm.synced_folder "../data", "/vagrant_data"
+            provider.token = ENV['LINODE_TOKEN']
 
-    # Provider-specific configuration so you can fine-tune various
-    # backing providers for Vagrant. These expose provider-specific options.
-    # Example for VirtualBox:
-    #
-    # config.vm.provider "virtualbox" do |vb|
-    #   # Don't boot with headless mode
-    #   vb.gui = true
-    #
-    #   # Use VBoxManage to customize the VM. For example to change memory:
-    #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-    # end
-    #
-    # View the documentation for the provider you're using for more
-    # information on available options.
+            provider.label = 'CourierChat1'
+            provider.distribution = 'Ubuntu 14.04 LTS'
 
-    courierchat.vm.provision "shell", path: "vagrant-provision.sh"
-    
-  end
+            provider.plan = '1024'
+            provider.swap_size = '512'
+
+            provider.setup = true            
+        end
+
+        courierchat.vm.provision "shell", path: "./vagrant-provision.sh"
+    end
 end
