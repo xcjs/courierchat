@@ -23,7 +23,7 @@ header {
     display: table-cell;
     height: 100%;
     min-width: 5em;
-    width: 4%;
+    width: 3vw;
 }
 
 header a:link {
@@ -37,7 +37,7 @@ header a:link > * {
     z-index: 3;
 }
 
-header a:link span.rotateInUpLeftCustom, header a:visited span.rotateInUpLeftCustom {
+header a:link span.anim-nav-hover, header a:visited span.anim-nav-hover {
     background-color: #FF8A65;
     border-radius: 1000000px;
     -webkit-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.5);
@@ -45,7 +45,7 @@ header a:link span.rotateInUpLeftCustom, header a:visited span.rotateInUpLeftCus
     box-shadow:         0px 4px 5px 0px rgba(0, 0, 0, 0.5);
     color: #fff;
     display: none;
-    font-size: 5vh;
+    font-size: 3vh;
     height: 100%;
     left: 0;
     padding: 0 1em 0 130%;
@@ -57,18 +57,18 @@ header a:link span.rotateInUpLeftCustom, header a:visited span.rotateInUpLeftCus
     z-index: 2;
 }
 
-header a:link span.rotateInUpLeftCustom .vertCenter {
+header a:link span.anim-nav-hover .vertCenter {
     display: block;
     margin-top: -25%;
     position: relative;
     top: 50%;
 }
 
-header a:link:hover span.rotateInUpLeftCustom {
-    -webkit-animation-duration: .01s
-    animation-duration: .01s;
-    -webkit-animation-name: rotateInUpLeftCustom;
-    animation-name: rotateInUpLeftCustom;
+header a:link:hover span.anim-nav-hover {
+    -webkit-animation-duration: 10ms
+    animation-duration: 10ms;
+    -webkit-animation-name: animNavHover;
+    animation-name: animNavHover;
     display: block;
 }
 

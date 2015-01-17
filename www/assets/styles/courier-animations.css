@@ -1,4 +1,9 @@
-@-webkit-keyframes rotateInUpLeftCustom {
+.animated.faster {
+  -webkit-animation-duration: 750ms;
+  animation-duration: 750ms;
+}
+
+@-webkit-keyframes animNavHover {
   0% {
     -webkit-transform-origin: left center;
     -ms-transform-origin: left center;
@@ -20,7 +25,7 @@
   }
 }
 
-@keyframes rotateInUpLeftCustom {
+@keyframes animNavHover {
   0% {
     -webkit-transform-origin: left center;
     -ms-transform-origin: left center;
