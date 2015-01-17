@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Determine the user ID of the user executing this script.
 case $(id -u) in
     0) 
      	echo "Running root user provisioning..."
@@ -11,9 +12,10 @@ case $(id -u) in
 		
      	# Execute this script as the vagrant user once root provisioning is
      	# completed.
-        
+
         THISSCRIPT=$(realpath $0)
-     	sudo -u vagrant -i $THISSCRIPT
+        chown vagrant $THISSCRIPT
+        sudo -u vagrant -i $THISSCRIPT
  	;;
     *) 
      	echo "Running vagrant user provisioning..."

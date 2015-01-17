@@ -34,8 +34,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
 
         courierchat.vm.provider :linode do |provider, override|
-            courierchat.ssh.private_key_path = '~/.ssh/courierchat'
-            courierchat.ssh.forward_agent = true
+            override.ssh.private_key_path = '~/.ssh/courierchat'
+            override.ssh.forward_agent = true
+            override.ssh.username = 'vagrant'
 
             override.vm.box = 'linode'
             override.vm.box_url = 'https://github.com/displague/vagrant-linode/raw/master/box/linode.box'
