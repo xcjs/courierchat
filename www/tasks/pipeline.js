@@ -16,6 +16,9 @@
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
   'styles/vendor/normalize.css',
+  'styles/vendor/main.css',
+  'styles/vendor/animate.css',
+  'styles/courier-animations.css',
   'styles/**/*.css'
 ];
 
