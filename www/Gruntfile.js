@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 	        		'angular.js': 'angular/angular.js',
 	        		'angular-animate.js': 'angular-animate/angular-animate.js',
 	        		'angular-cookies.js': 'angular-cookies/angular-cookies.js',
-	        		'angular-resource.js': 'angular-resource/angular-resource.js',
+	        		'angular-ui-router.js': 'angular-ui-router/release/angular-ui-router.js',
 	        		'angular-route.js': 'angular-route/angular-route.js',
 	        		'ngsails.io.js': 'angularSails/dist/ngsails.io.js',
 	        		'modernizr.js': 'modernizr/modernizr.js'
