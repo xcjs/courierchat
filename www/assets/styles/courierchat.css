@@ -196,6 +196,7 @@ main article.about .avatar-container {
 }
 
 article.login > h1 {
+    animation-delay: .1s;
     background-color: transparent;
     border-radius: 0;
     border-width: 0;
@@ -206,6 +207,10 @@ article.login > h1 {
 
 article.login > h1 > img {
     height: 100%;
+}
+
+article.login form {
+    animation-delay: 50ms;
 }
 
 article.login input[type="textbox"] {
