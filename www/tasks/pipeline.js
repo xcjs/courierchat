@@ -19,6 +19,8 @@ var cssFilesToInject = [
   'styles/**/main.css',
   'styles/vendor/animate.css',
   'styles/courier-animations.css',
+  'styles/courierchat.css',
+  'styles/courierchat-mobile.css',
   'styles/**/*.css'
 ];
 
