@@ -5,7 +5,7 @@ case $(id -u) in
     0) 
      	echo "Running root user provisioning..."
      	apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
-		apt-get install -y git nodejs nodejs-legacy npm realpath
+		apt-get install -y git nodejs nodejs-legacy npm redis-server realpath
 		npm install -g npm
         npm install -g sails
 		npm install -g grunt-cli
