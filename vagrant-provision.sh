@@ -6,7 +6,7 @@ case $(id -u) in
      	echo "Running root user provisioning..."
      	apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
 		apt-get install -y git nodejs nodejs-legacy npm realpath
-		npm install npm -g
+		npm install -g npm
         npm install -g sails
 		npm install -g grunt-cli
 		npm install -g bower
