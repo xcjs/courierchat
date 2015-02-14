@@ -51,3 +51,13 @@
     opacity: 1;
   }
 }
+
+article.login > h1 {
+  -webkit-animation-delay: 50ms;
+    animation-delay: 50ms;
+}
+
+article.login form {
+    -webkit-animation-delay: 25ms;
+    animation-delay: 25ms;
+}

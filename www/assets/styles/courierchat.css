@@ -204,8 +204,6 @@ main article.about .avatar-container {
 }
 
 article.login > h1 {
-    -webkit-animation-delay: 50ms;
-    animation-delay: 50ms;
     background-color: transparent;
     border-radius: 0;
     border-width: 0;
@@ -216,11 +214,6 @@ article.login > h1 {
 
 article.login > h1 > img {
     height: 100%;
-}
-
-article.login form {
-    -webkit-animation-delay: 25ms;
-    animation-delay: 25ms;
 }
 
 article.login input[type="textbox"] {
