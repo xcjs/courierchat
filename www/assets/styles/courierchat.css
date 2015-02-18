@@ -74,6 +74,7 @@ header a span.anim-nav-hover, header a:visited span.anim-nav-hover {
 
 header a span.anim-nav-hover .vertCenter {
     display: block;
+    line-height: 2em;
     margin-top: -25%;
     position: relative;
     top: 50%;
@@ -89,6 +90,12 @@ header a:hover span.anim-nav-hover {
 
 header a img {
     width: 100%;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 1px;
+    padding: 0;
 }
 
 main {
