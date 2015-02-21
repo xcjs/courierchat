@@ -72,20 +72,16 @@ header a span.anim-nav-hover, header a:visited span.anim-nav-hover {
     z-index: 2;
 }
 
-header a span.anim-nav-hover .vertCenter {
-    display: block;
-    line-height: 2em;
-    margin-top: -25%;
-    position: relative;
-    top: 50%;
-}
-
 header a:hover span.anim-nav-hover {
+    align-items: center;
     -webkit-animation-duration: 10ms
     animation-duration: 10ms;
     -webkit-animation-name: animNavHover;
     animation-name: animNavHover;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 3.5vh;
 }
 
 header a img {
