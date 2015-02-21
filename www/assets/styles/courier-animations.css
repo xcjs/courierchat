@@ -52,6 +52,13 @@
   }
 }
 
+header a:hover span.anim-nav-hover {
+  -webkit-animation-duration: 10ms
+  animation-duration: 10ms;
+  -webkit-animation-name: animNavHover;
+  animation-name: animNavHover;
+}
+
 article.login > h1 {
   -webkit-animation-delay: 50ms;
     animation-delay: 50ms;
@@ -61,3 +68,4 @@ article.login form {
     -webkit-animation-delay: 25ms;
     animation-delay: 25ms;
 }
+ 

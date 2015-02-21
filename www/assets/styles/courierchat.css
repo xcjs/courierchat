@@ -74,10 +74,6 @@ header a span.anim-nav-hover, header a:visited span.anim-nav-hover {
 
 header a:hover span.anim-nav-hover {
     align-items: center;
-    -webkit-animation-duration: 10ms
-    animation-duration: 10ms;
-    -webkit-animation-name: animNavHover;
-    animation-name: animNavHover;
     display: flex;
     flex-direction: column;
     justify-content: center;
