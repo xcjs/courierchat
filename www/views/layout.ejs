@@ -74,7 +74,7 @@
       <nav>
         <ul>
           <li>
-            <a ui-sref="login">
+            <a ui-sref="login" endTouchFocus>
               <img src="/images/courierchat.svg" id="logo" alt="Courier Chat Logo">
               <span class="animated faster anim-nav-hover shadowed">
                 Home
@@ -82,7 +82,7 @@
             </a>
           </li>
           <li>
-            <a ui-sref="about">
+            <a ui-sref="about" endTouchFocus>
               <img src="/images/about.svg" alt="About Courier Chat">
               <span class="animated faster anim-nav-hover shadowed">
                 About
@@ -157,6 +157,7 @@
     <script src="/js/vendor/ngsails.io.js"></script>
     <script src="/js/vendor/modernizr.js"></script>
     <script src="/js/courierchat/app.js"></script>
+    <script src="/js/courierchat/directives/cssTouchAssistant.js"></script>
     <!--SCRIPTS END-->
   </body>
 </html>

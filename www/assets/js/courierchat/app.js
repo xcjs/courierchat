@@ -1,6 +1,6 @@
 'use strict';
 
-var courierChat = angular.module('courierChat', ['ui.router']);
+var courierChat = angular.module('courierChat', ['ui.router', 'cssTouchAssistant']);
 
 courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 	var appBase = 'js/courierchat/';
