@@ -59,6 +59,10 @@ header a:hover span.anim-nav-hover {
   animation-name: animNavHover;
 }
 
+header a:active span.anim-nav-hover {
+  display: none;
+}
+
 article.login > h1 {
   -webkit-animation-delay: 50ms;
     animation-delay: 50ms;
