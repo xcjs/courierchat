@@ -1,3 +1,5 @@
+var Waterline = require('waterline');
+
 /**
 * Message.js
 *
@@ -5,7 +7,10 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-module.exports = {
+var Message = Waterline.Collection.extend({
+	identity: 'message',
+
+	connection: 'redis',
 
 	attributes: {
 		id: {
@@ -27,7 +32,7 @@ module.exports = {
 		room: {
 			model: 'room'
 		}
-
 	}
-};
+});
 
+module.exports = Message;

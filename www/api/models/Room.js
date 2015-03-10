@@ -1,3 +1,5 @@
+var Waterline = require('waterline');
+
 /**
 * Room.js
 *
@@ -5,7 +7,10 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-module.exports = {
+var Room = Waterline.Collection.extend({
+	identity: 'room',
+
+	connection: 'redis',
 
 	attributes: {
 		id: {
@@ -21,9 +26,8 @@ module.exports = {
 			type: 'datetime',
 			required: true
 		},
-		ownerUserId: {
-			type: 'int',
-			required: true
+		owner: {
+			model: 'user'
 		},
 		users: {
 			collection: 'user',
@@ -36,5 +40,6 @@ module.exports = {
 			required: true
 		}
 	}
-};
+});
 
+module.exports = Room;
