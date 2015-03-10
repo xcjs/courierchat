@@ -24,6 +24,9 @@ case $(id -u) in
 		cd courierchat/www/
 		npm install
 		bower install --config.interactive=false
-        screen -S courierchat -d -m bash -c 'sails lift'
+        echo "Starting the Sails server..."
+        screen -S sails -d -m bash -c 'sails lift'
+        echo "Starting the Redis server..."
+        screen -S redis -d -m bash -c 'redis-server'
  	;;
 esac
