@@ -11,6 +11,9 @@ case $(id -u) in
 		npm install -g grunt-cli
 		npm install -g bower
 		
+        # Disable saving to disk for Redis.
+        sed -i "/^save.*/d" /var/redis/redis.conf
+
      	# Execute this script as the vagrant user once root provisioning is
      	# completed.
 
