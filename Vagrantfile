@@ -20,6 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # within the machine from a port on the host machine. In the example below,
         # accessing "localhost:8080" will access port 80 on the guest machine.
         courierchat.vm.network "forwarded_port", guest: 1337, host: 1337
+        courierchat.vm.network "forwarded_port", guest: 6379, host: 6379
         courierchat.vm.network "forwarded_port", guest: 80, host: 8080
         courierchat.vm.network "forwarded_port", guest: 443, host: 4343
 
