@@ -18,7 +18,7 @@ case $(id -u) in
         npm install -g sails
 		
         # Disable saving to disk for Redis.
-        sed -i "/^save.*/d" /var/redis/redis.conf
+        sed -i "/^save.*/d" /etc/redis/redis.conf
 
      	# Execute this script as the vagrant user once root provisioning is
      	# completed.
@@ -29,8 +29,7 @@ case $(id -u) in
  	;;
     *) 
      	echo "Running vagrant user provisioning..."
-     	git clone https://github.com/xcjs/courierchat.git
-		cd courierchat/www/
+		cd courierchat/
 		npm install
 		bower install --config.interactive=false
         echo "Starting the Sails server..."

@@ -30,6 +30,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # argument is a set of non-required options.
         # config.vm.synced_folder "../data", "/vagrant_data"   
 
+        config.vm.synced_folder "./www", "/home/vagrant/courierchat"
+
         config.vm.provider "virtualbox" do |vb|
            vb.gui = false
         end
