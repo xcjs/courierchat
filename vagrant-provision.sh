@@ -6,10 +6,16 @@ case $(id -u) in
      	echo "Running root user provisioning..."
      	apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
 		apt-get install -y git nodejs nodejs-legacy npm redis-server realpath
-		npm install -g npm
+
+        # Updated NPM for Sails since the Ubuntu-packaged version is too old.
+        npm install -g npm
+
+        # Delete the hash for NPM since we need BASH to find the new version.
+        hash -d npm
+
+        npm install -g grunt-cli
+        npm install -g bower
         npm install -g sails
-		npm install -g grunt-cli
-		npm install -g bower
 		
         # Disable saving to disk for Redis.
         sed -i "/^save.*/d" /var/redis/redis.conf
