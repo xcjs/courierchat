@@ -19,6 +19,7 @@ case $(id -u) in
 		
         # Disable saving to disk for Redis.
         sed -i "/^save.*/d" /etc/redis/redis.conf
+        service restart redis-server
 
      	# Execute this script as the vagrant user once root provisioning is
      	# completed.
