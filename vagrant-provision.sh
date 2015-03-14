@@ -19,7 +19,7 @@ case $(id -u) in
 		
         # Disable saving to disk for Redis.
         sed -i "/^save.*/d" /etc/redis/redis.conf
-        service restart redis-server
+        service redis-server restart
 
      	# Execute this script as the vagrant user once root provisioning is
      	# completed.
@@ -35,7 +35,5 @@ case $(id -u) in
 		bower install --config.interactive=false
         echo "Starting the Sails server..."
         screen -S sails -d -m bash -c 'sails lift'
-        echo "Starting the Redis server..."
-        screen -S redis -d -m bash -c 'redis-server'
  	;;
 esac
