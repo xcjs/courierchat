@@ -20,7 +20,8 @@ var User = Waterline.Collection.extend({
 		},
 		name: {
 			type: 'string',
-			required: true
+			required: true,
+			unique: true
 		},
 		room: {
 			model: 'Room'
