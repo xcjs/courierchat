@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "ejs": "~0.8.4",
+    "fs-extra": "^0.8.1",
     "grunt": "0.4.2",
     "grunt-bowercopy": "~1.2.0",
     "grunt-contrib-clean": "~0.5.0",
