@@ -7,10 +7,10 @@ case $(id -u) in
      	apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
 		apt-get install -y git nodejs nodejs-legacy npm redis-server realpath
 
-        # Updated NPM for Sails since the Ubuntu-packaged version is too old.
+        # Updated npm for Sails since the Ubuntu-packaged version is too old.
         npm install -g npm
 
-        # Delete the hash for NPM since we need BASH to find the new version.
+        # Delete the hash for npm since we need bash to find the new version.
         hash -d npm
 
         npm install -g grunt-cli
@@ -31,8 +31,12 @@ case $(id -u) in
     *) 
      	echo "Running vagrant user provisioning..."
 		cd courierchat/
-		npm install
+
+        # npm creates symlinks within packages, which doesn't work within VirtualBox on Windows well.
+		npm install -–no-bin-link
+
 		bower install --config.interactive=false
+        
         echo "Starting the Sails server..."
         screen -S sails -d -m bash -c 'sails lift'
  	;;
