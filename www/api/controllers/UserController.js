@@ -8,6 +8,7 @@
 'use strict';
 
 var SessionManager = require('../modules/SessionManager.js');
+var User = require('../models/User.js');
 
 module.exports = {
 	findOne: function(req, res) {
@@ -16,14 +17,13 @@ module.exports = {
 
 	create: function(req, res) {
 		var name = req.param('name');
-		var mgr = new SessionManager(req.session);
+		var mgr = new SessionManager(req.session, User);
 
-		if(mgr.login(name)) {
-			res.json(mgr.user);
-		}
-		else {
-			res.badRequest('Sorry, that user name is taken.');
-		}
+		mgr.login(name).then(function(user) {
+			res.json(user);
+		}, function(err) {
+			res.badRequest('err');
+		});
 	},
 
 	update: function(req, res) {

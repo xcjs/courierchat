@@ -1,35 +1,35 @@
 'use strict';
 
-var UserModel = require('../models/User.js');
+var Promise = require('node-promise').Promise;
 
-module.exports = function(session) {
+module.exports = function(session, userModel) {
 	var self = this;
-	var authenticated = session.authenticated = false;
-	var user = session.user = null;	
+	
+	this.session = session;
+	this.userModel = userModel;
 
-	this.login = function(name) {
-		var searchedUser = null;
+	this.login = function() {
+		return new Promise(function(resolve, reject) {
+			if(!name) reject();
 
-		if(!name) return false;
+			userModel.findOne().where({ name: name }).then(function(user) {
+				if(user) reject();
 
-		UserModel.find().where({ name: name }).then(function(user) {
-			searchedUser = user;
-		}).catch(function(err) {
-			// TODO: Log error.
+				userModel.create({
+					name: name
+				}).exec(function(err, user) {
+					if(err === null) {
+						self.session.user = user;
+						self.session.authenticated = true;
+						resolve(user);
+					} else {
+						reject(err);
+					}
+				});
+			}).catch(function(err) {
+				reject(err);
+			});
 		});
-
-		if(searchedUser) return false;
-
-		UserModel.create({
-			name: name
-		}).exec(function(err, user) {
-			if(err === null) {
-				self.user = user;
-				self.authenticated = true;
-			}
-		});
-
-		return self.authenticated;
 	};
 
 	this.logout = function(name) {
