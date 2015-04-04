@@ -1,35 +1,34 @@
 'use strict';
 
-var Promise = require('node-promise').Promise;
+var Q = require('q');
 
-module.exports = function(session, userModel) {
+module.exports = function(session) {
 	var self = this;
 	
 	this.session = session;
-	this.userModel = userModel;
 
-	this.login = function() {
-		return new Promise(function(resolve, reject) {
-			if(!name) reject();
+	this.login = function(name) {
+        var deferred = Q.defer();
 
-			userModel.findOne().where({ name: name }).then(function(user) {
-				if(user) reject();
+        User.findOne({ name: name }).exec(function(err, user) {
+            if(user) {
+                deferred.reject('You can\'t take a name already in use.');
+                return;
+            }
+            if(err) {
+                deferred.reject(err);
+                return;
+            }
 
-				userModel.create({
-					name: name
-				}).exec(function(err, user) {
-					if(err === null) {
-						self.session.user = user;
-						self.session.authenticated = true;
-						resolve(user);
-					} else {
-						reject(err);
-					}
-				});
-			}).catch(function(err) {
-				reject(err);
-			});
-		});
+            User.create({ name: name }).exec(function(err, user) {
+                if(err) {
+                    deferred.reject(err);
+                }
+                deferred.resolve(user);
+            });
+        });
+
+        return deferred.promise;
 	};
 
 	this.logout = function(name) {
