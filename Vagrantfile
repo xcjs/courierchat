@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Every Vagrant virtual environment requires a box to build off of.
         courierchat.vm.box = "ubuntu/trusty64"
-        courierchat.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/20141125/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+        courierchat.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
 
         # Create a forwarded port mapping which allows access to a specific port
         # within the machine from a port on the host machine. In the example below,
@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # the path on the host to the actual folder. The second argument is
         # the path on the guest to mount the folder. And the optional third
         # argument is a set of non-required options.
-        # config.vm.synced_folder "../data", "/vagrant_data"
+        # config.vm.synced_folder "../data", "/vagrant_data"   
 
         config.vm.synced_folder "./www", "/home/vagrant/courierchat"
 
@@ -53,7 +53,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             provider.plan = '1024'
             provider.swap_size = '512'
 
-            provider.setup = true
+            provider.setup = true            
         end
 
         courierchat.vm.provision "shell", path: "./vagrant-provision.sh"
