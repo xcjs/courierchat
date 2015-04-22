@@ -10,12 +10,11 @@
 var SessionManager = require('../modules/SessionManager.js');
 
 module.exports = {
-    find: function(req, res) {
-
-    },
-
 	findOne: function(req, res) {
+    var name = req.param('id');
+    if(name !== req.session.user.name) res.forbidden();
 
+    res.json(req.session.user);
 	},
 
 	create: function(req, res) {
@@ -23,6 +22,7 @@ module.exports = {
 		var mgr = new SessionManager(req.session);
 
 		mgr.login(name).then(function(user) {
+      req.session.user = user;
 			res.json(user);
 		}, function(err) {
 			res.badRequest(err);
@@ -34,6 +34,6 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-
+    var id = req.body.name;
 	}
 };
