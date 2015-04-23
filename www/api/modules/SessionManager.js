@@ -13,10 +13,20 @@ module.exports = function(session) {
 	};
 
 	this.logout = function(name) {
+    var deferred = Q.defer();
 
+    if(name === self.session.user.name) {
+      UserFactory.removeByUser(self.session.user).then(function() {
+        self.session.destroy();
+        deferred.resolve();
+      }, function() {
+        deferred.reject('We had trouble logging you out. Please try again in a few minutes!');
+      });
+    }
+    else {
+      deferred.reject('You can\'t log out as another user.');
+    }
+
+    return deferred.promise;
 	};
-
-	var getUser = function() {
-
-	}
 };

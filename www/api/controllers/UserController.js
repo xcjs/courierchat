@@ -25,7 +25,7 @@ module.exports = {
       req.session.user = user;
 			res.json(user);
 		}, function(err) {
-			res.badRequest(err);
+			res.badRequest({ error: err });
 		});
 	},
 
@@ -34,6 +34,13 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-    var id = req.body.name;
+    var name = req.param('id');
+    var mgr = new SessionManager(req.session);
+
+    mgr.logout(name).then(function() {
+      res.ok();
+    }, function(err) {
+      res.forbidden({ error: err })
+    });
 	}
 };

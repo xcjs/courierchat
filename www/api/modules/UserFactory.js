@@ -30,5 +30,20 @@ module.exports = {
     });
 
     return deferred.promise;
+  },
+
+  removeByUser: function(user) {
+    var deferred = Q.defer();
+
+    User.destroy({ id: user.id }).exec(function(err) {
+      if(err) {
+        deferred.reject(err);
+      }
+      else {
+        deferred.resolve();
+      }
+    });
+
+    return deferred.promise;
   }
 };
