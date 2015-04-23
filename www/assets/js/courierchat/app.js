@@ -9,10 +9,16 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
 	$locationProvider.html5Mode(true);
 
 	$stateProvider
-		.state('login', {
+		.state('home', {
 			url: '/',
-			templateUrl: templates + 'login.html'
+			templateUrl: templates + 'login.html',
+      controller: 'userController'
 		})
+    .state('login', {
+      url: '/login',
+      templateUrl: templates + 'login.html',
+      controller: 'userController'
+    })
 		.state('about',  {
 			url: '/about',
 			templateUrl: templates + 'about.html'
