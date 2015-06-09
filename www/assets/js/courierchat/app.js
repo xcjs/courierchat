@@ -1,6 +1,8 @@
 var courierChat = angular.module('courierChat', ['ui.router']);
 
 courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
+	'use strict';
+
 	var appBase = 'js/courierchat/';
 	var templates = appBase + 'templates/';
 
