@@ -1,5 +1,7 @@
 courierchat.controller('userController', ['$scope', function() {
-  $scope.login = function(name) {
+	'use strict';
+
+	$scope.login = function(name) {
 
   }
 }]);
