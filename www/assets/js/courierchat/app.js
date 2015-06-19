@@ -9,22 +9,22 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
 	$locationProvider.html5Mode(true);
 
 	$stateProvider
-		.state('home', {
-			url: '/',
-			templateUrl: templates + 'login.html',
-      controller: 'userController'
-		})
+	.state('home', {
+		url: '/',
+		templateUrl: templates + 'login.html',
+  		controller: 'loginController'
+	})
     .state('login', {
-      url: '/login',
-      templateUrl: templates + 'login.html',
-      controller: 'userController'
+  		url: '/login',
+  		templateUrl: templates + 'login.html',
+  		controller: 'loginController'
     })
-		.state('about',  {
-			url: '/about',
-			templateUrl: templates + 'about.html'
-	  })
+	.state('about',  {
+		url: '/about',
+		templateUrl: templates + 'about.html'
+  	})
     .state('rooms', {
-      url: '/rooms',
-      templateUrl: templates + 'rooms.html'
-  })
+  		url: '/rooms',
+  		templateUrl: templates + 'rooms.html'
+  	})
 });
