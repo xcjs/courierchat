@@ -162,7 +162,7 @@ main article.about .avatar-container {
     -moz-box-shadow:    0px 4px 5px 0px rgba(0, 0, 0, 0.25);
     box-shadow:         0px 4px 5px 0px rgba(0, 0, 0, 0.25);
     margin: 0;
-} 
+}
 
 .form-container form {
     background-color: rgba(255, 255, 255, .95);
@@ -232,5 +232,10 @@ article.login input[type="textbox"] {
 
 article.login form > * {
     margin: 1rem;
+}
+
+article.login form > p {
+	color: #5A5A5A;
+	font-weight: bold;
 }
 

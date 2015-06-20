@@ -1,4 +1,4 @@
-courierchat.controller('roomsController', ['$scope', function() {
+courierChat.controller('roomsController', ['$scope', function() {
 	'use strict';
 
 

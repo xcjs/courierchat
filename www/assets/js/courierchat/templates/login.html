@@ -9,12 +9,15 @@
 		</h1>
 		<form class="animated bounceInDown">
 			<p>
-				<input type="textbox">
+				<input type="textbox" ng-model="username">
 			</p>
 			<p>
-				<button>
+				<button ng-click="login()">
 					Say hello! &raquo;
 				</button>
+			</p>
+			<p class="tcenter" ng-show="error">
+				{{error}}
 			</p>
 		</form>
 	</div>
