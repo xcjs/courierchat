@@ -6,7 +6,7 @@ courierChat.controller('loginController', ['$scope', 'user', function($scope, us
 
 	$scope.login = function() {
 		if($scope.username === null || $scope.username.length === 0) {
-			$scope.error = 'What should we call you?';
+			$scope.error = 'Wait a second, you still haven\'t introduced yourself.';
 			return;
 		}
 
