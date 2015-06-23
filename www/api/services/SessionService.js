@@ -1,7 +1,7 @@
 'use strict';
 
 var Q = require('q');
-var UserFactory = require('./UserFactory.js');
+var UserFactory = require('./UserFactoryService.js');
 
 module.exports = function(session) {
 	var self = this;

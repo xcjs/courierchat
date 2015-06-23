@@ -7,8 +7,6 @@
 
 'use strict';
 
-var SessionManager = require('../modules/SessionManager.js');
-
 module.exports = {
 	findOne: function(req, res) {
     var name = req.param('id');
@@ -19,7 +17,7 @@ module.exports = {
 
 	create: function(req, res) {
 		var name = req.body.name;
-		var mgr = new SessionManager(req.session);
+		var mgr = new SessionService(req.session);
 
 		mgr.login(name).then(function(user) {
       req.session.user = user;
@@ -35,7 +33,7 @@ module.exports = {
 
 	destroy: function(req, res) {
     var name = req.param('id');
-    var mgr = new SessionManager(req.session);
+    var mgr = new SessionService(req.session);
 
     mgr.logout(name).then(function() {
       res.ok();
