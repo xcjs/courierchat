@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		bowercopy: {
 	        options: {
-	            
+
 	        },
 	        devScripts: {
 	        	options: {
@@ -31,9 +31,10 @@ module.exports = function(grunt) {
 	        		'angular-cookies.js': 'angular-cookies/angular-cookies.js',
 	        		'angular-ui-router.js': 'angular-ui-router/release/angular-ui-router.js',
 	        		'angular-route.js': 'angular-route/angular-route.js',
+					'angular-resource.js': 'angular-resource/angular-resource.js',
 	        		'ngsails.io.js': 'angularSails/dist/ngsails.io.js',
 	        		'modernizr.js': 'modernizr/modernizr.js'
-	        	}   
+	        	}
 	        },
 	        devStylesheets: {
 	        	options: {
@@ -47,7 +48,7 @@ module.exports = function(grunt) {
 	        	}
 	        }
 	    }
-	});	
+	});
 
 	// Load the include-all library in order to require all of our grunt
 	// configurations and task registrations dynamically.
