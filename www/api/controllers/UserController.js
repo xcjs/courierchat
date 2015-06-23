@@ -9,10 +9,10 @@
 
 module.exports = {
 	findOne: function(req, res) {
-    var name = req.param('id');
-    if(name !== req.session.user.name) res.forbidden();
+    	var name = req.param('id');
+    	if(name !== req.session.user.name) res.forbidden();
 
-    res.json(req.session.user);
+		res.json(req.session.user);
 	},
 
 	create: function(req, res) {
@@ -20,11 +20,12 @@ module.exports = {
 		var mgr = new SessionService(req.session);
 
 		mgr.login(name).then(function(user) {
-      req.session.user = user;
-			res.json(user);
-		}, function(err) {
-			res.badRequest({ error: err });
-		});
+		  req.session.user = user;
+				res.json(user);
+			}, function(err) {
+				res.badRequest({ error: err });
+			}
+		);
 	},
 
 	update: function(req, res) {
@@ -32,13 +33,14 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-    var name = req.param('id');
-    var mgr = new SessionService(req.session);
+		var name = req.param('id');
+		var mgr = new SessionService(req.session);
 
-    mgr.logout(name).then(function() {
-      res.ok();
-    }, function(err) {
-      res.forbidden({ error: err })
-    });
+		mgr.logout(name).then(function() {
+			  res.ok();
+			}, function(err) {
+			  res.forbidden({ error: err })
+			}
+		);
 	}
 };
