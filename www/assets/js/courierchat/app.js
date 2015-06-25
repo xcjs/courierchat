@@ -1,4 +1,4 @@
-var courierChat = angular.module('courierChat', ['ui.router']);
+var courierChat = angular.module('courierChat', ['ui.router', 'ngResource']);
 
 courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 	'use strict';

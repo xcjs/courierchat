@@ -1,4 +1,4 @@
-courierChat.controller('loginController', ['$scope', 'user', function($scope, user) {
+courierChat.controller('loginController', ['$scope', 'userResource', function($scope, userResource) {
 	'use strict';
 
 	$scope.username = null;
@@ -12,7 +12,10 @@ courierChat.controller('loginController', ['$scope', 'user', function($scope, us
 
 		$scope.error = null;
 
-		var chatter = new user();
-		chatter.name = $scope.username;
+		userResource.login($scope.username, function(user) {
+			$scope.error = user.name;
+		}, function(response) {
+			$scope.error = response.data.error;
+		});
   	};
 }]);
