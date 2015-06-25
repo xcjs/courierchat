@@ -25,6 +25,7 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
   	})
     .state('rooms', {
   		url: '/rooms',
-  		templateUrl: components + 'rooms/rooms.html'
+  		templateUrl: components + 'rooms/rooms.html',
+		controller: 'roomsController'
   	})
 });
