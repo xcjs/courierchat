@@ -4,27 +4,27 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
 	'use strict';
 
 	var appBase = 'js/courierchat/';
-	var templates = appBase + 'templates/';
+	var components = appBase + 'components/';
 
 	$locationProvider.html5Mode(true);
 
 	$stateProvider
 	.state('home', {
 		url: '/',
-		templateUrl: templates + 'login.html',
+		templateUrl: components + 'login/login.html',
   		controller: 'loginController'
 	})
     .state('login', {
   		url: '/login',
-  		templateUrl: templates + 'login.html',
+  		templateUrl: components + 'login/login.html',
   		controller: 'loginController'
     })
 	.state('about',  {
 		url: '/about',
-		templateUrl: templates + 'about.html'
+		templateUrl: components + 'about/about.html'
   	})
     .state('rooms', {
   		url: '/rooms',
-  		templateUrl: templates + 'rooms.html'
+  		templateUrl: components + 'rooms/rooms.html'
   	})
 });
