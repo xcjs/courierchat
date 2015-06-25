@@ -3,7 +3,7 @@ var courierChat = angular.module('courierChat', ['ui.router', 'ngResource']);
 courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 	'use strict';
 
-	var appBase = 'js/courierchat/';
+	var appBase = '/js/courierchat/';
 	var components = appBase + 'components/';
 
 	$locationProvider.html5Mode(true);
