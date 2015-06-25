@@ -13,7 +13,7 @@ module.exports = {
 
     User.findOne({ name: name }).exec(function(err, user) {
       if(user) {
-        deferred.reject('You can\'t take a name already in use.');
+        deferred.reject('Sorry, someone already claimed that name!');
         return;
       }
       if(err) {
