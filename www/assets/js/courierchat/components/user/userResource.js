@@ -1,6 +1,4 @@
-courierChat.service('userResource', [
-'$resource', 'sessionFactory',
-function($resource, sessionFactory) {
+courierChat.service('userResource', ['$resource', function($resource) {
 	'use strict';
 
 	var userResource = $resource('/api/users/:id', { id: '@id' });

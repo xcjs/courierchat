@@ -1,4 +1,4 @@
-courierChat.controller('loginController', ['$scope', 'userResource', function($scope, userResource) {
+courierChat.controller('loginController', ['$scope', 'userResource', 'sessionService', function($scope, userResource, session) {
 	'use strict';
 
 	$scope.username = null;
@@ -13,7 +13,9 @@ courierChat.controller('loginController', ['$scope', 'userResource', function($s
 		$scope.error = null;
 
 		userResource.login($scope.username, function(user) {
-			$scope.error = user.name;
+			if(session.user === null) {
+				session.user = user;
+			}
 		}, function(response) {
 			$scope.error = response.data.error;
 		});
