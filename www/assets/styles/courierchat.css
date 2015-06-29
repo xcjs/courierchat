@@ -37,8 +37,8 @@ header {
     background-color: #23B28F;
     display: table-cell;
     height: 100%;
-    min-width: 5em;
-    padding-top: 1em;
+    min-width: 5rem;
+    padding-top: 1rem;
     vertical-align: top;
     width: 3vw;
 }
@@ -60,7 +60,7 @@ header a span.anim-nav-hover, header a:visited span.anim-nav-hover {
     border-radius: 1000000px;
     color: #fff;
     display: none;
-    font-size: 3.5vh;
+    font-size: 2rem;
     height: 100%;
     left: 0;
     padding: 0 1rem 0 130%;
