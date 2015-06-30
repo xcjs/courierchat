@@ -72,23 +72,24 @@
     <![endif]-->
     <header class="shadowed">
       <nav>
-        <ul>
-          <li>
-            <a ui-sref="login">
-              <img src="/images/courierchat.svg" id="logo" alt="Courier Chat Logo">
-              <span class="animated faster anim-nav-hover shadowed">
-                Home
-              </span>
-            </a>
-          </li>
-          <li>
-            <a ui-sref="about">
-              <img src="/images/about.svg" alt="About Courier Chat">
-              <span class="animated faster anim-nav-hover shadowed">
-                About
-              </span>
-            </a>
-          </li>
+		<ul>
+		  <li>
+			<a ui-sref="login">
+			  <img src="/images/courierchat.svg" id="logo" alt="Courier Chat Logo">
+			  <span class="animated faster anim-nav-hover shadowed">
+				Home
+			  </span>
+			</a>
+		  </li>
+		  <li>
+			<a ui-sref="about">
+			  <img src="/images/about.svg" alt="About Courier Chat">
+			  <span class="animated faster anim-nav-hover shadowed">
+				About
+			  </span>
+			</a>
+		  </li>
+			<logout-button />
         </ul>
       </nav>
     </header>
@@ -159,6 +160,7 @@
     <script src="/js/courierchat/app.js"></script>
     <script src="/js/courierchat/components/login/loginController.js"></script>
     <script src="/js/courierchat/components/rooms/roomsController.js"></script>
+    <script src="/js/courierchat/components/session/logoutButtonDirective.js"></script>
     <script src="/js/courierchat/components/session/sessionService.js"></script>
     <script src="/js/courierchat/components/user/userResource.js"></script>
     <!--SCRIPTS END-->
