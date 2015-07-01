@@ -36,11 +36,11 @@ module.exports = {
     var deferred = Q.defer();
 
     User.destroy({ id: user.id }).exec(function(err) {
-      if(err) {
-        deferred.reject(err);
+      if(!err) {
+		deferred.resolve();
       }
       else {
-        deferred.resolve();
+		deferred.reject(err);
       }
     });
 

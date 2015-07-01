@@ -33,10 +33,10 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-		var name = req.param('id');
+		var id = parseInt(req.param('id'));
 		var mgr = new SessionService(req.session);
 
-		mgr.logout(name).then(function() {
+		mgr.logout(id).then(function() {
 			  res.ok();
 			}, function(err) {
 			  res.forbidden({ error: err })

@@ -1,4 +1,4 @@
-courierChat.directive('logoutButton', ['$rootScope', 'sessionService', function($rootScope, sessionService) {
+courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService', 'userResource', function($rootScope, $state, sessionService, userResource) {
 	var link = function(scope, elem, attrs) {
 		if(!sessionService.user) {
 			elem.css('display', 'none');
@@ -16,7 +16,14 @@ courierChat.directive('logoutButton', ['$rootScope', 'sessionService', function(
 
 	var controller = function($scope) {
 		$scope.logout = function() {
-			
+			userResource.logout(sessionService.user, function() {
+				sessionService.user = null;
+				sessionService.room = null;
+
+				$state.go('login');
+			}, function() {
+
+			});
 		};
 	};
 
