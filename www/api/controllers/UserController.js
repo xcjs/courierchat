@@ -8,11 +8,17 @@
 'use strict';
 
 module.exports = {
-	findOne: function(req, res) {
-    	var name = req.param('id');
-    	if(name !== req.session.user.name) res.forbidden();
+	me: function(req, res) {
+		if(req.session && req.session.user) {
+			res.json(req.session.user);
+		}
+		else {
+			res.forbidden();
+		}
+	},
 
-		res.json(req.session.user);
+	findOne: function(req, res) {
+
 	},
 
 	create: function(req, res) {
@@ -20,7 +26,7 @@ module.exports = {
 		var mgr = new SessionService(req.session);
 
 		mgr.login(name).then(function(user) {
-		  req.session.user = user;
+		  		req.session.user = user;
 				res.json(user);
 			}, function(err) {
 				res.badRequest({ error: err });

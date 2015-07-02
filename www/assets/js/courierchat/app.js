@@ -29,3 +29,10 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
 		controller: 'roomsController'
   	})
 });
+
+courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {
+	userResource.keepalive(function(user) {
+		sessionService.user = user;
+		$state.go('rooms');
+	});
+}]);

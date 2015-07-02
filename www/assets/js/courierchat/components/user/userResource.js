@@ -3,6 +3,10 @@ courierChat.service('userResource', ['$resource', function($resource) {
 
 	var userResource = $resource('/api/users/:id', { id: '@id' });
 
+	this.keepalive = function(success, failure) {
+		userResource.get({ id: 'me' }).$promise.then(success, failure);
+	};
+
 	this.login = function(username, success, failure) {
 		userResource.save({ name: username }).$promise.then(success, failure);
 	};
