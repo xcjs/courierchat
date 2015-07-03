@@ -21,7 +21,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # within the machine from a port on the host machine. In the example below,
         # accessing "localhost:8080" will access port 80 on the guest machine.
         courierchat.vm.network "forwarded_port", guest: 1337, host: 1337
-        courierchat.vm.network "forwarded_port", guest: 6379, host: 6379
         courierchat.vm.network "forwarded_port", guest: 80, host: 8080
         courierchat.vm.network "forwarded_port", guest: 443, host: 4343
 
@@ -29,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # the path on the host to the actual folder. The second argument is
         # the path on the guest to mount the folder. And the optional third
         # argument is a set of non-required options.
-        # config.vm.synced_folder "../data", "/vagrant_data"   
+        # config.vm.synced_folder "../data", "/vagrant_data"
 
         config.vm.synced_folder "./www", "/home/vagrant/courierchat"
 
@@ -53,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             provider.plan = '1024'
             provider.swap_size = '512'
 
-            provider.setup = true            
+            provider.setup = true
         end
 
         courierchat.vm.provision "shell", path: "./vagrant-provision.sh"
