@@ -21,7 +21,7 @@ module.exports.http = {
   *                                                                           *
   ****************************************************************************/
 
-  // middleware: {
+  middleware: {
 
   /***************************************************************************
   *                                                                          *
@@ -30,23 +30,24 @@ module.exports.http = {
   *                                                                          *
   ***************************************************************************/
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+	order: [
+		'startRequestTimer',
+		'cookieParser',
+		'session',
+		'refreshSessionCookie',
+       //'myRequestLogger',
+		'bodyParser',
+		'handleBodyParserError',
+		'compress',
+		'methodOverride',
+		'poweredBy',
+		'$custom',
+		'router',
+		'www',
+		'favicon',
+		'404',
+		'500'
+	],
 
   /****************************************************************************
   *                                                                           *
@@ -58,6 +59,15 @@ module.exports.http = {
     //     console.log("Requested :: ", req.method, req.url);
     //     return next();
     // }
+
+	refreshSessionCookie: function(req, res, next) {
+	  	var ms = new Date().getMilliseconds();
+		var expires = new Date(new Date().setMilliseconds(ms + sails.config.session.cookie.maxAge));
+
+		req.session._garbage = expires;
+		req.session.touch();
+		return next();
+	}
 
 
   /***************************************************************************
@@ -71,7 +81,7 @@ module.exports.http = {
 
     // bodyParser: require('skipper')
 
-  // },
+  }
 
   /***************************************************************************
   *                                                                          *
