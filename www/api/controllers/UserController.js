@@ -23,15 +23,23 @@ module.exports = {
 
 	create: function(req, res) {
 		var name = req.body.name;
-		var mgr = new SessionService(req.session);
+		var mgr = new SessionService();
 
 		mgr.login(name).then(function(user) {
-		  		req.session.user = user;
+			mgr.createSessionId(user).then(function(updatedUser) {
+				user = updatedUser;
+				res.set('CourierChat-Session-ID', user.sessionId);
+
+				// Session ID is part of the header - it's not needed in the response body.
+				delete user.sessionId;
+
 				res.json(user);
 			}, function(err) {
-				res.badRequest({ error: err });
-			}
-		);
+				res.serverError({ error: err });
+			});
+		}, function(err) {
+			res.badRequest({ error: err });
+		});
 	},
 
 	update: function(req, res) {
@@ -39,10 +47,9 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-		var id = parseInt(req.param('id'));
 		var mgr = new SessionService(req.session);
 
-		mgr.logout(id).then(function() {
+		mgr.logout().then(function() {
 			  res.ok();
 			}, function(err) {
 			  res.forbidden({ error: err })

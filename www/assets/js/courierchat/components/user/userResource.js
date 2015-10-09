@@ -3,6 +3,8 @@ courierChat.service('userResource', ['$resource', function($resource) {
 
 	var userResource = $resource('/api/users/:id', { id: '@id' });
 
+	this.keepaliveRoute = '/api/users/me';
+
 	this.keepalive = function(success, failure) {
 		userResource.get({ id: 'me' }).$promise.then(success, failure);
 	};

@@ -2,31 +2,71 @@
 
 var Q = require('q');
 
+var validName = function(name) {
+	if (name === null || name === undefined || name === '') {
+		return false;
+	}
+
+	return true;
+};
+
 module.exports = {
+	create: function(name) {
+		var deferred = Q.defer();
+
+		if(!validName(name)) {
+			deferred.reject('Sorry, that name isn\'t going to work for us.');
+			return deferred.promise;
+		}
+
+		User.create({ name: name }).exec(function (err, user) {
+			if (err) {
+				deferred.reject(err);
+				return deferred.promise;
+			}
+
+			deferred.resolve(user);
+		});
+
+		return deferred.promise;
+	},
+
 	findByName: function (name) {
 		var deferred = Q.defer();
 
-		if (name === null || name === undefined) {
-			deferred.reject('What are we supposed to name you?');
+		if (!validName(name)) {
+			deferred.reject('A valid name is required to find a user.');
 			return deferred.promise;
 		}
 
 		User.findOne({name: name}).exec(function (err, user) {
 			if (user) {
-				deferred.reject('Sorry, someone already claimed that name!');
-				return;
-			}
-			if (err) {
-				deferred.reject(err);
-				return;
-			}
-
-			User.create({name: name}).exec(function (err, user) {
-				if (err) {
-					deferred.reject(err);
-				}
 				deferred.resolve(user);
-			});
+			}
+			else if (!err) {
+				deferred.resolve(null);
+			}
+			else {
+				deferred.reject(err);
+			}
+		});
+
+		return deferred.promise;
+	},
+
+	update: function(user) {
+		var deferred = Q.defer();
+
+		User.update({ id: user.id }, user).exec(function(err, users) {
+			if(!err && users.length > 0) {
+				deferred.resolve(users[0]);
+			}
+			else if(err) {
+				deferred.reject(err);
+			}
+			else {
+				deferred.reject('A matching user could not be found to update based on the information provided.');
+			}
 		});
 
 		return deferred.promise;
@@ -36,11 +76,11 @@ module.exports = {
 		var deferred = Q.defer();
 
 		User.destroy({id: user.id}).exec(function (err) {
-			if (!err) {
-				deferred.resolve();
+			if (err) {
+				deferred.reject(err);
 			}
 			else {
-				deferred.reject(err);
+				deferred.resolve();
 			}
 		});
 

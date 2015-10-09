@@ -1,4 +1,4 @@
-var courierChat = angular.module('courierChat', ['ui.router', 'ngResource']);
+var courierChat = angular.module('courierChat', ['ui.router', 'ngResource', 'sails.io']);
 
 courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 	'use strict';

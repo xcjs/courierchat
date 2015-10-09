@@ -34,10 +34,10 @@ module.exports.sockets = {
   * disconnects                                                              *
   *                                                                          *
   ***************************************************************************/
-  onDisconnect: function(session, socket) {
-
-    // By default: do nothing.
-  },
+	onDisconnect: function(session, socket) {
+		//var mgr = new SessionService();
+		//mgr.logout();
+	}
 
 
   /***************************************************************************
