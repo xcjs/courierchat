@@ -9,7 +9,7 @@ module.exports = {
 	create: function(req, res) {
 		var roomName = req.body.name;
 
-		RoomFactoryService.findByName(roomName).then(function(room) {
+		RoomService.findByName(roomName).then(function(room) {
 			res.json(room);
 		}, function(err) {
 			res.badRequest(err);

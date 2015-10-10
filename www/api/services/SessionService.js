@@ -8,20 +8,20 @@ module.exports = function() {
 	var self = this;
 
 	this.login = function(name) {
-    	return UserFactoryService.create(name);
+    	return UserService.create(name);
 	};
 
 	this.createSessionId = function(user) {
 		sha1sum.update(sails.config.session.secret + user.id);
 		user.sessionId = sha1sum.digest('hex');
 
-		return UserFactoryService.update(user);
+		return UserService.update(user);
 	};
 
 	this.logout = function(user) {
 		var deferred = Q.defer();
 
-		UserFactoryService.removeByUser(user).then(function() {
+		UserService.removeByUser(user).then(function() {
 			deferred.resolve();
 		}, function() {
 			deferred.reject('We had trouble logging you out. Please try again in a few minutes!');
