@@ -20,7 +20,7 @@ var User = Waterline.Collection.extend({
 			required: true,
 			primaryKey: true
 		},
-		sessionId: {
+		token: {
 			type: 'string',
 			required: true,
 			unique: true
