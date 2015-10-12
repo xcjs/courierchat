@@ -43,15 +43,26 @@ module.exports = {
 			if (user) {
 				deferred.resolve(user);
 			}
-			else if (!err) {
-				deferred.resolve(null);
-			}
 			else {
 				deferred.reject(err);
 			}
 		});
 
 		return deferred.promise;
+	},
+
+	findByToken: function(authToken) {
+		var deferred = Q.defer();
+
+		User.findOne({token: authToken}).exec(function(err, user) {
+			if (!err) {
+				deferred.resolve(user);
+			} else {
+				deferred.reject(err);
+			}
+		});
+
+		return deferred;
 	},
 
 	update: function(user) {
