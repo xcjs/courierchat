@@ -8,7 +8,7 @@ courierChat.service('sessionService', ['userResource', function(userResource) {
 	this.sessionSocket = null;
 	this.roomSocket = null;
 
-	this.createSessionSocket = function() {
+	this.checkSession = function() {
 		var socketRoute = userResource.keepaliveRoute;
 	};
 }]);

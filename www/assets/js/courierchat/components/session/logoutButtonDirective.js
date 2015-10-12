@@ -5,7 +5,7 @@ courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService',
 		}
 
 		$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-			if(!sessionService.user) {
+			if(!$rootScope.user) {
 				elem.css('display', 'none');
 			}
 			else {
@@ -16,9 +16,9 @@ courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService',
 
 	var controller = function($scope) {
 		$scope.logout = function() {
-			userResource.logout(sessionService.user, function() {
-				sessionService.user = null;
-				sessionService.room = null;
+			userResource.logout($rootScope.user, function() {
+				$rootScope.user = null;
+				$rootScope.room = null;
 
 				$state.go('login');
 			}, function() {

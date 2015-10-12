@@ -1,10 +1,10 @@
-courierChat.controller('loginController', ['$scope', '$state', 'userResource', 'sessionService', function($scope, $state, userResource, session) {
+courierChat.controller('loginController', ['$rootScope', '$scope', '$state', 'userResource', function($rootScope, $scope, $state, userResource) {
 	'use strict';
 
 	$scope.username = null;
 	$scope.error = null;
 
-	if(session.user !== null) $state.go('rooms');
+	if($rootScope.user) $state.go('rooms');
 
 	$scope.login = function() {
 		if($scope.username === null || $scope.username.length === 0) {
@@ -15,10 +15,8 @@ courierChat.controller('loginController', ['$scope', '$state', 'userResource', '
 		$scope.error = null;
 
 		userResource.login($scope.username, function(user) {
-			if(session.user === null) {
-				session.user = user;
-				$state.go('rooms');
-			}
+			$rootScope.user = user;
+			$state.go('rooms');
 		}, function(response) {
 			$scope.error = response.data.error;
 		});

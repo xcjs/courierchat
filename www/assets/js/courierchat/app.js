@@ -1,12 +1,14 @@
 var courierChat = angular.module('courierChat', ['ui.router', 'ngResource', 'sails.io']);
 
-courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
+courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 	'use strict';
 
 	var appBase = '/js/courierchat/';
 	var components = appBase + 'components/';
 
 	$locationProvider.html5Mode(true);
+
+	$httpProvider.interceptors.push('authInterceptor');
 
 	$stateProvider
 	.state('home', {
@@ -31,8 +33,5 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
 });
 
 courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {
-	userResource.keepalive(function(user) {
-		sessionService.user = user;
-		$state.go('rooms');
-	});
+
 }]);
