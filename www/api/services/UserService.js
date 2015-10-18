@@ -2,30 +2,21 @@
 
 var Q = require('q');
 
-var validName = function(name) {
-	if (name === null || name === undefined || name === '') {
-		return false;
-	}
-
-	return true;
-};
-
 module.exports = {
 	create: function(name) {
 		var deferred = Q.defer();
 
-		if(!validName(name)) {
+		if(!StringService.hasValue(name)) {
 			deferred.reject('Sorry, that name isn\'t going to work for us.');
 			return deferred.promise;
 		}
 
 		User.create({ name: name }).exec(function (err, user) {
-			if (err) {
+			if (!err) {
+				deferred.resolve(user);
+			} else {
 				deferred.reject(err);
-				return deferred.promise;
 			}
-
-			deferred.resolve(user);
 		});
 
 		return deferred.promise;
@@ -34,13 +25,13 @@ module.exports = {
 	findByName: function (name) {
 		var deferred = Q.defer();
 
-		if (!validName(name)) {
+		if (!StringService.hasValue(name)) {
 			deferred.reject('A valid name is required to find a user.');
 			return deferred.promise;
 		}
 
 		User.findOne({name: name}).exec(function (err, user) {
-			if (user) {
+			if (!err) {
 				deferred.resolve(user);
 			}
 			else {
@@ -54,6 +45,11 @@ module.exports = {
 	findByToken: function(authToken) {
 		var deferred = Q.defer();
 
+		if(!StringService.hasValue(authToken)) {
+			deferred.reject('A valid token was not provided, so you cannot be logged out.');
+			return deferred.promise;
+		};
+
 		User.findOne({token: authToken}).exec(function(err, user) {
 			if (!err) {
 				deferred.resolve(user);
@@ -62,7 +58,7 @@ module.exports = {
 			}
 		});
 
-		return deferred;
+		return deferred.promise;
 	},
 
 	update: function(user) {
@@ -87,11 +83,11 @@ module.exports = {
 		var deferred = Q.defer();
 
 		User.destroy({id: user.id}).exec(function (err) {
-			if (err) {
-				deferred.reject(err);
+			if (!err) {
+				deferred.resolve();
 			}
 			else {
-				deferred.resolve();
+				deferred.reject(err);
 			}
 		});
 

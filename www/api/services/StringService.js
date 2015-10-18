@@ -1,3 +1,11 @@
-/**
- * Created by diaruemnus on 10/16/15.
- */
+'use strict';
+
+module.exports = {
+	hasValue: function(stringValue) {
+		if (name === null || name === undefined || name === '') {
+			return false;
+		}
+
+		return true;
+	}
+};

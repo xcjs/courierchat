@@ -14,6 +14,18 @@ var User = Waterline.Collection.extend({
 
 	connection: 'redis',
 
+	beforeCreate: function(values, next) {
+		UserService.findByName(values.name).then(function(user) {
+			if(user) {
+				return next('Sorry, someone else already has that name!');
+			}
+		}, function(err) {
+			return next(err);
+		});
+
+		return next();
+	},
+
 	attributes: {
 		id: {
 			type: 'integer',

@@ -1,12 +1,14 @@
 module.exports = function (req, res, next) {
-	var authToken = req.header('courierchat-auth-token');
+	'use strict';
+
+	var headerMgr = new HeaderService(req, res);
+	var authToken = headerMgr.getAuthToken();
 
 	if (!authToken) { return res.forbidden(); }
 
 	UserService.findByToken(authToken).then(function(user) {
-		if(user) {
-			return next();
-		}
+		if(user) { return next(); }
+		else { res.serverError('Unable to properly authenticate due to missing user record.'); }
 	}, function(err) {
 		return res.serverError(err);
 	});

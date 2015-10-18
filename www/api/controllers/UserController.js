@@ -8,30 +8,19 @@
 'use strict';
 
 module.exports = {
-	me: function(req, res) {
-		if(req.session && req.session.user) {
-			res.json(req.session.user);
-		}
-		else {
-			res.forbidden();
-		}
-	},
-
 	findOne: function(req, res) {
 
 	},
 
 	create: function(req, res) {
 		var name = req.body.name;
-		var mgr = new SessionService();
+		var sessionMgr = new SessionService();
+		var headerMgr = new HeaderService(req, res);
 
-		mgr.login(name).then(function(user) {
-			mgr.createSessionId(user).then(function(updatedUser) {
+		sessionMgr.login(name).then(function(user) {
+			sessionMgr.createSessionId(user).then(function(updatedUser) {
 				user = updatedUser;
-				res.set('CourierChat-Session-ID', user.sessionId);
-
-				// Session ID is part of the header - it's not needed in the response body.
-				delete user.sessionId;
+				headerMgr.setAuthToken(user.token);
 
 				res.json(user);
 			}, function(err) {
@@ -47,13 +36,20 @@ module.exports = {
 	},
 
 	destroy: function(req, res) {
-		var mgr = new SessionService(req.session);
+		var headerMgr = new HeaderService(req, res);
+		var token = headerMgr.getAuthToken();
 
-		mgr.logout().then(function() {
-			  res.ok();
-			}, function(err) {
-			  res.forbidden({ error: err })
-			}
-		);
+		var sessionMgr = new SessionService();
+
+		UserService.findByToken(token).then(function(user) {
+			sessionMgr.logout(user).then(function() {
+					res.ok();
+				}, function(err) {
+					res.forbidden({ error: err });
+				}
+			);
+		}, function(err) {
+			res.serverError({ error: err });
+		});
 	}
 };

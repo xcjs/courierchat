@@ -13,7 +13,7 @@ module.exports = function() {
 
 	this.createSessionId = function(user) {
 		sha1sum.update(sails.config.session.secret + user.id);
-		user.sessionId = sha1sum.digest('hex');
+		user.token = sha1sum.digest('hex');
 
 		return UserService.update(user);
 	};
