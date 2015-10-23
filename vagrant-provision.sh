@@ -1,43 +1,38 @@
 #!/bin/bash
 
-# Determine the user ID of the user executing this script.
-case $(id -u) in
-    0)
-     	echo "Running root user provisioning..."
-     	apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
-		apt-get install -y git nodejs nodejs-legacy npm redis-server realpath
+echo "Fetching the NodeSource script to install Node.js 4.x..."
+curl -sL https://deb.nodesource.com/setup_4.x | bash -
 
-        # Updated npm for Sails since the Ubuntu-packaged version is too old.
-        npm install -g npm
+echo "Checking for and Installing system updates..."
+apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get autoremove -y
 
-        # Delete the hash for npm since we need bash to find the new version.
-        hash -d npm
+echo "Installing git, nodejs, npm, and redis-server..."
+apt-get install -qq git nodejs redis-server
 
-        npm install -g grunt-cli
-        npm install -g bower
-        npm install -g sails
+# Updated npm for Sails since the Ubuntu-packaged version may be outdated.
+echo "Checking for updates to NPM..."
+npm install -g npm
 
-        # Disable saving to disk for Redis.
-        sed -i "/^save.*/d" /etc/redis/redis.conf
-        service redis-server restart
+# Delete the hash for npm since we need bash to find the new version.
+hash -d npm
 
-     	# Execute this script as the vagrant user once root provisioning is
-     	# completed.
+echo "Installing Grunt, Bower, and Sails globally..."
+npm install -g grunt-cli
+npm install -g bower
+npm install -g sails
 
-        THISSCRIPT=$(realpath $0)
-        chown vagrant $THISSCRIPT
-        sudo -u vagrant -i $THISSCRIPT
- 	;;
-    *)
-     	echo "Running vagrant user provisioning..."
-		cd courierchat/
+echo "Disabling the Redis disk sync..."
+sed -i "/^save.*/d" /etc/redis/redis.conf
+service redis-server restart
 
-        # npm creates symlinks within packages, which doesn't work within VirtualBox on Windows well.
-		npm install -–no-bin-links
+cd /vagrant/www
 
-		bower install --config.interactive=false
+# npm creates symlinks within packages, which doesn't work within VirtualBox on Windows well.
+echo "Installing NPM dependencies..."
+npm install -–no-bin-links
 
-        echo "Starting the Sails server..."
-        screen -S sails -d -m bash -c 'sails lift'
- 	;;
-esac
+echo "Installing Bower dependencies..."
+bower install --config.interactive=false --allow-root
+
+echo "Starting the Sails server..."
+sudo -i -u vagrant cd /vagrant/www && screen -dmS courierchat sails lift
