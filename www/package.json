@@ -1,13 +1,13 @@
 {
   "name": "courierchat",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.1.0",
   "description": "Courierchat is a Node.js web application providing chat rooms with disposable identities.",
   "keywords": [],
   "dependencies": {
-    "express4": "0.0.1",
-    "sails-redis": "0.10.5",
-    "waterline": "0.10.26"
+    "express": "^4.13.3",
+    "nohm": "^0.9.7",
+    "require-all": "^2.0.0"
   },
   "scripts": {
     "start": "node app.js --silent --port=80 --prod",
