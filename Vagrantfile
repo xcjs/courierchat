@@ -42,9 +42,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             override.vm.box = 'linode'
             override.vm.box_url = 'https://github.com/displague/vagrant-linode/raw/master/box/linode.box'
 
-            provider.token = ENV['LINODE_TOKEN']
+            provider.api_key = ENV['LINODE_TOKEN']
 
             provider.label = 'CourierChat1'
+            provider.group = 'CourierChat'
             provider.distribution = 'Ubuntu 14.04 LTS'
 
             provider.plan = '1024'
