@@ -13,6 +13,8 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
 	watch = require('gulp-watch');
 
+gulp.task('default', ['build']);
+
 gulp.task('build', ['clean', 'minHtml', 'minCss', 'minJs', 'minImages']);
 
 gulp.task('clean', function(cb) {
