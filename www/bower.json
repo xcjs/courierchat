@@ -22,7 +22,6 @@
     "angular": "~1.4.1",
     "animate.css": "~3.2.0",
     "modernizr": "~2.8.3",
-    "angularSails": "~0.10.0-pre",
     "angular-route": "~1.4.1",
     "angular-animate": "~1.4.1",
     "angular-resource": "~1.4.1",
