@@ -30,6 +30,10 @@ gulp.task('clean', function(cb) {
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
 gulp.task('registerWatchTasks', function() {
+	watch('./Gulpfile.js', function() {
+		gulp.start('build');
+	});
+
 	watch('public/src/js/**/*.html', function() {
 		gulp.start('minHtml');
 	});
@@ -91,7 +95,6 @@ gulp.task('minVendorJs', function() {
 	var jsFilter = filter(['**/angular.js', '**/*.js']);
 
 	return gulp.src('./bower.json')
-		.pipe(mainBowerFiles())
 		.pipe(jsFilter)
 		.pipe(sourcemaps.init())
 		.pipe(concat('vendor.js'))
