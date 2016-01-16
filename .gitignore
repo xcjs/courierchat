@@ -68,8 +68,8 @@ config/local.js
 
 node_modules
 bower_components
-www/public/src/js/vendor
-www/public/src/css/vendor
+public/src/js/vendor
+public/src/css/vendor
 
 
 
@@ -81,7 +81,7 @@ www/public/src/css/vendor
 # tasks and adapters.
 ################################################
 
-www/public/dist
+public/dist
 
 
 
