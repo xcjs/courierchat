@@ -7,6 +7,7 @@ var gulp = require('gulp'),
 	filter = require('gulp-filter'),
 	htmlmin = require('gulp-htmlmin'),
 	imagemin = require('gulp-imagemin'),
+	install = require('gulp-install'),
 	mainBowerFiles = require('gulp-main-bower-files'),
 	pngquant = require('imagemin-pngquant'),
 	sourcemaps = require('gulp-sourcemaps'),
@@ -16,6 +17,11 @@ var gulp = require('gulp'),
 gulp.task('default', ['build']);
 
 gulp.task('build', ['clean', 'minHtml', 'minCss', 'minJs', 'minImages']);
+
+gulp.task('install', function() {
+	gulp.src(['./bower.json', './package.json'])
+		.pipe(install());
+});
 
 gulp.task('clean', function(cb) {
 	del.sync(['public/dist'], cb);
