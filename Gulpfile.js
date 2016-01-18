@@ -92,9 +92,10 @@ gulp.task('minAppCss', function() {
 gulp.task('minJs', ['minVendorJs', 'minAppJs']);
 
 gulp.task('minVendorJs', function() {
-	var jsFilter = filter(['**/angular.js', '**/*.js']);
+	var jsFilter = filter('**/*.js');
 
 	return gulp.src('./bower.json')
+		.pipe(mainBowerFiles())
 		.pipe(jsFilter)
 		.pipe(sourcemaps.init())
 		.pipe(concat('vendor.js'))
