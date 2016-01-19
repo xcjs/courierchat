@@ -15,9 +15,7 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
-    "html5-boilerplate": "~4.3.0"
-  },
+  "devDependencies": {},
   "dependencies": {
     "angular": "~1.4.1",
     "animate.css": "~3.2.0",
@@ -27,7 +25,8 @@
     "angular-resource": "~1.4.1",
     "angular-cookies": "~1.4.1",
     "angular-ui-router": "~0.2.13",
-    "angular-touch": "~1.4.1"
+    "angular-touch": "~1.4.1",
+    "html5-boilerplate": "~5.3.0"
   },
   "resolutions": {
     "angular": "~1.4.1"

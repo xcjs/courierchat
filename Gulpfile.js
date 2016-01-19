@@ -24,7 +24,7 @@ gulp.task('install', function() {
 });
 
 gulp.task('clean', function(cb) {
-	del.sync(['public/dist'], cb);
+	del.sync(['public/dist', 'public/src/css/vendor', 'public/src/js/vendor'], cb);
 });
 
 gulp.task('watch', ['build', 'registerWatchTasks']);
@@ -80,13 +80,18 @@ gulp.task('minVendorCss', function() {
 		.pipe(gulp.dest('public/dist/css'));
 });
 
-gulp.task('minAppCss', function() {
+gulp.task('minAppCss', ['copyNoBowerMainCssDeps'], function() {
 	return gulp.src('public/src/css/**/*.css')
 		.pipe(sourcemaps.init())
 		.pipe(cssnano())
 		.pipe(concat('app.css'))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/css'));
+});
+
+gulp.task('copyNoBowerMainCssDeps', function() {
+	return gulp.src('bower_components/html5-boilerplate/dist/css/*.css')
+		.pipe(gulp.dest('public/src/css/vendor'));
 });
 
 gulp.task('minJs', ['minVendorJs', 'minAppJs']);
@@ -108,7 +113,7 @@ gulp.task('minAppJs', function() {
 	return gulp.src('public/src/js/**/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(concat('app.js'))
-		.pipe(uglify())
+		//.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/js'));
 });
