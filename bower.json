@@ -27,8 +27,7 @@
     "angular-resource": "~1.4.1",
     "angular-cookies": "~1.4.1",
     "angular-ui-router": "~0.2.13",
-    "angular-touch": "~1.4.1",
-    "ngAnimate": "*"
+    "angular-touch": "~1.4.1"
   },
   "resolutions": {
     "angular": "~1.4.1"
