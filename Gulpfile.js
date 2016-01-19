@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp = require('gulp'),
+	addsrc = require('gulp-add-src'),
 	concat = require('gulp-concat'),
 	cssnano = require('gulp-cssnano'),
 	del = require('del'),
@@ -73,6 +74,7 @@ gulp.task('minVendorCss', function() {
 	return gulp.src('./bower.json')
 		.pipe(mainBowerFiles())
 		.pipe(cssFilter)
+		.pipe(addsrc.append('bower_components/html5-boilerplate/dist/css/**/*.css'))
 		.pipe(sourcemaps.init())
 		.pipe(concat('vendor.css'))
 		.pipe(cssnano())
@@ -80,18 +82,13 @@ gulp.task('minVendorCss', function() {
 		.pipe(gulp.dest('public/dist/css'));
 });
 
-gulp.task('minAppCss', ['copyNoBowerMainCssDeps'], function() {
+gulp.task('minAppCss', function() {
 	return gulp.src('public/src/css/**/*.css')
 		.pipe(sourcemaps.init())
 		.pipe(cssnano())
 		.pipe(concat('app.css'))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/css'));
-});
-
-gulp.task('copyNoBowerMainCssDeps', function() {
-	return gulp.src('bower_components/html5-boilerplate/dist/css/*.css')
-		.pipe(gulp.dest('public/src/css/vendor'));
 });
 
 gulp.task('minJs', ['minVendorJs', 'minAppJs']);
