@@ -5,9 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-
 var app = express();
+
+var users = require('./controllers/users.js');
+var rooms = require('./controllers/rooms.js');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -17,7 +18,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/dist')));
 
-app.use('/', routes);
+app.use(users);
+app.use(rooms);
+
+app.get('*', function(request, response) {
+	response.sendfile(__dirname + '/public/index.html');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
