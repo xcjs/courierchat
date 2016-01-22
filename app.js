@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
+// Register controllers and controller routes here.
 var users = require('./controllers/users.js');
 var rooms = require('./controllers/rooms.js');
 
@@ -22,7 +23,7 @@ app.use(users);
 app.use(rooms);
 
 app.get('*', function(request, response) {
-	response.sendfile(__dirname + '/public/index.html');
+	response.sendfile(__dirname + '/public/dist/index.html');
 });
 
 // catch 404 and forward to error handler
