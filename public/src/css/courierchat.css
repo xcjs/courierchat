@@ -55,7 +55,8 @@ header a > * {
     z-index: 3;
 }
 
-header a span.anim-nav-hover, header a:visited span.anim-nav-hover {
+header a span.anim-nav-hover,
+header a:visited span.anim-nav-hover {
     background-color: #FF8A65;
     border-radius: 1000000px;
     color: #fff;
