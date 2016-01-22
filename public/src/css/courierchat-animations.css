@@ -53,8 +53,6 @@
 }
 
 header a:hover span.anim-nav-hover {
-  -webkit-animation-duration: 10ms;
-  animation-duration: 10ms;
   -webkit-animation-name: animNavHover;
   animation-name: animNavHover;
 }
