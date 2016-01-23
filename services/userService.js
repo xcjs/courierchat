@@ -1,17 +1,19 @@
 'use strict';
 
 var Q = require('q');
+var stringService = require('./stringService.js');
+var userService = require('./userService.js');
 
 module.exports = {
 	create: function(name) {
 		var deferred = Q.defer();
 
-		if(!StringService.hasValue(name)) {
+		if(!stringService.hasValue(name)) {
 			deferred.reject('Sorry, that name isn\'t going to work for us.');
 			return deferred.promise;
 		}
 
-		User.create({ name: name }).exec(function (err, user) {
+		userService.create({ name: name }).exec(function (err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			} else {
@@ -25,12 +27,12 @@ module.exports = {
 	findByName: function (name) {
 		var deferred = Q.defer();
 
-		if (!StringService.hasValue(name)) {
+		if (!stringService.hasValue(name)) {
 			deferred.reject('A valid name is required to find a user.');
 			return deferred.promise;
 		}
 
-		User.findOne({name: name}).exec(function (err, user) {
+		userService.findOne({name: name}).exec(function (err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			}
@@ -45,12 +47,12 @@ module.exports = {
 	findByToken: function(authToken) {
 		var deferred = Q.defer();
 
-		if(!StringService.hasValue(authToken)) {
+		if(!stringService.hasValue(authToken)) {
 			deferred.reject('A valid token was not provided, so you cannot be logged out.');
 			return deferred.promise;
 		};
 
-		User.findOne({token: authToken}).exec(function(err, user) {
+		userService.findOne({token: authToken}).exec(function(err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			} else {
@@ -64,7 +66,7 @@ module.exports = {
 	update: function(user) {
 		var deferred = Q.defer();
 
-		User.update({ id: user.id }, user).exec(function(err, users) {
+		userService.update({ id: user.id }, user).exec(function(err, users) {
 			if(!err && users.length > 0) {
 				deferred.resolve(users[0]);
 			}
@@ -82,7 +84,7 @@ module.exports = {
 	removeByUser: function (user) {
 		var deferred = Q.defer();
 
-		User.destroy({id: user.id}).exec(function (err) {
+		userService.destroy({id: user.id}).exec(function (err) {
 			if (!err) {
 				deferred.resolve();
 			}
