@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
+app.set('view engine', 'jade');
+
 // Register controllers and controller routes here.
 var users = require('./controllers/users.js');
 var rooms = require('./controllers/rooms.js');
