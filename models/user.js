@@ -8,6 +8,7 @@
 'use strict';
 
 var Waterline = require('waterline');
+var config = require('../config');
 
 var User = Waterline.Collection.extend({
 	identity: 'user',

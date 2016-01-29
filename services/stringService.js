@@ -2,7 +2,7 @@
 
 module.exports = {
 	hasValue: function(stringValue) {
-		if (name === null || name === undefined || name === '') {
+		if (stringValue === null || stringValue === undefined || stringValue === '') {
 			return false;
 		}
 

@@ -1,11 +1,15 @@
 'use strict';
 
+var WaterLine = require('waterline');
+var redisAdapter = require('sails-redis');
+
 var config = {
-	security: {
-		secret: process.env.COURIERCHAT_SECRET
+	adapters: {
+		redis: redisAdapter
 	},
-	storage: {
+	connections: {
 		redis: {
+			adapter: 'redis',
 			port: 6379,
 			host: 'localhost',
 			password: null,
@@ -22,6 +26,12 @@ var config = {
 				enable_offline_queue: true
 			}
 		}
+	},
+	defaults: {
+		migrate: 'alter'
+	},
+	security: {
+		secret: process.env.COURIERCHAT_SECRET
 	}
 };
 

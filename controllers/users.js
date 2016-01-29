@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express');
-var userService = require('../services/roomService.js');
+var userService = require('../services/userService.js');
 var SessionService = require('../services/SessionService.js');
 var HeaderService = require('../services/HeaderService.js');
 
