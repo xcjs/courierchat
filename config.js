@@ -1,6 +1,5 @@
 'use strict';
 
-var WaterLine = require('waterline');
 var redisAdapter = require('sails-redis');
 
 var config = {
