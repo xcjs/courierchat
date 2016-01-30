@@ -2,8 +2,8 @@
 
 var Q = require('q');
 
-module.exports = {
-    findByName: function(roomName) {
+module.exports = function(roomModel) {
+    this.findByName = function(roomName) {
         var deferred = Q.defer();
 
         if (roomName === null || roomName === undefined) {
@@ -11,7 +11,7 @@ module.exports = {
             return deferred.promise;
         }
 
-        Room.findOne({name: roomName}).exec(function(err, room) {
+		roomModel.findOne({name: roomName}).exec(function(err, room) {
             if (room) {
                 deferred.reject('Sorry, that room name already in use.');
                 return;
@@ -21,7 +21,7 @@ module.exports = {
                 return;
             }
 
-            Room.create({name: roomName}).exec(function(err, room) {
+			roomModel.create({name: roomName}).exec(function(err, room) {
                 if (err) {
                     deferred.reject(err);
                 }
@@ -29,9 +29,9 @@ module.exports = {
             });
         });
         return deferred.promise;
-    },
+    };
 
-	removeByName: function(roomName) {
+	this.removeByName = function(roomName) {
 
-	}
+	};
 };

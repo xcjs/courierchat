@@ -1,15 +1,17 @@
 'use strict';
 
 var express = require('express');
-var roomService = require('../services/roomService.js');
+var RoomService = require('../services/RoomService.js');
 
 var router = express.Router();
 var path = '/api/rooms';
 
 router.get(path, function(req, res) {
 	var roomName = req.body.name;
+	var roomModel = req.app.room;
+	var service = new RoomService(roomModel);
 
-	roomService.findByName(roomName).then(function(room) {
+	service.findByName(roomName).then(function(room) {
 		res.json(room);
 	}, function(err) {
 		res.badRequest(err);

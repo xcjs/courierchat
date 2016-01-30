@@ -1,7 +1,6 @@
 'use strict';
 
 var express = require('express');
-var userService = require('../services/userService.js');
 var SessionService = require('../services/SessionService.js');
 var HeaderService = require('../services/HeaderService.js');
 
@@ -10,7 +9,7 @@ var path = '/api/users';
 
 router.post(path, function(req, res) {
 	var name = req.body.name;
-	var sessionMgr = new SessionService();
+	var sessionMgr = new SessionService(req.app.models.user);
 	var headerMgr = new HeaderService(req, res);
 
 	sessionMgr.login(name).then(function(user) {

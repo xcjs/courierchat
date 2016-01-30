@@ -4,20 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var config = require('./config.js');
-var orm = require('waterlineService');
 
 var app = express();
-
-orm.initialize(config, function(err, models) {
-	if(err) {
-		console.error('Waterline failed to initialize: ' + err);
-		return;
-	}
-
-	app.models = models.collections;
-	app.connections = models.connections;
-});
 
 app.set('view engine', 'jade');
 
@@ -70,6 +58,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

@@ -2,10 +2,9 @@
 
 var Q = require('q');
 var stringService = require('./stringService.js');
-var user = require('../models/user.js');
 
-module.exports = {
-	create: function(name) {
+module.exports = function(userModel) {
+	this.create = function(name) {
 		var deferred = Q.defer();
 
 		if(!stringService.hasValue(name)) {
@@ -13,7 +12,7 @@ module.exports = {
 			return deferred.promise;
 		}
 
-		user.create({ name: name }).exec(function (err, user) {
+		userModel.create({ name: name }).exec(function (err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			} else {
@@ -22,9 +21,9 @@ module.exports = {
 		});
 
 		return deferred.promise;
-	},
+	};
 
-	findByName: function (name) {
+	this.findByName = function (name) {
 		var deferred = Q.defer();
 
 		if (!stringService.hasValue(name)) {
@@ -32,7 +31,7 @@ module.exports = {
 			return deferred.promise;
 		}
 
-		user.findOne({name: name}).exec(function (err, user) {
+		userModel.findOne({name: name}).exec(function (err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			}
@@ -42,9 +41,9 @@ module.exports = {
 		});
 
 		return deferred.promise;
-	},
+	};
 
-	findByToken: function(authToken) {
+	this.findByToken = function(authToken) {
 		var deferred = Q.defer();
 
 		if(!stringService.hasValue(authToken)) {
@@ -61,9 +60,9 @@ module.exports = {
 		});
 
 		return deferred.promise;
-	},
+	};
 
-	update: function(user) {
+	this.update = function(user) {
 		var deferred = Q.defer();
 
 		user.update({ id: user.id }, user).exec(function(err, users) {
@@ -79,9 +78,9 @@ module.exports = {
 		});
 
 		return deferred.promise;
-	},
+	};
 
-	removeByUser: function (user) {
+	this.removeByUser = function (user) {
 		var deferred = Q.defer();
 
 		user.destroy({id: user.id}).exec(function (err) {
@@ -94,5 +93,5 @@ module.exports = {
 		});
 
 		return deferred.promise;
-	}
+	};
 };
