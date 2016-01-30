@@ -22,7 +22,7 @@ router.post(path, function(req, res) {
 			res.serverError({ error: err });
 		});
 	}, function(err) {
-		res.badRequest({ error: err });
+		res.badRequest(err);
 	});
 });
 
