@@ -43,4 +43,4 @@ Install Vagrant for your operating system, open a terminal in the CourierChat di
 
 `vagrant up`
 
-CourierChat will then be available in your web browser through http://localhost:1337 (the Sails devlepment server).
+CourierChat will then be available in your web browser through http://localhost:1337 (the Sails development server).
