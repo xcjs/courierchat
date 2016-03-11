@@ -20,7 +20,7 @@
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
     "q": "^1.4.1",
-    "sails-redis": "^0.10.6",
+    "sails-redis": "^0.10.7",
     "serve-favicon": "~2.3.0",
     "waterline": "^0.10.30"
   },
