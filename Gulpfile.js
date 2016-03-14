@@ -11,11 +11,19 @@ var gulp = require('gulp'),
 	install = require('gulp-install'),
 	mainBowerFiles = require('gulp-main-bower-files'),
 	pngquant = require('imagemin-pngquant'),
+	run = require('childish-process'),
 	sourcemaps = require('gulp-sourcemaps'),
 	uglify = require('gulp-uglify'),
 	watch = require('gulp-watch');
 
-gulp.task('default', ['build']);
+gulp.task('default', ['serve']);
+
+gulp.task('serve', function() {
+	run('node ./bin/www');
+	run('gulp watch');
+});
+
+gulp.task('watch', ['build', 'registerWatchTasks']);
 
 gulp.task('build', ['clean', 'minHtml', 'minCss', 'minJs', 'minImages']);
 
@@ -27,8 +35,6 @@ gulp.task('install', function() {
 gulp.task('clean', function(cb) {
 	del.sync(['public/dist', 'public/src/css/vendor', 'public/src/js/vendor'], cb);
 });
-
-gulp.task('watch', ['build', 'registerWatchTasks']);
 
 gulp.task('registerWatchTasks', function() {
 	watch('./Gulpfile.js', function() {
