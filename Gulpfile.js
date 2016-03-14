@@ -111,7 +111,7 @@ gulp.task('minAppJs', function() {
 	return gulp.src('public/src/js/**/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(concat('app.js'))
-		//.pipe(uglify())
+		.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/js'));
 });
