@@ -11,26 +11,26 @@ courierChat.config(['$stateProvider', '$locationProvider', '$httpProvider',
 
 	$httpProvider.interceptors.push('authInterceptor');
 
-	$stateProvider
-	.state('home', {
+    $stateProvider
+    .state('home', {
 		url: '/',
 		templateUrl: components + 'login/login.html',
   		controller: 'loginController'
-	})
+    })
     .state('login', {
   		url: '/login',
   		templateUrl: components + 'login/login.html',
   		controller: 'loginController'
     })
-	.state('about',  {
+    .state('about',  {
 		url: '/about',
 		templateUrl: components + 'about/about.html'
-  	})
-    .state('rooms', {
-  		url: '/rooms',
-  		templateUrl: components + 'rooms/rooms.html',
-		controller: 'roomsController'
-  	})
+  	});
+    //.state('rooms', {
+  	//	url: '/rooms',
+  	//	templateUrl: components + 'rooms/rooms.html',
+		//controller: 'roomsController'
+  	//})
 }]);
 
 courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {

@@ -14,7 +14,7 @@ courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService',
 		});
 	};
 
-	var controller = function($scope) {
+	var controller = ['$scope', function($scope) {
 		$scope.logout = function() {
 			userResource.logout($rootScope.user, function() {
 				$rootScope.user = null;
@@ -25,7 +25,7 @@ courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService',
 
 			});
 		};
-	};
+	}];
 
 	return {
 		restrict: 'E',
