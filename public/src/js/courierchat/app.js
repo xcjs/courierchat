@@ -1,6 +1,7 @@
 var courierChat = angular.module('courierChat', ['ui.router', 'ngResource']);
 
-courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+courierChat.config(['$stateProvider', '$locationProvider', '$httpProvider',
+	function($stateProvider, $locationProvider, $httpProvider) {
 	'use strict';
 
 	var appBase = '/js/courierchat/';
@@ -30,7 +31,7 @@ courierChat.config(function($stateProvider, $urlRouterProvider, $locationProvide
   		templateUrl: components + 'rooms/rooms.html',
 		controller: 'roomsController'
   	})
-});
+}]);
 
 courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {
 
