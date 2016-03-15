@@ -25,12 +25,12 @@ courierChat.config(['$stateProvider', '$locationProvider', '$httpProvider',
     .state('about',  {
 		url: '/about',
 		templateUrl: components + 'about/about.html'
+  	})
+    .state('rooms', {
+  		url: '/rooms',
+  		templateUrl: components + 'rooms/rooms.html',
+		controller: 'roomsController'
   	});
-    //.state('rooms', {
-  	//	url: '/rooms',
-  	//	templateUrl: components + 'rooms/rooms.html',
-		//controller: 'roomsController'
-  	//})
 }]);
 
 courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {
