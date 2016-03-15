@@ -9,6 +9,7 @@ var gulp = require('gulp'),
 	htmlmin = require('gulp-htmlmin'),
 	imagemin = require('gulp-imagemin'),
 	install = require('gulp-install'),
+	jshint = require('gulp-jshint'),
 	mainBowerFiles = require('gulp-main-bower-files'),
 	pngquant = require('imagemin-pngquant'),
 	run = require('childish-process'),
@@ -37,7 +38,7 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('registerWatchTasks', function() {
-	watch('./Gulpfile.js', function() {
+	watch('Gulpfile.js', function() {
 		gulp.start('build');
 	});
 
@@ -113,7 +114,13 @@ gulp.task('minVendorJs', function() {
 		.pipe(gulp.dest('public/dist/js'));
 });
 
-gulp.task('minAppJs', function() {
+gulp.task('jshint', function() {
+	return gulp.src('public/src/js/**/*.js')
+		.pipe(jshint())
+		.pipe(jshint.reporter('jshint-stylish'));
+});
+
+gulp.task('minAppJs', ['jshint'], function() {
 	return gulp.src('public/src/js/**/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(concat('app.js'))
