@@ -33,14 +33,6 @@ courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService',
 		scope: true,
 		link: link,
 		controller: controller,
-		template:
-			'<li>\
-				<a ng-click="logout()">\
-					<img src="/images/logout.svg" alt="Courier Chat Logo">\
-					<span class="animated faster anim-nav-hover shadowed">\
-						Log Out\
-					</span>\
-				</a>\
-			</li>'
+		template: 'logoutButton.html'
 	};
 }]);

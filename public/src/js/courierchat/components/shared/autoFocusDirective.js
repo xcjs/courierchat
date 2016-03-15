@@ -5,5 +5,5 @@ courierChat.directive('autoFocus', function() {
 				element[0].focus();
 			}
 		}
-	}
+	};
 });
