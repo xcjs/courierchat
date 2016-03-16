@@ -59,6 +59,7 @@ gulp.task('registerWatchTasks', function() {
 	});
 
 	watch('public/src/js/**/*.js', function() {
+		gulp.start('jshint');
 		gulp.start('minAppJs');
 	});
 
