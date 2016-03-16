@@ -32,7 +32,3 @@ courierChat.config(['$stateProvider', '$locationProvider', '$httpProvider',
 		controller: 'roomsController'
   	});
 }]);
-
-courierChat.run(['$state', 'sessionService', 'userResource', function($state, sessionService, userResource) {
-
-}]);
