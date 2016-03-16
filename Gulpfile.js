@@ -54,6 +54,10 @@ gulp.task('registerWatchTasks', function() {
 		gulp.start('minAppCss');
 	});
 
+	watch('.jshintrc', function() {
+		gulp.start('jshint');
+	});
+
 	watch('bower_components/**/*.js', function() {
 		gulp.start('minVendorJs');
 	});
