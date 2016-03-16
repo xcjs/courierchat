@@ -26,7 +26,7 @@ gulp.task('serve', function() {
 
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
-gulp.task('build', ['clean', 'minHtml', 'minCss', 'minJs', 'minImages']);
+gulp.task('build', ['clean', 'jshint', 'minHtml', 'minCss', 'minJs', 'minImages']);
 
 gulp.task('install', function() {
 	gulp.src(['./bower.json', './package.json'])
