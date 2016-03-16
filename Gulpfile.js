@@ -131,7 +131,7 @@ gulp.task('minAppJs', ['jshint'], function() {
 });
 
 gulp.task('minImages', function() {
-	return gulp.src('public/src/images/*')
+	return gulp.src('public/src/images/**/*')
 		.pipe(imagemin({
 			// JPG
 			progressive: true,
