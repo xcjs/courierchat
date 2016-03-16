@@ -1,6 +1,12 @@
-courierChat.controller('roomsController', ['$rootScope', '$scope', function($rootScope, $scope) {
+(function() {
 	'use strict';
 
-	$scope.rooms = null;
-	$scope.user = $rootScope.user;
-}]);
+	angular.module('courierChat').controller('roomsController',
+		['$rootScope', '$scope',
+		function($rootScope, $scope) {
+
+		$scope.rooms = null;
+		$scope.user = $rootScope.user;
+	}]);
+})();
+
