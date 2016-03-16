@@ -3,7 +3,6 @@
 
 	angular.module('courierChat').config(['$stateProvider', '$locationProvider', '$httpProvider',
 		function($stateProvider, $locationProvider, $httpProvider) {
-			'use strict';
 
 			var appBase = '/js/courierchat/';
 			var components = appBase + 'components/';
