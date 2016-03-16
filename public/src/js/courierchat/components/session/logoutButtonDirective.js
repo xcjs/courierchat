@@ -1,38 +1,45 @@
-courierChat.directive('logoutButton', ['$rootScope', '$state', 'sessionService', 'userResource', function($rootScope, $state, sessionService, userResource) {
-	var link = function(scope, elem, attrs) {
-		if(!sessionService.user) {
-			elem.css('display', 'none');
-		}
+(function() {
+	'use strict';
 
-		$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-			if(!$rootScope.user) {
+	angular.module('courierChat').directive('logoutButton',
+		['$rootScope', '$state', 'sessionService', 'userResource',
+		function($rootScope, $state, sessionService, userResource) {
+
+		var link = function(scope, elem) {
+			if(!sessionService.user) {
 				elem.css('display', 'none');
 			}
-			else {
-				elem.css('display', 'block');
-			}
-		});
-	};
 
-	var controller = ['$scope', function($scope) {
-		$scope.logout = function() {
-			userResource.logout($rootScope.user, function() {
-				$rootScope.user = null;
-				$rootScope.room = null;
-
-				$state.go('login');
-			}, function() {
-
+			$rootScope.$on('$stateChangeSuccess', function(){
+				if(!$rootScope.user) {
+					elem.css('display', 'none');
+				}
+				else {
+					elem.css('display', 'block');
+				}
 			});
 		};
-	}];
 
-	return {
-		restrict: 'E',
-		replace: 'true',
-		scope: true,
-		link: link,
-		controller: controller,
-		template: 'logoutButton.html'
-	};
-}]);
+		var controller = ['$scope', function($scope) {
+			$scope.logout = function() {
+				userResource.logout($rootScope.user, function() {
+					$rootScope.user = null;
+					$rootScope.room = null;
+
+					$state.go('login');
+				}, function() {
+
+				});
+			};
+		}];
+
+		return {
+			restrict: 'E',
+			replace: 'true',
+			scope: true,
+			link: link,
+			controller: controller,
+			template: 'logoutButton.html'
+		};
+	}]);
+})();
