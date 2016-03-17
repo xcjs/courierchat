@@ -26,7 +26,7 @@ gulp.task('serve', function() {
 
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
-gulp.task('build', ['clean', 'install', 'jshint', 'minHtml', 'minCss', 'minJs', 'minImages']);
+gulp.task('build', ['clean', 'install', 'jshint', 'jshint:node', 'minHtml', 'minCss', 'minJs', 'minImages']);
 
 gulp.task('install', function() {
 	gulp.src(['./bower.json', './package.json'])
@@ -146,4 +146,21 @@ gulp.task('minImages', function() {
 			svgoPlugins: [{ removeViewBox: false }]
 		}))
 		.pipe(gulp.dest('public/dist/images'));
+});
+
+gulp.task('jshint:node', function() {
+	return gulp.src([
+		'app.js',
+		'config.js',
+		'Gulpfile.js',
+		'bin/**/*.js',
+		'common/**/*.js',
+		'controllers/**/*.js',
+		'models/**/*.js',
+		'responses/**/*.js',
+		'routes/**/*.js',
+		'services/**/*.js'
+	])
+		.pipe(jshint('.jshintrc-node'))
+		.pipe(jshint.reporter('jshint-stylish'));
 });
