@@ -1,14 +1,9 @@
-courierChat.service('sessionService', ['userResource', function(userResource) {
+(function() {
 	'use strict';
 
-	var self = this;
+	angular.module('courierChat').service('sessionService', [function() {
 
-	this.user = null;
-	this.room = null;
-	this.sessionSocket = null;
-	this.roomSocket = null;
+	}]);
+})();
 
-	this.checkSession = function() {
-		var socketRoute = userResource.keepaliveRoute;
-	};
-}]);
+
