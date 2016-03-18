@@ -34,7 +34,7 @@ gulp.task('install', function() {
 });
 
 gulp.task('clean', function(cb) {
-	del.sync(['public/dist', 'public/src/css/vendor', 'public/src/js/vendor'], cb);
+	del.sync(['public/dist'], cb);
 });
 
 gulp.task('registerWatchTasks', function() {
