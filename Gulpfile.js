@@ -99,7 +99,7 @@ gulp.task('minAppCss', function() {
 		.pipe(sourcemaps.init())
 		.pipe(cssnano())
 		.pipe(concat('app.css'))
-		.pipe(sourcemaps.write())
+		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/css'));
 });
 
@@ -114,7 +114,7 @@ gulp.task('minVendorJs', function() {
 		.pipe(sourcemaps.init())
 		.pipe(concat('vendor.js'))
 		.pipe(uglify())
-		.pipe(sourcemaps.write())
+		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('public/dist/js'));
 });
 
