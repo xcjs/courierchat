@@ -50,7 +50,7 @@ module.exports = function() {
 		if(!stringService.hasValue(authToken)) {
 			deferred.reject('A valid token was not provided, so you cannot be logged out.');
 			return deferred.promise;
-		};
+		}
 
 		userModel.findOne({token: authToken}).exec(function(err, user) {
 			if (!err) {
