@@ -152,16 +152,10 @@ gulp.task('minImages', function() {
 
 gulp.task('jshint:node', function() {
 	return gulp.src([
-		'app.js',
-		'config.js',
-		'Gulpfile.js',
-		'bin/**/*.js',
-		'common/**/*.js',
-		'controllers/**/*.js',
-		'models/**/*.js',
-		'responses/**/*.js',
-		'routes/**/*.js',
-		'services/**/*.js'
+		'**/*.js',
+		'!bower_components/**/*.*',
+		'!node_modules/**/*.*',
+		'!public/**/*.*'
 	])
 		.pipe(jshint('.jshintrc-node'))
 		.pipe(jshint.reporter('jshint-stylish'));
