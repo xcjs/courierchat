@@ -39,7 +39,7 @@
 			scope: true,
 			link: link,
 			controller: controller,
-			template: 'logoutButton.html'
+			templateUrl: '/js/courierchat/components/session/logoutButton.html'
 		};
 	}]);
 })();
