@@ -2,6 +2,7 @@
 
 var express = require('express');
 var SessionService = require('../services/SessionService.js');
+var UserService = require('../services/UserService.js');
 var HeaderService = require('../services/HeaderService.js');
 
 var router = express.Router();
@@ -29,10 +30,10 @@ router.post(path, function(req, res) {
 router.delete(path, function(req, res) {
 	var headerMgr = new HeaderService(req, res);
 	var token = headerMgr.getAuthToken();
-
+	var userMgr = new UserService();
 	var sessionMgr = new SessionService();
 
-	userService.findByToken(token).then(function(user) {
+	userMgr.findByToken(token).then(function(user) {
 		sessionMgr.logout(user).then(function() {
 				res.ok();
 			}, function(err) {

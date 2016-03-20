@@ -2,8 +2,9 @@
 
 var Q = require('q');
 var stringService = require('./stringService.js');
+var userModel = require('../models/user.js');
 
-module.exports = function(userModel) {
+module.exports = function() {
 	this.create = function(name) {
 		var deferred = Q.defer();
 
@@ -51,7 +52,7 @@ module.exports = function(userModel) {
 			return deferred.promise;
 		};
 
-		user.findOne({token: authToken}).exec(function(err, user) {
+		userModel.findOne({token: authToken}).exec(function(err, user) {
 			if (!err) {
 				deferred.resolve(user);
 			} else {
@@ -65,7 +66,7 @@ module.exports = function(userModel) {
 	this.update = function(user) {
 		var deferred = Q.defer();
 
-		user.update({ id: user.id }, user).exec(function(err, users) {
+		userModel.update({ id: user.id }, user).exec(function(err, users) {
 			if(!err && users.length > 0) {
 				deferred.resolve(users[0]);
 			}
@@ -83,7 +84,7 @@ module.exports = function(userModel) {
 	this.removeByUser = function (user) {
 		var deferred = Q.defer();
 
-		user.destroy({id: user.id}).exec(function (err) {
+		userModel.destroy({id: user.id}).exec(function (err) {
 			if (!err) {
 				deferred.resolve();
 			}
