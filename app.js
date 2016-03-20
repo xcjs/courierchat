@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -6,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var app = express();
+app.use(favicon(__dirname + '/public/dist/images/favicon-16x16.png'));
 
 app.set('view engine', 'jade');
 
@@ -46,22 +49,24 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+	res.status(err.status || 500);
+	res.render('error', {
+		message: err.message,
+		error: err
     });
+	next();
   });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+	res.status(err.status || 500);
+	res.render('error', {
+    	message: err.message,
+		error: {}
+	});
+	next();
 });
 
 module.exports = app;
