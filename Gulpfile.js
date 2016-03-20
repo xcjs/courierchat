@@ -2,6 +2,7 @@
 
 var gulp = require('gulp'),
 	addsrc = require('gulp-add-src'),
+	angularFileSort = require('gulp-angular-filesort'),
 	concat = require('gulp-concat'),
 	cssnano = require('gulp-cssnano'),
 	del = require('del'),
@@ -126,6 +127,7 @@ gulp.task('jshint', function() {
 
 gulp.task('minAppJs', ['jshint'], function() {
 	return gulp.src('public/src/js/**/*.js')
+		.pipe(angularFileSort())
 		.pipe(sourcemaps.init())
 		.pipe(concat('app.js'))
 		.pipe(uglify())
