@@ -31,7 +31,7 @@ module.exports = function(roomModel) {
         return deferred.promise;
     };
 
-	this.removeByName = function(roomName) {
+	this.removeByName = function() {
 
 	};
 };
