@@ -77,10 +77,10 @@ gulp.task('registerWatchTasks:prod', function() {
 
 gulp.task('copyHtml', ['copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs'], function() {
 	return gulp.src('public/src/**/*.html')
-		.pipe(inject(gulp.src('public/dist/css/vendor/**/*.css', { read: false }), { name: 'vendorCss' }))
-		.pipe(inject(gulp.src(['public/dist/css/**/*.css', '!public/dist/css/vendor/**/*.css'], { read: false }), { name: 'appCss' }))
-		.pipe(inject(gulp.src('public/dist/js/vendor/**/*.js', { read: false })), { name: 'vendorJs' })
-		.pipe(inject(gulp.src('public/dist/js/courierchat/**/*.js', { read: false }), { name: 'appJs' }))
+		.pipe(inject(gulp.src('public/dist/css/vendor/**/*.css', { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->' }))
+		.pipe(inject(gulp.src(['public/dist/css/**/*.css', '!public/dist/css/vendor/**/*.css'], { read: false }), { starttag: '<!-- inject:app:{{ext}} -->' }))
+		.pipe(inject(gulp.src('public/dist/js/vendor/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:vendor:{{ext}} -->' }))
+		.pipe(inject(gulp.src('public/dist/js/courierchat/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:app:{{ext}} -->' }))
 		.pipe(gulp.dest('public/dist'));
 });
 
