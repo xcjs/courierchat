@@ -7,6 +7,7 @@ var gulp = require('gulp'),
 	cssnano = require('gulp-cssnano'),
 	del = require('del'),
 	filter = require('gulp-filter'),
+	flatten = require('gulp-flatten'),
 	htmlmin = require('gulp-htmlmin'),
 	imagemin = require('gulp-imagemin'),
 	inject = require('gulp-inject'),
@@ -80,7 +81,7 @@ gulp.task('copyHtml', ['copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs
 
 	html = html.pipe(inject(gulp.src('public/dist/css/vendor/**/*.css', { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->', ignorePath: '/public/dist' }))
 		.pipe(inject(gulp.src(['public/dist/css/**/*.css', '!public/dist/css/vendor/**/*.css'], { read: false }), { starttag: '<!-- inject:app:{{ext}} -->', ignorePath: '/public/dist' }))
-		.pipe(inject(gulp.src(['public/dist/js/vendor/angular/angular.js', 'public/dist/js/vendor/**/*.js'], { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->', ignorePath: '/public/dist' }))
+		.pipe(inject(gulp.src(['public/dist/js/vendor/angular.js', 'public/dist/js/vendor/**/*.js'], { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->', ignorePath: '/public/dist' }))
 		.pipe(inject(gulp.src('public/dist/js/courierchat/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:app:{{ext}} -->', ignorePath: '/public/dist' }));
 
 	return html.pipe(gulp.dest('public/dist'));
@@ -100,6 +101,7 @@ gulp.task('copyVendorCss', function() {
 		.pipe(cssFilter)
 		.pipe(addsrc.prepend('bower_components/html5-boilerplate/dist/css/main.css'))
 		.pipe(addsrc.prepend('bower_components/html5-boilerplate/dist/css/normalize.css'))
+		.pipe(flatten())
 		.pipe(gulp.dest('public/dist/css/vendor'));
 });
 
@@ -146,6 +148,7 @@ gulp.task('copyVendorJs', function() {
 	return gulp.src('./bower.json')
 		.pipe(mainBowerFiles())
 		.pipe(jsFilter)
+		.pipe(flatten())
 		.pipe(gulp.dest('public/dist/js/vendor'));
 });
 
