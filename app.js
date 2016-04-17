@@ -32,8 +32,9 @@ app.use(express.static(path.join(__dirname, 'public/dist')));
 app.use(users);
 app.use(rooms);
 
-app.get('*', function(request, response) {
-	response.sendfile(__dirname + '/public/dist/index.html');
+app.get('*', function(req, res, next) {
+	res.sendFile(__dirname + '/public/dist/index.html');
+	next();
 });
 
 // catch 404 and forward to error handler

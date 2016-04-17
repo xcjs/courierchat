@@ -41,7 +41,7 @@ gulp.task('clean', function(cb) {
 	del.sync(['public/dist'], cb);
 });
 
-gulp.task('registerWatchTasks:prod', function() {
+gulp.task('registerWatchTasks', function() {
 	watch('Gulpfile.js', function() {
 		gulp.start('build');
 	});
@@ -51,11 +51,11 @@ gulp.task('registerWatchTasks:prod', function() {
 	});
 
 	watch('bower_components/**/*.css', function() {
-		gulp.start('copyVendorCss');
+		gulp.start('copyHtml');
 	});
 
 	watch('public/src/css/**/*.css', function() {
-		gulp.start('copyAppJs');
+		gulp.start('copyHtml');
 	});
 
 	watch('.jshintrc', function() {
@@ -63,11 +63,11 @@ gulp.task('registerWatchTasks:prod', function() {
 	});
 
 	watch('bower_components/**/*.js', function() {
-		gulp.start('copyVendorJs');
+		gulp.start('copyHtml');
 	});
 
 	watch('public/src/js/**/*.js', function() {
-		gulp.start('copyAppJs');
+		gulp.start('copyHtml');
 	});
 
 	watch('public/images/**/*.*', function() {
@@ -76,12 +76,14 @@ gulp.task('registerWatchTasks:prod', function() {
 });
 
 gulp.task('copyHtml', ['copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs'], function() {
-	return gulp.src('public/src/**/*.html')
-		.pipe(inject(gulp.src('public/dist/css/vendor/**/*.css', { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->' }))
-		.pipe(inject(gulp.src(['public/dist/css/**/*.css', '!public/dist/css/vendor/**/*.css'], { read: false }), { starttag: '<!-- inject:app:{{ext}} -->' }))
-		.pipe(inject(gulp.src('public/dist/js/vendor/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:vendor:{{ext}} -->' }))
-		.pipe(inject(gulp.src('public/dist/js/courierchat/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:app:{{ext}} -->' }))
-		.pipe(gulp.dest('public/dist'));
+	var html = gulp.src('public/src/**/*.html');
+
+	html = html.pipe(inject(gulp.src('public/dist/css/vendor/**/*.css', { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->', ignorePath: '/public/dist' }))
+		.pipe(inject(gulp.src(['public/dist/css/**/*.css', '!public/dist/css/vendor/**/*.css'], { read: false }), { starttag: '<!-- inject:app:{{ext}} -->', ignorePath: '/public/dist' }))
+		.pipe(inject(gulp.src(['public/dist/js/vendor/angular/angular.js', 'public/dist/js/vendor/**/*.js'], { read: false }), { starttag: '<!-- inject:vendor:{{ext}} -->', ignorePath: '/public/dist' }))
+		.pipe(inject(gulp.src('public/dist/js/courierchat/**/*.js').pipe(angularFileSort()), { starttag: '<!-- inject:app:{{ext}} -->', ignorePath: '/public/dist' }));
+
+	return html.pipe(gulp.dest('public/dist'));
 });
 
 gulp.task('minHtml', function() {
