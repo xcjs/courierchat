@@ -117,6 +117,11 @@ gulp.task('serve', function() {
 	run('gulp watch');
 });
 
+gulp.task('serve:prod', function() {
+	run('gulp build:prod');
+	run('node ' + paths.files.startScript);
+});
+
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
 gulp.task('build', ['clean', 'install', 'jshint', 'jshint:node', 'copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs', 'copyHtml', 'copyImages']);
@@ -252,7 +257,7 @@ gulp.task('copyVendorJs', function() {
 gulp.task('copyAppJs', function() {
 	return gulp.src(filters.js.src)
 		.pipe(angularFileSort())
-		.pipe(gulp.dest(paths.js.dist));
+		.pipe(gulp.dest(paths.dist));
 });
 
 gulp.task('minJs', ['minVendorJs', 'minAppJs']);
@@ -265,7 +270,7 @@ gulp.task('minVendorJs', function() {
 		.pipe(concat(paths.files.vendorJs))
 		.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.js.dist));
+		.pipe(gulp.dest(paths.dist));
 });
 
 gulp.task('minAppJs', ['jshint'], function() {
@@ -275,7 +280,7 @@ gulp.task('minAppJs', ['jshint'], function() {
 		.pipe(concat(paths.files.appJs))
 		.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.js.dist));
+		.pipe(gulp.dest(paths.dist));
 });
 
 gulp.task('copyImages', function() {
