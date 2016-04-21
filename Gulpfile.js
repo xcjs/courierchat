@@ -124,9 +124,9 @@ gulp.task('serve:prod', function() {
 
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
-gulp.task('build', ['clean', 'install', 'jshint', 'jshint:node', 'copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs', 'copyHtml', 'copyImages']);
+gulp.task('build', ['clean', 'install', 'jshint', 'jshint:node', 'copyHtml', 'copyImages']);
 
-gulp.task('build:prod', ['clean', 'install', 'jshint', 'jshint:node', 'minCss', 'minJs', 'minHtml', 'minImages']);
+gulp.task('build:prod', ['clean', 'install', 'jshint', 'jshint:node', 'minHtml', 'minImages']);
 
 gulp.task('install', function() {
 	gulp.src([paths.files.bower, paths.files.npm])
@@ -195,9 +195,29 @@ gulp.task('copyHtml', ['copyVendorCss', 'copyAppCss', 'copyVendorJs', 'copyAppJs
 	return html.pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('minHtml', function() {
-	return gulp.src(filters.html.src)
-		.pipe(htmlmin({collapseWhitespace: true}))
+gulp.task('minHtml', ['minVendorCss', 'minAppCss', 'minVendorJs', 'minAppJs'] , function() {
+	var html = gulp.src(filters.html.src);
+
+	html =
+		html.pipe(inject(gulp.src(path.join(paths.css.dist, paths.files.vendorCss), { read: false }), {
+				starttag: '<!-- inject:vendor:{{ext}} -->',
+				ignorePath: paths.dist
+			}))
+			.pipe(inject(gulp.src(path.join(paths.css.dist, paths.files.appCss), { read: false }), {
+				starttag: '<!-- inject:app:{{ext}} -->',
+				ignorePath: paths.dist
+			}))
+			.pipe(inject(gulp.src(path.join(paths.js.dist, paths.files.vendorJs), { read: false }), {
+				starttag: '<!-- inject:vendor:{{ext}} -->',
+				ignorePath: paths.dist
+			}))
+			.pipe(inject(gulp.src(path.join(paths.js.dist, paths.files.appJs), { read: false }), {
+				starttag: '<!-- inject:app:{{ext}} -->',
+				ignorePath: paths.dist
+			}));
+
+	return html
+		.pipe(htmlmin())
 		.pipe(gulp.dest(paths.dist));
 });
 
@@ -270,7 +290,7 @@ gulp.task('minVendorJs', function() {
 		.pipe(concat(paths.files.vendorJs))
 		.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.dist));
+		.pipe(gulp.dest(paths.js.dist));
 });
 
 gulp.task('minAppJs', ['jshint'], function() {
@@ -280,7 +300,7 @@ gulp.task('minAppJs', ['jshint'], function() {
 		.pipe(concat(paths.files.appJs))
 		.pipe(uglify())
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.dist));
+		.pipe(gulp.dest(paths.js.dist));
 });
 
 gulp.task('copyImages', function() {
