@@ -217,7 +217,7 @@ gulp.task('minHtml', ['minVendorCss', 'minAppCss', 'minVendorJs', 'minAppJs'] , 
 			}));
 
 	return html
-		.pipe(htmlmin())
+		.pipe(htmlmin({ collapseWhitespace: true }))
 		.pipe(gulp.dest(paths.dist));
 });
 
