@@ -89,6 +89,8 @@ function joinFilters() {
 	filters.npm = path.join(paths.npm, filters.generic);
 	filters.dist = path.join(paths.dist, filters.generic);
 
+	filters.src = path.join(paths.src, filters.generic);
+
 	filters.html.bower = path.join(paths.bower, filters.html.generic);
 	filters.html.src = path.join(paths.src, filters.html.generic);
 	filters.html.dist = path.join(paths.dist, filters.html.generic);
@@ -142,15 +144,10 @@ gulp.task('registerWatchTasks', function() {
 		gulp.start('build');
 	});
 
-	watch(filters.html.src, function() {
-		gulp.start('copyHtml');
-	});
-
-	watch(filters.css.bower, function() {
-		gulp.start('copyHtml');
-	});
-
-	watch(filters.css.src, function() {
+	watch([
+		filters.css.bower,
+		filters.src
+	], function() {
 		gulp.start('copyHtml');
 	});
 
@@ -158,13 +155,6 @@ gulp.task('registerWatchTasks', function() {
 		gulp.start('jshint');
 	});
 
-	watch(filters.js.bower, function() {
-		gulp.start('copyHtml');
-	});
-
-	watch(filters.js.src, function() {
-		gulp.start('copyHtml');
-	});
 
 	watch(filters.img.src, function() {
 		gulp.start('copyImages');
