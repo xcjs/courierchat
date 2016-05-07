@@ -20,9 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Create a forwarded port mapping which allows access to a specific port
         # within the machine from a port on the host machine. In the example below,
         # accessing "localhost:8080" will access port 80 on the guest machine.
-        courierchat.vm.network "forwarded_port", guest: 1337, host: 1337
-        courierchat.vm.network "forwarded_port", guest: 80, host: 8080
-        courierchat.vm.network "forwarded_port", guest: 443, host: 4343
+        courierchat.vm.network "forwarded_port", guest: 3000, host: 3000
 
         # Share an additional folder to the guest VM. The first argument is
         # the path on the host to the actual folder. The second argument is
@@ -34,26 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
            vb.gui = false
         end
 
-        courierchat.vm.provider :linode do |provider, override|
-            override.ssh.private_key_path = '~/.ssh/courierchat'
-            override.ssh.forward_agent = true
-            override.ssh.username = 'vagrant'
-
-            override.vm.box = 'linode'
-            override.vm.box_url = 'https://github.com/displague/vagrant-linode/raw/master/box/linode.box'
-
-            provider.api_key = ENV['LINODE_TOKEN']
-
-            provider.label = 'CourierChat1'
-            provider.group = 'CourierChat'
-            provider.distribution = 'Ubuntu 14.04 LTS'
-
-            provider.plan = '1024'
-            provider.swap_size = '512'
-
-            provider.setup = true
-        end
-
-        courierchat.vm.provision "shell", path: "./vagrant-provision.sh", privileged: true
+        courierchat.vm.provision "shell", path: "./vagrant-provision.sh", privileged: false
     end
 end
