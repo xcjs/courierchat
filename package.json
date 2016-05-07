@@ -10,7 +10,7 @@
     "url": "git://github.com/xcjs/courierchat.git"
   },
   "scripts": {
-    "start": "gulp serve"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "childish-process": "0.0.5",
     "del": "^2.2.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-add-src": "^0.2.0",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-concat": "^2.6.0",
