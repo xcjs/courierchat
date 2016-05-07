@@ -116,17 +116,17 @@ gulp.task('default', ['serve']);
 
 gulp.task('serve', function() {
 	run('node ' + paths.files.startScript);
-	run('gulp watch');
+	gulp.start('watch');
 });
 
 gulp.task('serve:prod', function() {
-	run('gulp build:prod');
+	gulp.start('build:prod');
 	run('node ' + paths.files.startScript);
 });
 
 gulp.task('watch', ['build', 'registerWatchTasks']);
 
-gulp.task('build', ['clean', 'install', 'jshint', 'jshint:node', 'copyHtml', 'copyImages']);
+gulp.task('build', ['clean', 'jshint', 'jshint:node', 'copyHtml', 'copyImages']);
 
 gulp.task('build:prod', ['clean', 'install', 'jshint', 'jshint:node', 'minHtml', 'minImages']);
 

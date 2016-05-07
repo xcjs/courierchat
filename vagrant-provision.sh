@@ -1,59 +1,59 @@
 #!/bin/bash
 
-echo "Fetching the NodeSource script to install Node.js 4.x..."
-curl -sL https://deb.nodesource.com/setup_4.x | bash - >/dev/null 2>&1
+echo "Fetching the NodeSource script to install Node.js 5.x..."
+curl -sL https://deb.nodesource.com/setup_5.x | sudo bash - >/dev/null 2>&1
 
 echo "Checking for system updates..."
-apt-get -qq update
+sudo apt-get -qq update
 
-echo "Installing system upgrades..."
-apt-get -qq upgrade >/dev/null 2>&1
+echo "Installing system updates..."
+sudo apt-get -qq upgrade && sudo apt-get -qq dist-upgrade
 
-echo "Installing system upgrades with new dependencies..."
-apt-get -qq dist-upgrade >/dev/null 2>&1
-
-echo "Cleaning up after installing updates..."
-apt-get -qq autoremove >/dev/null 2>&1
+echo "Cleaning up leftover system packages..."
+sudo apt-get -qq autoremove
 
 echo "Installing git..."
-apt-get -qq install git >/dev/null 2>&1
+sudo apt-get -qq install git
 
 echo "Installing Node.js and NPM..."
-apt-get -qq install nodejs >/dev/null 2>&1
+sudo apt-get -qq install nodejs
 
 echo "Installing Redis..."
-apt-get -qq install redis-server >/dev/null 2>&1
+sudo apt-get -qq install redis-server
 
 # Updated npm for Sails since the Ubuntu-packaged version may be outdated.
 echo "Checking for updates to NPM..."
-npm install -g npm >/dev/null 2>&1
+sudo npm install -g npm
 
 # Delete the hash for npm since we need bash to find the new version.
 hash -d npm
 
-echo "Installing Grunt..."
-npm install -g grunt-cli >/dev/null 2>&1
-
 echo "Installing Bower..."
-npm install -g bower >/dev/null 2>&1
+sudo npm install -g bower
 
-echo "Installing Sails..."
-npm install -g sails >/dev/null 2>&1
+echo "Installing Gulp..."
+sudo npm install -g gulp
+
+echo "Installing Express..."
+sudo npm install -g express@4.x
 
 echo "Disabling the Redis disk sync..."
-sed -i "/^save.*/d" /etc/redis/redis.conf
-service redis-server restart >/dev/null 2>&1
+sudo sed -i "/^save.*/d" /etc/redis/redis.conf
+sudo service redis-server restart
 
-cd /vagrant/www
+cd /vagrant
 
 # npm creates symlinks within packages, which doesn't work within VirtualBox on Windows well.
 echo "Installing NPM dependencies..."
-npm install -–no-bin-links >/dev/null 2>&1
+npm install -–no-bin-links
 
 echo "Installing Bower dependencies..."
-bower install --config.interactive=false --allow-root >/dev/null 2>&1
+bower install --config.interactive=false
 
-echo "Starting the Sails server..."
-sudo -i -u vagrant cd /vagrant/www && screen -dmS courierchat sails lift
+echo "Performing a development build..."
+gulp build
 
-echo "CourierChat is now available on your host at http://localhost:1337"
+echo "Starting the Express server..."
+screen -dmS courierchat bash -c "cd /vagrant && npm start"
+
+echo "CourierChat is now available on your host at http://localhost:3000"
