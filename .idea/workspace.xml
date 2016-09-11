@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="00b3c039-1ffa-41b1-b1fd-9347fb31f8c2" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.editorconfig" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.gitignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.jshintrc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.jshintrc-node" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Gulpfile.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/bower.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/package.json" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/src/server-old/app.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/bin/www" afterPath="$PROJECT_DIR$/src/server-old/bin/www" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/common/ApiError.js" afterPath="$PROJECT_DIR$/src/server-old/common/ApiError.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/config.js" afterPath="$PROJECT_DIR$/src/server-old/config.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/controllers/rooms.js" afterPath="$PROJECT_DIR$/src/server-old/controllers/rooms.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/controllers/users.js" afterPath="$PROJECT_DIR$/src/server-old/controllers/users.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/models/message.js" afterPath="$PROJECT_DIR$/src/server-old/models/message.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/models/room.js" afterPath="$PROJECT_DIR$/src/server-old/models/room.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/models/user.js" afterPath="$PROJECT_DIR$/src/server-old/models/user.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/css/courierchat-animations.css" afterPath="$PROJECT_DIR$/src/client-old/css/courierchat-animations.css" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/css/courierchat-mobile.css" afterPath="$PROJECT_DIR$/src/client-old/css/courierchat-mobile.css" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/css/courierchat.css" afterPath="$PROJECT_DIR$/src/client-old/css/courierchat.css" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/about.svg" afterPath="$PROJECT_DIR$/src/client-old/images/about.svg" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-144x144.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-144x144.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-192x192.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-192x192.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-36x36.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-36x36.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-48x48.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-48x48.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-72x72.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-72x72.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/android-chrome-96x96.png" afterPath="$PROJECT_DIR$/src/client-old/images/android-chrome-96x96.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-114x114.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-114x114.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-120x120.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-120x120.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-144x144.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-144x144.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-152x152.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-152x152.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-180x180.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-180x180.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-57x57.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-57x57.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-60x60.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-60x60.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-72x72.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-72x72.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-76x76.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-76x76.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon-precomposed.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon-precomposed.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/apple-touch-icon.png" afterPath="$PROJECT_DIR$/src/client-old/images/apple-touch-icon.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/browserconfig.xml" afterPath="$PROJECT_DIR$/src/client-old/images/browserconfig.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/courierchat.svg" afterPath="$PROJECT_DIR$/src/client-old/images/courierchat.svg" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/favicon-16x16.png" afterPath="$PROJECT_DIR$/src/client-old/images/favicon-16x16.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/favicon-194x194.png" afterPath="$PROJECT_DIR$/src/client-old/images/favicon-194x194.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/favicon-32x32.png" afterPath="$PROJECT_DIR$/src/client-old/images/favicon-32x32.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/favicon-96x96.png" afterPath="$PROJECT_DIR$/src/client-old/images/favicon-96x96.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/favicon.ico" afterPath="$PROJECT_DIR$/src/client-old/images/favicon.ico" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/kylemoses.jpg" afterPath="$PROJECT_DIR$/src/client-old/images/kylemoses.jpg" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/logout.svg" afterPath="$PROJECT_DIR$/src/client-old/images/logout.svg" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/manifest.json" afterPath="$PROJECT_DIR$/src/client-old/images/manifest.json" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/mstile-144x144.png" afterPath="$PROJECT_DIR$/src/client-old/images/mstile-144x144.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/mstile-150x150.png" afterPath="$PROJECT_DIR$/src/client-old/images/mstile-150x150.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/mstile-310x150.png" afterPath="$PROJECT_DIR$/src/client-old/images/mstile-310x150.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/mstile-310x310.png" afterPath="$PROJECT_DIR$/src/client-old/images/mstile-310x310.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/mstile-70x70.png" afterPath="$PROJECT_DIR$/src/client-old/images/mstile-70x70.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/images/xcjs.png" afterPath="$PROJECT_DIR$/src/client-old/images/xcjs.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/index.html" afterPath="$PROJECT_DIR$/src/client-old/index.html" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/app.config.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/app.config.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/app.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/app.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/about/about.html" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/about/about.html" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/login/login.html" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/login/login.html" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/login/loginController.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/login/loginController.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/rooms/rooms.html" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/rooms/rooms.html" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/rooms/roomsController.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/rooms/roomsController.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/session/logoutButton.html" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/session/logoutButton.html" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/session/logoutButtonDirective.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/session/logoutButtonDirective.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/session/sessionService.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/session/sessionService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/shared/autoFocusDirective.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/shared/autoFocusDirective.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/shared/environmentService.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/shared/environmentService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/components/user/userResource.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/components/user/userResource.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/public/src/js/courierchat/interceptors/authInterceptor.js" afterPath="$PROJECT_DIR$/src/client-old/js/courierchat/interceptors/authInterceptor.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/responses/badRequest.js" afterPath="$PROJECT_DIR$/src/server-old/responses/badRequest.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/HeaderService.js" afterPath="$PROJECT_DIR$/src/server-old/services/HeaderService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/RoomService.js" afterPath="$PROJECT_DIR$/src/server-old/services/RoomService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/SessionService.js" afterPath="$PROJECT_DIR$/src/server-old/services/SessionService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/UserService.js" afterPath="$PROJECT_DIR$/src/server-old/services/UserService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/stringService.js" afterPath="$PROJECT_DIR$/src/server-old/services/stringService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/services/waterlineService.js" afterPath="$PROJECT_DIR$/src/server-old/services/waterlineService.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/views/error.jade" afterPath="$PROJECT_DIR$/src/server-old/views/error.jade" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/views/layout.jade" afterPath="$PROJECT_DIR$/src/server-old/views/layout.jade" />
+    </list>
+    <ignored path="courierchat.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="courierchat" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="rooms.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server-old/controllers/rooms.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/package.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-13">
+              <caret line="12" column="12" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".editorconfig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.editorconfig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="297">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="198">
+                <caret line="6" column="5" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
+                <folding />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server-old/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server-old/config.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ApiError.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/server-old/common/ApiError.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/hottowel/.editorconfig" />
+        <option value="$PROJECT_DIR$/hottowel/README.md" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/node_modules" />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="-2" />
+    <option name="width" value="3200" />
+    <option name="height" value="1744" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="courierchat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="courierchat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="courierchat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="nodejs_interpreter_path" value="/usr/bin/node" />
+    <property name="editor.config.accepted" value="true" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
+    <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/hottowel/node_modules/mocha" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/hottowel" />
+      <recent name="$PROJECT_DIR$/hottowel/src/server-old" />
+      <recent name="$PROJECT_DIR$/hottowel/src/client-old" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <method />
+    </configuration>
+    <configuration default="true" type="DartTestRunConfigurationType" factoryName="Dart Test">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
+      <method />
+    </configuration>
+    <configuration default="true" type="cucumber.js" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" value="" />
+      <option name="executablePath" />
+      <option name="filePath" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory />
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui />
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="00b3c039-1ffa-41b1-b1fd-9347fb31f8c2" name="Default" comment="" />
+      <created>1473628230703</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1473628230703</updated>
+      <workItem from="1473628232039" duration="1512000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="1512000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="-2" width="3200" height="1744" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24976258" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/client/app/core/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/client/app/app.module.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gulp.config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="156" column="37" selection-start-line="156" selection-start-column="37" selection-end-line="156" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bower.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-13">
+          <caret line="28" column="24" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server-old/bin/www">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server-old/common/ApiError.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server-old/controllers/rooms.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-13">
+          <caret line="12" column="12" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.editorconfig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.editorconfig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="792">
+            <caret line="24" column="58" selection-start-line="0" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="198">
+            <caret line="6" column="5" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server-old/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server-old/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Gulpfile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
