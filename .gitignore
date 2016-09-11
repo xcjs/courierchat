@@ -5,3 +5,6 @@ bower_components/
 
 # other
 .tmp
+
+# IDE/Editors
+.idea/
