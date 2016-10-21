@@ -1,4 +1,4 @@
-# courierChat
+# CourierChat
 
 ![CourierChat Logo](https://cdn.rawgit.com/xcjs/courierchat/master/www/assets/images/courierchat.svg) CourierChat
 ============================================================================================================================
