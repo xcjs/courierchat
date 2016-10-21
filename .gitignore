@@ -3,8 +3,9 @@
 node_modules/
 bower_components/
 
-# other
-.tmp
+# Build Files
+build/
+report/
 
 # IDE/Editors
 .idea/
