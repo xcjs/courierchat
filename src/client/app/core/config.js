@@ -13,8 +13,8 @@
   }
 
   var config = {
-    appErrorPrefix: '[courierChat Error] ',
-    appTitle: 'courierChat'
+    appErrorPrefix: '[CourierChat Error] ',
+    appTitle: 'CourierChat'
   };
 
   core.value('config', config);
