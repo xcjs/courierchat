@@ -1,12 +1,8 @@
-(function () {
+(function() {
 	'use strict';
 
-	angular.module('app', [
-		'app.core',
-		'app.widgets',
-		'app.admin',
-		'app.dashboard',
-		'app.layout'
+	angular.module('courierChat', [
+		'ngResource',
+		'ui.router'
 	]);
-
 })();

@@ -13,11 +13,11 @@
     "requireOperatorBeforeLineBreak": true,
     "requireCamelCaseOrUpperCaseIdentifiers": true,
     "maximumLineLength": {
-      "value": 100,
+      "value": 120,
       "allowComments": true,
       "allowRegex": true
     },
-    "validateIndentation": "\t",
+    //"validateIndentation": "\t",
     "validateQuoteMarks": "'",
 
     "disallowMultipleLineStrings": true,
@@ -27,7 +27,7 @@
     "disallowMultipleVarDecl": null,
 
     "requireSpaceAfterKeywords": [
-      "if",
+	  //"if",
       "else",
       "for",
       "while",
