@@ -180,7 +180,7 @@ main article.about .avatar-container {
 }
 
 .form-container button:hover {
-  background-color: lighten($background-interactive, 5%);
+  background-color: darken($background-interactive, 5%);
   box-shadow: $drop-shadow;
   position: relative;
   top: 2px;
