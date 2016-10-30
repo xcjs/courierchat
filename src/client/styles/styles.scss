@@ -1,9 +1,9 @@
-@color_lightblue: #52b9e9;
-@color_blue: #1171a3;
-@color_success: #43c83c;
-@color_warning: #f88529;
-@color_important: #fa3031;
-@color_violet: #932ab6;
+$color_lightblue: #52b9e9;
+$color_blue: #1171a3;
+$color_success: #43c83c;
+$color_warning: #f88529;
+$color_important: #fa3031;
+$color_violet: #932ab6;
 
 * {
     /*-webkit-box-shadow: none !important;
@@ -198,7 +198,7 @@ a.btn {
 /* Button colors */
 
 .btn.btn-primary {
-    background: @color_blue !important;
+    background: $color_blue !important;
 }
 
     .btn.btn-primary:hover {
@@ -206,7 +206,7 @@ a.btn {
     }
 
 .btn.btn-info {
-    background: @color_lightblue !important;
+    background: $color_lightblue !important;
 }
 
     .btn.btn-info:hover {
@@ -214,7 +214,7 @@ a.btn {
     }
 
 .btn.btn-success {
-    background: @color_success !important;
+    background: $color_success !important;
 }
 
     .btn.btn-success:hover {
@@ -222,7 +222,7 @@ a.btn {
     }
 
 .btn.btn-warning {
-    background: @color_warning !important;
+    background: $color_warning !important;
 }
 
     .btn.btn-warning:hover {
@@ -230,7 +230,7 @@ a.btn {
     }
 
 .btn.btn-danger {
-    background: @color_important !important;
+    background: $color_important !important;
 }
 
     .btn.btn-danger:hover {
@@ -241,59 +241,59 @@ a.btn {
 
 .label.label-success,
 .badge.badge-success {
-    background: @color_success !important;
+    background: $color_success !important;
 }
 
 .label.label-warning,
 .badge.badge-warning {
-    background: @color_warning !important;
+    background: $color_warning !important;
 }
 
 .label.label-important,
 .badge.badge-important {
-    background: @color_important !important;
+    background: $color_important !important;
 }
 
 .label.label-info,
 .badge.badge-info {
-    background: @color_lightblue !important;
+    background: $color_lightblue !important;
 }
 
 /* Background colors */
 
 
 .blightblue {
-    background: @color_lightblue !important;
+    background: $color_lightblue !important;
     color: #fff !important;
     border: 0 !important;
 }
 
 .bblue {
-    background: @color_blue !important;
+    background: $color_blue !important;
     color: #fff !important;
     border: 0 !important;
 }
 
 .bgreen {
-    background: @color_success !important;
+    background: $color_success !important;
     color: #fff !important;
     border: 0 !important;
 }
 
 .borange {
-    background: @color_warning !important;
+    background: $color_warning !important;
     color: #fff !important;
     border: 0 !important;
 }
 
 .bred {
-    background: @color_important !important;
+    background: $color_important !important;
     color: #fff !important;
     border: 0 !important;
 }
 
 .bviolet {
-    background: @color_violet !important;
+    background: $color_violet !important;
     color: #fff !important;
     border: 0 !important;
 }
@@ -328,27 +328,27 @@ a.btn {
 /* Text colors */
 
 .lightblue {
-    color: @color_lightblue !important;
+    color: $color_lightblue !important;
 }
 
 .blue {
-    color: @color_blue !important;
+    color: $color_blue !important;
 }
 
 .green {
-    color: @color_success !important;
+    color: $color_success !important;
 }
 
 .orange {
-    color: @color_warning !important;
+    color: $color_warning !important;
 }
 
 .red {
-    color: @color_important !important;
+    color: $color_important !important;
 }
 
 .violet {
-    color: @color_violet !important;
+    color: $color_violet !important;
 }
 
 
@@ -407,7 +407,7 @@ form {
     bottom: 0;
     left: 0;
     z-index: 104400;
-    background: @color_important;
+    background: $color_important;
     display: none;
 }
 
@@ -653,7 +653,7 @@ form {
     .sidebar .navi > li.nlightblue > a:hover,
     .sidebar .navi > li.open.nlightblue > a,
     .sidebar .navi > li.current.nlightblue > a {
-        background: @color_lightblue !important;
+        background: $color_lightblue !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -663,7 +663,7 @@ form {
     .sidebar .navi > li.nblue > a:hover,
     .sidebar .navi > li.open.nblue > a,
     .sidebar .navi > li.current.nblue > a {
-        background: @color_blue !important;
+        background: $color_blue !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -673,7 +673,7 @@ form {
     .sidebar .navi > li.ngreen > a:hover,
     .sidebar .navi > li.open.ngreen > a,
     .sidebar .navi > li.current.ngreen > a {
-        background: @color_success !important;
+        background: $color_success !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -683,7 +683,7 @@ form {
     .sidebar .navi > li.norange > a:hover,
     .sidebar .navi > li.open.norange > a,
     .sidebar .navi > li.current.norange > a {
-        background: @color_warning !important;
+        background: $color_warning !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -693,7 +693,7 @@ form {
     .sidebar .navi > li.nred > a:hover,
     .sidebar .navi > li.open.nred > a,
     .sidebar .navi > li.current.nred > a {
-        background: @color_important !important;
+        background: $color_important !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -703,7 +703,7 @@ form {
     .sidebar .navi > li.nviolet > a:hover,
     .sidebar .navi > li.open.nviolet > a,
     .sidebar .navi > li.current.nviolet > a {
-        background: @color_violet !important;
+        background: $color_violet !important;
         -webkit-transition: background 0.5s ease;
         -moz-transition: background 0.5s ease;
         -o-transition: background 0.5s ease;
@@ -928,38 +928,38 @@ form {
     /* Widget colors */
 
     .widget.wred .widget-head {
-        background-color: @color_important;
-        border: 1px solid @color_important;
+        background-color: $color_important;
+        border: 1px solid $color_important;
         color: #fff;
     }
 
     .widget.wlightblue .widget-head {
-        background-color: @color_lightblue;
-        border: 1px solid @color_lightblue;
+        background-color: $color_lightblue;
+        border: 1px solid $color_lightblue;
         color: #fff;
     }
 
     .widget.wblue .widget-head {
-        background-color: @color_blue;
-        border: 1px solid @color_blue;
+        background-color: $color_blue;
+        border: 1px solid $color_blue;
         color: #fff;
     }
 
     .widget.wgreen .widget-head {
-        background-color: @color_success;
-        border: 1px solid @color_success;
+        background-color: $color_success;
+        border: 1px solid $color_success;
         color: #fff;
     }
 
     .widget.worange .widget-head {
-        background-color: @color_warning;
-        border: 1px solid @color_warning;
+        background-color: $color_warning;
+        border: 1px solid $color_warning;
         color: #fff;
     }
 
     .widget.wviolet .widget-head {
-        background-color: @color_violet;
-        border: 1px solid @color_violet;
+        background-color: $color_violet;
+        border: 1px solid $color_violet;
         color: #fff;
     }
 
@@ -1333,7 +1333,7 @@ body {
 }
 
     .sidebar .navi li ul li a:hover {
-        color: @color_lightblue;
+        color: $color_lightblue;
     }
 
     .sidebar .navi li ul li a:disabled {
@@ -1459,7 +1459,7 @@ small {
 .widget-content .padd:hover {
     cursor: pointer;
     color: white;
-    background-color: @color_lightblue;
+    background-color: $color_lightblue;
 }
 
     .widget-content .padd:hover * {
