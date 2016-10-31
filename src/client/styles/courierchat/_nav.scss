@@ -1,0 +1,49 @@
+nav {
+  ul {
+	list-style-type: none;
+	margin: 1px;
+	padding: 0;
+  }
+
+  a {
+	cursor: pointer;
+	display: block;
+	margin-bottom: 1rem;
+	position: relative;
+  }
+
+  a > * {
+	position: relative;
+	z-index: 3;
+  }
+
+  a span.anim-nav-hover,
+  a:visited span.anim-nav-hover {
+	background-color: $background-interactive;
+	border-radius: 1000000px;
+	color: $white;
+	display: none;
+	font-size: 2rem;
+	height: 100%;
+	left: 0;
+	padding: 0 1rem 0 130%;
+	position: absolute;
+	text-decoration: none;
+	top: 0;
+	vertical-align: middle;
+	white-space: nowrap;
+	z-index: 2;
+  }
+
+  a:hover span.anim-nav-hover {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding-right: 3.5vh;
+  }
+
+  a img {
+	width: 100%;
+  }
+}

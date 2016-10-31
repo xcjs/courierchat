@@ -1,0 +1,36 @@
+article.login {
+  > h1 {
+	background-color: transparent;
+	border-radius: 0;
+	border-width: 0;
+	box-shadow: none;
+	color: $text-primary;
+	font-size: 3rem;
+  }
+
+  > h1 > img {
+	height: 100%;
+  }
+
+  input[type="textbox"] {
+	background-color: $white;
+	border: #DDD 1px solid;
+	box-shadow: $drop-shadow;
+	color: $text-primary;
+	font-weight: bold;
+	display: block;
+	font-size: 3rem;
+	height: 6rem;
+	text-indent: 1rem;
+	width: 100%;
+  }
+
+  form > * {
+	margin: 1rem;
+  }
+
+  form > p {
+	color: $text-content;
+	font-weight: bold;
+  }
+}
