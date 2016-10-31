@@ -4,6 +4,8 @@
 	angular.module('courierChat').controller('loginController',
 		['$rootScope', '$scope', '$state', 'userResource',
 		function ($rootScope, $scope, $state, userResource) {
+			$rootScope.title = 'Login - CourierChat';
+
 			$scope.username = null;
 			$scope.error = null;
 
