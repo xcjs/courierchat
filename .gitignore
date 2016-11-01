@@ -8,5 +8,8 @@ bower_components/
 build/
 report/
 
+# Vagrant
+.vagrant/
+
 # IDE/Editors
 .idea/
