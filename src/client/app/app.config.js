@@ -11,21 +11,25 @@
 				.state('home', {
 					url: '/',
 					templateUrl: 'app/login/login.html',
-					controller: 'loginController'
+					controller: 'LoginController',
+					controllerAs: 'vm'
 				})
 				.state('login', {
 					url: '/login',
 					templateUrl: 'app/login/login.html',
-					controller: 'loginController'
+					controller: 'loginController',
+					controllerAs: 'vm'
 				})
 				.state('about',  {
 					url: '/about',
-					templateUrl: 'app/about/about.html'
+					templateUrl: 'app/about/about.html',
+					controllerAs: 'vm'
 				})
 				.state('rooms', {
 					url: '/rooms',
 					templateUrl: 'app/rooms/rooms.html',
-					controller: 'roomsController'
+					controller: 'roomsController',
+					controllerAs: 'vm'
 				});
 		}]);
 })();

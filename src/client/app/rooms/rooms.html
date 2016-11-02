@@ -1,9 +1,9 @@
 <article class="animated fadeIn rooms">
-	<div class="form-container" ng-if="!rooms">
+	<div class="form-container" ng-if="!vm.rooms">
 		<form>
-			<p class="tcenter">
+			<p class="text-center">
 				You're the first,
-				<strong>{{user.name}}</strong>!
+				<strong>{{vm.user.name}}</strong>!
 				Give people something to talk about!
 			</p>
 			<button>
@@ -11,5 +11,4 @@
 			</button>
 		</form>
 	</div>
-
 </article>

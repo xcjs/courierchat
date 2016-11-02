@@ -1,6 +1,6 @@
 <article class="animated bounceInDown login">
 	<h1 class="animated bounceInDown">
-		<img src="/images/courierchat.svg" alt="CourierChat Logo">
+		<img src="images/courierchat.svg" alt="CourierChat Logo">
 		CourierChat
 	</h1>
 	<div class="form-container">
@@ -9,15 +9,15 @@
 		</h1>
 		<form class="animated bounceInDown">
 			<p>
-				<input type="textbox" ng-model="username" auto-focus>
+				<input type="textbox" ng-model="vm.username" auto-focus>
 			</p>
 			<p>
-				<button ng-click="login()">
+				<button ng-click="vm.login()">
 					Say hello! &raquo;
 				</button>
 			</p>
-			<p class="animated pulse" ng-if="error">
-				{{error}}
+			<p class="animated pulse" ng-if="vm.error">
+				{{vm.error}}
 			</p>
 		</form>
 	</div>
