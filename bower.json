@@ -23,7 +23,8 @@
     "angular-ui-router": "^0.2.18",
     "angular-animate": "^1.5.3",
     "animate.css": "^3.5.2",
-    "angular-resource": "^1.5.8"
+    "angular-resource": "^1.5.8",
+    "skylinkjs": "^0.6.15"
   },
   "resolutions": {
     "angular": "1.5.3"
