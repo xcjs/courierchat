@@ -39,7 +39,7 @@
 			scope: true,
 			link: link,
 			controller: controller,
-			templateUrl: 'app/components/session/logoutButton.html'
+			templateUrl: 'app/components/session/logout-button.html'
 		};
 	}]);
 })();
