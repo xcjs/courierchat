@@ -5,11 +5,13 @@ article.login {
 	border-width: 0;
 	box-shadow: none;
 	color: $text-primary;
-	font-size: 3rem;
+	font-size: 4rem;
+	font-weight: 500;
   }
 
   > h1 > img {
-	height: 100%;
+	height: 4rem;
+	vertical-align: top;
   }
 
   input[type="textbox"] {
@@ -17,7 +19,7 @@ article.login {
 	border: #DDD 1px solid;
 	box-shadow: $drop-shadow;
 	color: $text-primary;
-	font-weight: bold;
+	font-weight: 500;
 	display: block;
 	font-size: 3rem;
 	height: 6rem;
@@ -30,6 +32,6 @@ article.login {
   }
 
   form > p {
-	font-weight: bold;
+	font-weight: 500;
   }
 }
