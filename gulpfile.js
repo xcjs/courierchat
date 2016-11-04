@@ -65,7 +65,7 @@ gulp.task('styles', ['clean-styles'], function () {
 	return gulp
 		.src(config.sass)
 		.pipe($.plumber()) // exit gracefully if something fails after this
-		.pipe($.sass.sync().on('error', errorLogger))
+		.pipe($.sass().on('error', errorLogger))
 		.pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
 		.pipe(gulp.dest(config.temp));
 });
