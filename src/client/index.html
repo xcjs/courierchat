@@ -54,30 +54,7 @@
 	</head>
 
 	<body>
-		<header class="shadowed">
-			<nav>
-				<ul>
-					<li>
-						<a ui-sref="home">
-							<img src="/images/courierchat.svg" id="logo" alt="Courier Chat Logo">
-							<span class="animated faster anim-nav-hover shadowed">
-					Home
-				  </span>
-						</a>
-					</li>
-					<li>
-						<a ui-sref="about">
-							<img src="/images/about.svg" alt="About Courier Chat">
-							<span class="animated faster anim-nav-hover shadowed">
-					About
-				  </span>
-						</a>
-					</li>
-					<logout-button />
-				</ul>
-			</nav>
-		</header>
-
+		<courier-nav class="header-container"></courier-nav>
 		<main ui-view></main>
 
 		<!-- build:js js/lib.js -->
@@ -97,11 +74,10 @@
 		<!-- inject:js -->
 		<script src="/src/client/app/app.module.js"></script>
 		<script src="/src/client/app/app.config.js"></script>
+		<script src="/src/client/app/components/courier-nav/courier-nav.component.js"></script>
+		<script src="/src/client/app/components/courier-nav/courier-nav.controller.js"></script>
 		<script src="/src/client/app/components/interceptors/auth.interceptor.js"></script>
-		<script src="/src/client/app/components/session/logout-button.directive.js"></script>
-		<script src="/src/client/app/components/session/session.service.js"></script>
 		<script src="/src/client/app/components/shared/auto-focus.directive.js"></script>
-		<script src="/src/client/app/components/shared/environment.service.js"></script>
 		<script src="/src/client/app/components/user/user.resource.js"></script>
 		<script src="/src/client/app/login/login.controller.js"></script>
 		<script src="/src/client/app/rooms/rooms.controller.js"></script>

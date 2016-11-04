@@ -1,0 +1,30 @@
+<header class="shadowed">
+	<nav>
+		<ul>
+			<li>
+				<a ui-sref="home">
+					<img src="images/courierchat.svg" id="logo" alt="Courier Chat Logo">
+					<span class="animated faster anim-nav-hover shadowed">
+					Home
+				  </span>
+				</a>
+			</li>
+			<li>
+				<a ui-sref="about">
+					<img src="images/about.svg" alt="About Courier Chat">
+					<span class="animated faster anim-nav-hover shadowed">
+					About
+				  </span>
+				</a>
+			</li>
+			<li ng-if="$ctrl.user">
+				<a ng-click="$ctrl.logout()">
+					<img src="images/logout.svg" alt="Log Out of CourierChat">
+					<span class="animated faster anim-nav-hover shadowed">
+						Log Out
+					</span>
+				</a>
+			</li>
+		</ul>
+	</nav>
+</header>

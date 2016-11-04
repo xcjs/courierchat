@@ -1,9 +1,14 @@
+.header-container {
+  display: table-cell;
+  height: 100%;
+  vertical-align: top;
+}
+
 header {
   background-color: $background-primary;
-  display: table-cell;
+  display: block;
   height: 100%;
   min-width: 5rem;
   padding-top: 1rem;
-  vertical-align: top;
   width: 3vw;
 }
