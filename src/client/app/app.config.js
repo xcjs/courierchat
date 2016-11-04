@@ -18,12 +18,13 @@
 			.state('login', {
 				url: '/login',
 				templateUrl: 'app/login/login.html',
-				controller: 'loginController',
+				controller: 'LoginController',
 				controllerAs: 'vm'
 			})
 			.state('about',  {
 				url: '/about',
 				templateUrl: 'app/about/about.html',
+				controller: 'AboutController',
 				controllerAs: 'vm'
 			})
 			.state('rooms', {

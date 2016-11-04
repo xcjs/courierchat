@@ -6,38 +6,27 @@ article {
   padding: 1rem;
 
   > * {
-	margin: 1em;
+	margin: 1rem;
   }
 
-  > h1,
-  > h2 {
+  > h1 {
 	background-color: $background-primary;
 	border: $background-primary .5rem solid;
 	border-radius: .5rem;
 	box-shadow: $drop-shadow;
-	color: $text-primary;
+	color: $text-content-inverted;
+	margin: 1rem 0 2rem 0;
+	padding: 1rem;
 	font-weight: 500;
-	margin: 1rem;
   }
 
-  h1 {
+  > h1 {
 	font-size: 2.5rem;
   }
 
-  > h1:after  {
-	margin-bottom: 1rem;
-  }
-
   > h2 {
-	font-size: 1.5rem;
-  }
-
-  > h1 > span,
-  > h2 > span {
-	background-color: rgba(255, 255, 255, .95);
-	border-radius: .5rem;
-	box-shadow: $drop-shadow;
-	display: block;
-	padding: .5rem;
+	font-size: 2rem;
+	font-weight: 500;
+	margin: 2rem 1rem;
   }
 }
