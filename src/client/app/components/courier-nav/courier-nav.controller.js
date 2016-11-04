@@ -7,7 +7,7 @@
 		var self = this;
 
 		self.user = $rootScope.user;
-		self.logout = logout();
+		self.logout = logout;
 
 		function logout() {
 			userResource.logout($rootScope.user, function() {
