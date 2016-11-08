@@ -3,14 +3,19 @@
     https://color.adobe.com/create/color-wheel/?base=2&rule=Complementary&selected=1&name=My%20Color%20Theme&mode=rgb&rgbvalues=0.7,0.34025188051640154,0.22646649832612348,1,0.6177548712685628,0.4968538694078385,1,0.5417838748740231,0.3968538694078385,0.13779770858548698,0.7,0.5590839592260689,0.3968538694078385,1,0.8488213832830178&swatchOrder=0,1,2,3,4
 */
 
-$white: rgb(255, 255, 255);
+$color-lightest: rgb(255, 255, 255);
+$color-lighter: rgb(206, 206, 206);
+$color-light: rgb(156, 156, 156);
+$color-neutral: rgb(127, 127, 127);
+$color-dark: rgb(102, 102, 102);
+$color-darker: rgb(51, 51, 51);
+$color-darkest: rgb(0, 0, 0);
 
-$background-primary: rgb(35, 178, 143);
-$background-interactive: rgb(255, 138, 101);
+$color-primary: rgb(35, 178, 143);
+$color-highlight: rgb(255, 138, 101);
 
-$text-primary: rgb(255, 138, 101);
-$text-content: rgb(51, 51, 51);
-$text-content-inverted: rgb(255, 255, 255);
-$text-error: rgb(165, 61, 61);
+$color-error: rgb(165, 61, 61);
 
+$border-radius: .5rem;
 $drop-shadow:  0px 4px 5px 0px rgba(0, 0, 0, 0.5);
+$drop-shadow-inset:  inset 0px 2px 2px 0px rgba(0, 0, 0, 0.5);

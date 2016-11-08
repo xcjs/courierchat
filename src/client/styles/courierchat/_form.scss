@@ -1,29 +1,18 @@
-.form-container {
-  background-color: $background-primary;
-  border: $background-primary .5rem solid;
-  border-radius: .5rem;
-  box-shadow: $drop-shadow;
-  margin: 0;
-
-  form {
-	background-color: rgba(255, 255, 255, .95);
-	border-radius: .5rem;
-	box-shadow: $drop-shadow;
-	display: block;
-	padding: .5rem;
-	margin: 1rem;
-  }
-
+form {
   h1 {
-	color: $white;
+	color: $color-lightest;
 	margin: 1rem;
 	font-weight: 500;
   }
 
+  input {
+	border-radius: $border-radius;
+  }
+
   button {
-	background-color: $background-interactive;
-	box-shadow: $drop-shadow;
-	color: $white;
+	background-color: $color-highlight;
+	border-radius: $border-radius;
+	color: $color-lightest;
 	cursor: pointer;
 	display: block;
 	font-size: 1.5rem;
@@ -33,8 +22,8 @@
   }
 
   button:hover {
-	background-color: darken($background-interactive, 5%);
-	box-shadow: $drop-shadow;
+	background-color: darken($color-highlight, 5%);
+	box-shadow: $drop-shadow-inset;
 	position: relative;
 	top: 2px;
   }

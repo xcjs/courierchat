@@ -3,22 +3,24 @@
 		<img src="images/courierchat.svg" alt="CourierChat Logo">
 		CourierChat
 	</h1>
-	<div class="form-container">
+	<div class="panel">
 		<h1>
 			Choose a name!
 		</h1>
-		<form class="animated bounceInDown">
-			<p>
-				<input type="textbox" ng-model="vm.username" auto-focus>
-			</p>
-			<p>
-				<button ng-click="vm.login()">
-					Say hello! &raquo;
-				</button>
-			</p>
-			<p class="animated pulse" ng-if="vm.error">
-				{{vm.error}}
-			</p>
-		</form>
+		<div class="panel-inner">
+			<form class="animated bounceInDown">
+				<p>
+					<input type="textbox" ng-model="vm.username" auto-focus>
+				</p>
+				<p>
+					<button ng-click="vm.login()">
+						Say hello! &raquo;
+					</button>
+				</p>
+				<p class="animated pulse" ng-if="vm.error">
+					{{vm.error}}
+				</p>
+			</form>
+		</div>
 	</div>
 </article>

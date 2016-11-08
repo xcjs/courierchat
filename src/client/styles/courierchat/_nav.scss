@@ -19,9 +19,10 @@ nav {
 
   a span.anim-nav-hover,
   a:visited span.anim-nav-hover {
-	background-color: $background-interactive;
+	background-color: $color-highlight;
 	border-radius: 1000000px;
-	color: $white;
+	box-shadow: $drop-shadow;
+	color: $color-lightest;
 	display: none;
 	font-size: 2rem;
 	height: 100%;

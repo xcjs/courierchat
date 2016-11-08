@@ -1,5 +1,5 @@
 article {
-  color: $text-content;
+  color: $color-darker;
   font-size: 1.5rem;
   margin: auto;
   max-width: 500px;
@@ -10,11 +10,11 @@ article {
   }
 
   > h1 {
-	background-color: $background-primary;
-	border: $background-primary .5rem solid;
-	border-radius: .5rem;
+	background-color: $color-primary;
+	border: $color-primary .5rem solid;
+	border-radius: $border-radius;
 	box-shadow: $drop-shadow;
-	color: $text-content-inverted;
+	color: $color-lightest;
 	margin: 1rem 0 2rem 0;
 	padding: 1rem;
 	font-weight: 500;

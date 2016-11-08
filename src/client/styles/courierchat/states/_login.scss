@@ -4,9 +4,11 @@ article.login {
 	border-radius: 0;
 	border-width: 0;
 	box-shadow: none;
-	color: $text-primary;
+	color: $color-highlight;
 	font-size: 4rem;
 	font-weight: 500;
+	margin: 2rem 0;
+	padding: 0;
   }
 
   > h1 > img {
@@ -15,10 +17,9 @@ article.login {
   }
 
   input[type="textbox"] {
-	background-color: $white;
-	border: #DDD 1px solid;
-	box-shadow: $drop-shadow;
-	color: $text-primary;
+	background-color: $color-lightest;
+	border: $color-neutral 1px solid;
+	color: $color-highlight;
 	font-weight: 500;
 	display: block;
 	font-size: 2rem;
