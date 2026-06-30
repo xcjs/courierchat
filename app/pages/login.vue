@@ -37,6 +37,21 @@
         >
       </div>
 
+      <div class="mt-6">
+        <label class="flex items-center gap-2 text-text-content cursor-pointer">
+          <input
+            v-model="isAdult"
+            type="checkbox"
+            class="w-4 h-4 accent-background-interactive"
+          >
+          I am 18 or older
+        </label>
+        <p class="text-xs text-text-content/50 mt-1">
+          Your age tier determines which rooms you can see. Minors and adults
+          cannot interact. This resets when your session ends.
+        </p>
+      </div>
+
       <button
         type="submit"
         class="mt-4 w-full h-12 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
@@ -56,6 +71,7 @@ definePageMeta({ layout: 'auth' });
 const name = ref('');
 const roomName = ref('');
 const createRoom = ref(false);
+const isAdult = ref(false);
 const error = ref('');
 const usernameInput = ref<HTMLInputElement | null>(null);
 
@@ -120,7 +136,7 @@ async function onSubmit (): Promise<void> {
   }
 
   const session = useSessionStore();
-  session.setSession(trimmed);
+  session.setSession(trimmed, isAdult.value ? ['adult'] : ['minor']);
 
   if (createRoom.value) {
     await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`);

@@ -1,6 +1,17 @@
+import { fileURLToPath } from 'node:url';
 import { defineVitestConfig } from '@nuxt/test-utils/config';
 
 export default defineVitestConfig({
-  // Nuxt test-utils provides the environment automatically.
-  // Add per-environment overrides here as features grow.
+  test: {
+    include: [
+      'test/**/*.test.ts',
+      'app/**/*.test.ts',
+      'server/**/*.test.ts'
+    ]
+  },
+  resolve: {
+    alias: {
+      '#shared': fileURLToPath(new URL('./shared', import.meta.url))
+    }
+  }
 });

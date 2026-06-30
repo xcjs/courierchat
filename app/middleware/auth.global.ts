@@ -1,11 +1,15 @@
+import { decideAuth } from './decideAuth';
+
 export default defineNuxtRouteMiddleware((to) => {
   const session = useSessionStore();
 
-  // Public routes that don't require authentication.
-  const publicPaths = ['/login', '/about'];
-  if (publicPaths.includes(to.path)) { return; }
+  const decision = decideAuth({
+    path: to.path,
+    username: session.username,
+    tiers: session.tiers
+  });
 
-  if (!session.isAuthenticated) {
-    return navigateTo('/login');
+  if (decision.action === 'redirect') {
+    return navigateTo(decision.destination);
   }
 });

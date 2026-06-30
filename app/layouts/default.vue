@@ -30,28 +30,28 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRoute } from '#imports';
+import { useRoomsStore } from '~/stores/Rooms';
 
 type TransportMode = 'mesh' | 'star' | 'relay' | 'offline'
 
-interface RoomEntry {
-  name: string
-  icon?: string
-}
-
 const route = useRoute();
 const session = useSessionStore();
+const roomsStore = useRoomsStore();
 
-// Placeholder store wiring (real stores arrive with feature work)
-const rooms = ref<RoomEntry[]>([]);
 const connected = ref(false);
-const memberCount = ref<number | undefined>(undefined);
 const transportMode = ref<TransportMode>('offline');
 
+const rooms = computed(() => roomsStore.roomsVisibleToTiers(session.tiers));
 const username = computed(() => session.username);
 
 const activeRoomName = computed(() => {
   const name = route.params?.name;
   return typeof name === 'string' ? decodeURIComponent(name) : undefined;
+});
+
+const memberCount = computed(() => {
+  if (activeRoomName.value === undefined) { return undefined; }
+  return roomsStore.getRoom(activeRoomName.value)?.memberCount;
 });
 
 function onCreateRoom (): void {

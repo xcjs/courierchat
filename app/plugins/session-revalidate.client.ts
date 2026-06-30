@@ -2,6 +2,14 @@ export default defineNuxtPlugin(async () => {
   const session = useSessionStore();
   const { checkAvailability } = useUsernameService();
 
+  // A session without tiers is invalid (age attestation missing). Tear it
+  // down and force the user back to /login to re-attest.
+  if (session.username !== null && session.tiers.length === 0) {
+    session.clear();
+    await navigateTo('/login');
+    return;
+  }
+
   if (!session.isAuthenticated || !session.username) {
     return;
   }
