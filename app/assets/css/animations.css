@@ -28,6 +28,7 @@
 .icon-rail button:focus-visible span.anim-nav-hover {
   animation-name: animNavHover;
   animation-duration: 250ms;
+  animation-fill-mode: forwards;
 }
 
 .icon-rail a:active span.anim-nav-hover,

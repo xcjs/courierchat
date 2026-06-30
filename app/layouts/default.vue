@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col overflow-hidden bg-white text-text-content">
+  <div class="h-screen flex flex-col bg-white text-text-content">
     <ShellHeader
       :room-name="activeRoomName"
       :member-count="memberCount"
@@ -7,7 +7,7 @@
       :username="username"
       @logout="onLogout"
     />
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 min-h-0">
       <ShellIconRail
         :rooms="rooms"
         :active-room-name="activeRoomName"
