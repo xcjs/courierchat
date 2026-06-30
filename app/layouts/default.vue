@@ -13,8 +13,8 @@
         :active-room-name="activeRoomName"
         @create-room="onCreateRoom"
       />
-      <div class="flex flex-col flex-1 overflow-hidden">
-        <main class="flex-1 overflow-y-auto bg-white">
+      <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <main class="flex-1 w-full overflow-y-auto bg-white">
           <slot />
         </main>
         <ShellStatusBar

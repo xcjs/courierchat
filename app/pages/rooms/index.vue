@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 max-w-2xl mx-auto">
+  <div class="flex flex-col items-center justify-center h-full p-8 max-w-md mx-auto text-center">
     <h1 class="text-2xl font-semibold text-text-content mb-4">
       Rooms
     </h1>
