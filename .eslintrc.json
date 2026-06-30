@@ -12,6 +12,7 @@
   "rules": {
     "vue/multi-word-component-names": "off",
     "semi": ["error", "always"],
+    "space-before-blocks": "error",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {
