@@ -13,7 +13,7 @@
         v-model="name"
         type="text"
         placeholder="username"
-        class="block w-full text-2xl h-12 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-primary"
+        class="block w-full text-2xl h-12 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-content"
       >
       <p v-if="error" class="text-error text-sm mt-2">
         {{ error }}
@@ -33,7 +33,7 @@
           v-model="roomName"
           type="text"
           placeholder="room name"
-          class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-primary"
+          class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-content"
         >
       </div>
 

@@ -1,14 +1,14 @@
 <template>
   <header
-    class="sticky top-0 z-20 bg-white shadow-courier-drop flex items-center px-4 h-14"
+    class="sticky top-0 z-20 bg-background-interactive shadow-courier-drop flex items-center px-4 h-14"
   >
     <div class="flex items-baseline gap-2 min-w-0">
-      <h1 class="text-lg font-semibold text-text-content truncate">
+      <h1 class="text-lg font-semibold text-text-content-inverted truncate">
         {{ roomName ?? 'CourierChat' }}
       </h1>
       <span
         v-if="memberCount !== undefined"
-        class="text-sm text-text-content/60 shrink-0"
+        class="text-sm text-text-content-inverted/70 shrink-0"
       >
         {{ memberCount }} {{ memberCount === 1 ? 'member' : 'members' }}
       </span>
@@ -25,7 +25,7 @@
 
     <div class="ml-auto flex items-center gap-2">
       <template v-if="username">
-        <span class="text-sm text-text-content/70 hidden sm:inline">{{ username }}</span>
+        <span class="text-sm text-text-content-inverted/80 hidden sm:inline">{{ username }}</span>
         <div class="relative">
           <button
             type="button"

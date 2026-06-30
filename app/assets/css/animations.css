@@ -23,13 +23,21 @@
 }
 
 .icon-rail a:hover span.anim-nav-hover,
-.icon-rail a:focus-visible span.anim-nav-hover {
+.icon-rail a:focus-visible span.anim-nav-hover,
+.icon-rail button:hover span.anim-nav-hover,
+.icon-rail button:focus-visible span.anim-nav-hover {
   animation-name: animNavHover;
   animation-duration: 250ms;
 }
 
-.icon-rail a:active span.anim-nav-hover {
+.icon-rail a:active span.anim-nav-hover,
+.icon-rail button:active span.anim-nav-hover {
   display: none;
+}
+
+/* Room labels start hidden and only reveal on hover via animNavHover. */
+.icon-rail span.anim-nav-hover {
+  opacity: 0;
 }
 
 article.login > h1 {
@@ -66,7 +74,9 @@ article.login {
   }
 
   .icon-rail a:hover span.anim-nav-hover,
-  .icon-rail a:focus-visible span.anim-nav-hover {
+  .icon-rail a:focus-visible span.anim-nav-hover,
+  .icon-rail button:hover span.anim-nav-hover,
+  .icon-rail button:focus-visible span.anim-nav-hover {
     animation: none;
     opacity: 1;
   }

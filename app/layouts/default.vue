@@ -1,5 +1,12 @@
 <template>
   <div class="h-screen flex flex-col overflow-hidden bg-white text-text-content">
+    <ShellHeader
+      :room-name="activeRoomName"
+      :member-count="memberCount"
+      :transport-mode="transportMode"
+      :username="username"
+      @logout="onLogout"
+    />
     <div class="flex flex-1 overflow-hidden">
       <ShellIconRail
         :rooms="rooms"
@@ -7,13 +14,6 @@
         @create-room="onCreateRoom"
       />
       <div class="flex flex-col flex-1 overflow-hidden">
-        <ShellHeader
-          :room-name="activeRoomName"
-          :member-count="memberCount"
-          :transport-mode="transportMode"
-          :username="username"
-          @logout="onLogout"
-        />
         <main class="flex-1 overflow-y-auto bg-white">
           <slot />
         </main>

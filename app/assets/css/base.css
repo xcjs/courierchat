@@ -7,3 +7,11 @@ input:-webkit-autofill:active {
   box-shadow: 0 0 0 1000px white inset;
   -webkit-text-fill-color: inherit;
 }
+
+/* Use brand orange for input focus instead of browser default blue. */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid rgb(255, 138, 101);
+  outline-offset: -1px;
+}
