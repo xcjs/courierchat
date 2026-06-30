@@ -7,7 +7,7 @@
       <button
         type="button"
         class="relative block focus:outline-none"
-        aria-label="Create a room"
+        aria-label="Create a Room"
         @click="$emit('create-room')"
       >
         <span
@@ -16,9 +16,9 @@
           <Icon name="lucide:plus" size="28" />
         </span>
         <span
-          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-12 text-text-content-inverted font-medium whitespace-nowrap z-20"
+          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20"
         >
-          New room
+          New Room
         </span>
       </button>
 
@@ -43,7 +43,7 @@
           <img v-else src="/courierchat.svg" alt="" class="w-10 h-10 rounded-full p-1" />
         </span>
         <span
-          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-12 text-text-content-inverted font-medium whitespace-nowrap z-20"
+          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20"
         >
           {{ room.name }}
         </span>

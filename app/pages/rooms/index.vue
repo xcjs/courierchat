@@ -10,7 +10,7 @@
       type="button"
       class="px-4 py-2 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
     >
-      Create a room
+      Create a Room
     </button>
   </div>
 </template>
