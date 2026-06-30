@@ -1,9 +1,9 @@
 export default defineNuxtPlugin(async () => {
-  const session = useSessionStore()
-  const { checkAvailability } = useUsernameService()
+  const session = useSessionStore();
+  const { checkAvailability } = useUsernameService();
 
   if (!session.isAuthenticated || !session.username) {
-    return
+    return;
   }
 
   // Revalidate the claimed username against the server. If the name is now
@@ -11,14 +11,14 @@ export default defineNuxtPlugin(async () => {
   // someone else claimed it), tear down the local session and force a return
   // to /login so the user can pick a fresh name.
   try {
-    const status = await checkAvailability(session.username)
+    const status = await checkAvailability(session.username);
     if (!status.available) {
-      session.clear()
-      await navigateTo('/login')
+      session.clear();
+      await navigateTo('/login');
     }
   } catch {
     // Network or server error: don't destroy the session on a transient
     // failure. The user keeps their session; revalidation retries on next
     // load. A real implementation would also retry on a heartbeat.
   }
-})
+});

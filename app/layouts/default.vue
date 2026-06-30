@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
+import { computed, ref } from 'vue';
+import { useRoute } from '#imports';
 
 type TransportMode = 'mesh' | 'star' | 'relay' | 'offline'
 
@@ -38,28 +38,28 @@ interface RoomEntry {
   icon?: string
 }
 
-const route = useRoute()
-const session = useSessionStore()
+const route = useRoute();
+const session = useSessionStore();
 
 // Placeholder store wiring (real stores arrive with feature work)
-const rooms = ref<RoomEntry[]>([])
-const connected = ref(false)
-const memberCount = ref<number | undefined>(undefined)
-const transportMode = ref<TransportMode>('offline')
+const rooms = ref<RoomEntry[]>([]);
+const connected = ref(false);
+const memberCount = ref<number | undefined>(undefined);
+const transportMode = ref<TransportMode>('offline');
 
-const username = computed(() => session.username)
+const username = computed(() => session.username);
 
 const activeRoomName = computed(() => {
-  const name = route.params?.name
-  return typeof name === 'string' ? decodeURIComponent(name) : undefined
-})
+  const name = route.params?.name;
+  return typeof name === 'string' ? decodeURIComponent(name) : undefined;
+});
 
 function onCreateRoom (): void {
-  navigateTo('/rooms')
+  navigateTo('/rooms');
 }
 
 function onLogout (): void {
-  session.clear()
-  navigateTo('/login')
+  session.clear();
+  navigateTo('/login');
 }
 </script>

@@ -17,5 +17,5 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: 'default' });
 </script>

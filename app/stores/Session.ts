@@ -1,18 +1,18 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 
 export const useSessionStore = defineStore('session', () => {
-  const username = ref<string | null>(null)
+  const username = ref<string | null>(null);
 
-  const isAuthenticated = computed(() => username.value !== null)
+  const isAuthenticated = computed(() => username.value !== null);
 
   function setSession (name: string): void {
-    username.value = name
+    username.value = name;
   }
 
   function clear (): void {
-    username.value = null
+    username.value = null;
   }
 
-  return { username, isAuthenticated, setSession, clear }
-})
+  return { username, isAuthenticated, setSession, clear };
+});

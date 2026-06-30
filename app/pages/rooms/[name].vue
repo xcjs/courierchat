@@ -11,14 +11,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { computed } from 'vue';
+import { useRoute } from '#imports';
 
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: 'default' });
 
-const route = useRoute()
+const route = useRoute();
 const roomName = computed(() => {
-  const name = route.params?.name
-  return typeof name === 'string' ? decodeURIComponent(name) : ''
-})
+  const name = route.params?.name;
+  return typeof name === 'string' ? decodeURIComponent(name) : '';
+});
 </script>

@@ -9,11 +9,11 @@
         Pick a username. If it's not in use, it's yours until you disconnect.
       </p>
       <input
+        ref="usernameInput"
         v-model="name"
         type="text"
         placeholder="username"
         class="block w-full text-2xl h-12 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-primary"
-        autofocus
       >
       <p v-if="error" class="text-error text-sm mt-2">
         {{ error }}
@@ -49,37 +49,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-definePageMeta({ layout: 'auth' })
+definePageMeta({ layout: 'auth' });
 
-const name = ref('')
-const roomName = ref('')
-const createRoom = ref(false)
-const error = ref('')
+const name = ref('');
+const roomName = ref('');
+const createRoom = ref(false);
+const error = ref('');
+const usernameInput = ref<HTMLInputElement | null>(null);
+
+function onAnimationEnd (): void {
+  usernameInput.value?.focus();
+}
+
+onMounted(() => {
+  const panel = document.querySelector('article.login');
+  if (panel === null) {
+    usernameInput.value?.focus();
+    return;
+  }
+
+  const styles = getComputedStyle(panel);
+  const duration = styles.animationDuration;
+  // '0s' or empty means no animation (reduced-motion or disabled) — focus now.
+  if (duration === '' || duration === '0s') {
+    usernameInput.value?.focus();
+    return;
+  }
+
+  panel.addEventListener('animationend', onAnimationEnd, { once: true });
+});
+
+onBeforeUnmount(() => {
+  document.querySelector('article.login')?.removeEventListener('animationend', onAnimationEnd);
+});
 
 async function onSubmit (): Promise<void> {
-  const trimmed = name.value.trim()
-  if (!trimmed) { return }
-  if (createRoom.value && !roomName.value.trim()) { return }
+  const trimmed = name.value.trim();
+  if (!trimmed) { return; }
+  if (createRoom.value && !roomName.value.trim()) { return; }
 
-  const { checkAvailability } = useUsernameService()
-  const status = await checkAvailability(trimmed)
+  const { checkAvailability } = useUsernameService();
+  const status = await checkAvailability(trimmed);
 
   if (!status.available) {
     error.value = status.reason === 'in-use'
       ? 'That username is already in use. Try another.'
-      : 'That username is not valid.'
-    return
+      : 'That username is not valid.';
+    return;
   }
 
-  const session = useSessionStore()
-  session.setSession(trimmed)
+  const session = useSessionStore();
+  session.setSession(trimmed);
 
   if (createRoom.value) {
-    await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`)
+    await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`);
   } else {
-    await navigateTo('/rooms')
+    await navigateTo('/rooms');
   }
 }
 </script>

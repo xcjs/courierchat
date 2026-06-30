@@ -22,6 +22,7 @@ export default defineNuxtConfig({
   },
 
   css: [
+    '~/assets/css/base.css',
     '~/assets/css/animations.css'
   ],
 
@@ -41,4 +42,4 @@ export default defineNuxtConfig({
       ]
     }
   }
-})
+});
