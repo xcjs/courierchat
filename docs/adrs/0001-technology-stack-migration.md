@@ -1,7 +1,7 @@
-# ADR 0001: Technology stack migration to Nuxt 3 + TypeScript, with Docker
+# ADR 0001: Technology stack migration to Nuxt + TypeScript, with Docker
 
 Date: 2026-06-30
-Status: Proposed
+Status: Proposed (amended at scaffolding time: Nuxt 4 adopted as current stable)
 
 ## Context
 
@@ -27,9 +27,11 @@ principles. Replace Vagrant-based provisioning with Docker.
 ### Stack
 
 - Runtime: Node.js (current LTS).
-- Framework: Nuxt 3 (current stable), used in full-stack mode (Nitro server
-  routes for the signaling/coordination/STUN/relay services described in
-  ADR 0002). This keeps the deployment all-in-one.
+- Framework: Nuxt (current stable; resolved to Nuxt 4 at scaffolding time,
+  since "current stable" was the intent rather than pinning to Nuxt 3 by
+  version number), used in full-stack mode (Nitro server routes for the
+  signaling/coordination/STUN/relay services described in ADR 0002). This
+  keeps the deployment all-in-one.
 - Language: TypeScript, latest stable, with strict compiler settings
   (`"strict": true` and related flags).
 - Unit tests: Vitest, co-located with features (each feature directory contains

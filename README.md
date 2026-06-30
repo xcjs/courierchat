@@ -1,46 +1,55 @@
-CourierChat
-============================================================================================================================
+# CourierChat
 
-About
------
+Ephemeral chat rooms with basic anonymity. WebRTC-based peer-to-peer messaging with no persistent storage. Identities can be freely claimed and abandoned. Only session-identifier cookies are used.
 
-CourierChat was created as a social chat room site with basic anonymity. Connections will be encrypted, messages will
-not be kept once delivered (and will not even be stored in any long-term storage), and no tracking cookies beyond
-session identifiers will be used.
+## Stack
 
-Identities can be freely claimed and abandoned at any time.
+- **Framework:** Nuxt 4 (current stable) + Nitro (full-stack, all-in-one process)
+- **Language:** TypeScript (strict mode)
+- **State:** Pinia (cross-cutting domain state) + Nuxt `useState` (feature-local ephemeral state)
+- **Styling:** Tailwind CSS + plain CSS
+- **Testing:** Vitest
+- **Linting:** ESLint (`@nuxtjs/eslint-config-typescript`)
+- **Transport:** WebRTC DataChannels (see `docs/adrs/0002-webrtc-transport-and-signaling.md`)
+- **License:** AGPL-3.0
 
-Dependencies
-------------
+## Development
 
-CourierChat is primarily written in Node.js, but requires a few root dependencies to get started:
+```bash
+npm install
+npm run dev
+```
 
-* Node.js (of course)
-* NPM
-* Bower
-* Grunt
-* Sails.js
-* Redis
+The dev server starts on `http://localhost:3000`.
 
-All other dependencies can be tracked through the following files:
+### Other commands
 
-* ./packages.json (npm)
-* ./bower.json (bower)
+| Command | Description |
+| --- | --- |
+| `npm run build` | Production build |
+| `npm run preview` | Preview the production build |
+| `npm run test` | Run unit tests once |
+| `npm run test:watch` | Run unit tests in watch mode |
+| `npm run lint` | Lint with ESLint |
+| `npm run typecheck` | Type-check with vue-tsc |
 
-Setup instructions can be found in the provided Vagrantfile and should be enough to get you started under most Linux
-distributions if you substitute the included commands for ones that work with your package manager. There should be no
-reason why other operating systems could not execute CourierChat.
+### Docker
 
-Startup
--------
+```bash
+docker compose up
+```
 
-If you wish to avoid managing these dependencies and the environment yourself, A Vagrantfile is provided with a
-provisioning script.
+Runs the dev server with hot reload via volume mounts. Exposes port 3000 (HTTP) and 3478/udp (in-process STUN, reserved for ADR 0002 implementation).
 
-Install Vagrant for your operating system, open a terminal in the CourierChat directory...
+## Architecture
 
-...and simply:
+This project follows domain-driven design principles. Features are grouped together; each feature bundles its own components, composables, stores, services, types, and tests. Nuxt conventions are followed for placement and naming where they apply.
 
-`vagrant up`
+See `docs/adrs/` for architecture decisions:
 
-CourierChat will then be available in your web browser through http://localhost:1337 (the Sails devlepment server).
+- `0001-technology-stack-migration.md` — Nuxt + TypeScript + Docker migration
+- `0002-webrtc-transport-and-signaling.md` — WebRTC transport, signaling, star topology, in-process STUN
+
+## License
+
+GNU Affero General Public License v3.0. See `LICENSE`.
