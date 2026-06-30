@@ -1,0 +1,64 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Dev Server (Nuxt)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "pattern": "Local: +(https?://.+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      "name": "Debug Build (Nuxt)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run build",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Preview Production Build",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run preview",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "pattern": "Local: +(https?://.+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      "name": "Run Tests (Vitest)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm test",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Watch Tests (Vitest)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run test:watch",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Typecheck",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run typecheck",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Lint",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run lint",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
