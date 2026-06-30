@@ -18,10 +18,29 @@
       <p v-if="error" class="text-error text-sm mt-2">
         {{ error }}
       </p>
+
+      <div class="mt-6">
+        <label class="flex items-center gap-2 text-text-content cursor-pointer">
+          <input
+            v-model="createRoom"
+            type="checkbox"
+            class="w-4 h-4 accent-background-interactive"
+          >
+          Create a new room
+        </label>
+        <input
+          v-if="createRoom"
+          v-model="roomName"
+          type="text"
+          placeholder="room name"
+          class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-primary"
+        >
+      </div>
+
       <button
         type="submit"
-        class="mt-4 w-full h-12 rounded bg-background-primary text-text-content-inverted font-medium shadow-courier-drop"
-        :disabled="!name.trim()"
+        class="mt-4 w-full h-12 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
+        :disabled="!name.trim() || (createRoom && !roomName.trim())"
       >
         Enter
       </button>
@@ -35,12 +54,23 @@ import { ref } from 'vue'
 definePageMeta({ layout: 'auth' })
 
 const name = ref('')
+const roomName = ref('')
+const createRoom = ref(false)
 const error = ref('')
 
 async function onSubmit (): Promise<void> {
   const trimmed = name.value.trim()
   if (!trimmed) { return }
+  if (createRoom.value && !roomName.value.trim()) { return }
+
   // Placeholder: real claim flow wired in feature work.
-  await navigateTo('/rooms')
+  const session = useSessionStore()
+  session.setSession(trimmed)
+
+  if (createRoom.value) {
+    await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`)
+  } else {
+    await navigateTo('/rooms')
+  }
 }
 </script>

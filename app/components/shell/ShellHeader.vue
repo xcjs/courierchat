@@ -29,7 +29,7 @@
         <div class="relative">
           <button
             type="button"
-            class="w-8 h-8 rounded-full bg-background-primary flex items-center justify-center text-text-content-inverted"
+            class="w-8 h-8 rounded-full bg-background-interactive flex items-center justify-center text-text-content-inverted"
             aria-label="User menu"
             @click="menuOpen = !menuOpen"
           >

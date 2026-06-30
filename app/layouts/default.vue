@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 
 type TransportMode = 'mesh' | 'star' | 'relay' | 'offline'
@@ -39,13 +39,15 @@ interface RoomEntry {
 }
 
 const route = useRoute()
+const session = useSessionStore()
 
 // Placeholder store wiring (real stores arrive with feature work)
 const rooms = ref<RoomEntry[]>([])
-const username = ref<string | null>(null)
 const connected = ref(false)
 const memberCount = ref<number | undefined>(undefined)
 const transportMode = ref<TransportMode>('offline')
+
+const username = computed(() => session.username)
 
 const activeRoomName = computed(() => {
   const name = route.params?.name
@@ -57,6 +59,7 @@ function onCreateRoom (): void {
 }
 
 function onLogout (): void {
+  session.clear()
   navigateTo('/login')
 }
 </script>
