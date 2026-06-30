@@ -2,16 +2,21 @@
   <header
     class="sticky top-0 z-20 bg-background-interactive shadow-courier-drop flex items-center px-4 h-14"
   >
-    <div class="flex items-baseline gap-2 min-w-0">
-      <h1 class="text-lg font-semibold text-text-content-inverted truncate">
-        {{ roomName ?? 'CourierChat' }}
-      </h1>
-      <span
-        v-if="memberCount !== undefined"
-        class="text-sm text-text-content-inverted/70 shrink-0"
-      >
+    <div class="flex items-center gap-2 min-w-0">
+      <NuxtLink to="/rooms" aria-label="CourierChat home" class="shrink-0">
+        <img src="/courierchat.svg" alt="CourierChat" class="w-10 h-10 -my-1" />
+      </NuxtLink>
+      <div class="flex items-baseline gap-2 min-w-0">
+        <h1 class="text-lg font-semibold text-text-content-inverted truncate">
+          {{ roomName ?? 'CourierChat' }}
+        </h1>
+        <span
+          v-if="memberCount !== undefined"
+          class="text-sm text-text-content-inverted/70 shrink-0"
+        >
         {{ memberCount }} {{ memberCount === 1 ? 'member' : 'members' }}
       </span>
+      </div>
     </div>
 
     <span
