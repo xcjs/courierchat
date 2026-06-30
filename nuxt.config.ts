@@ -19,6 +19,7 @@ export default defineNuxtConfig({
   ],
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'CourierChat',
       meta: [

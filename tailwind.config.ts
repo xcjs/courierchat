@@ -16,8 +16,8 @@ export default <Partial<Config>>{
       },
       animation: {
         'nav-hover': 'navHover 250ms ease-out',
-        'slower': 'slower 1.5s ease-out',
-        'faster': 'faster 750ms ease-out'
+        slower: 'slower 1.5s ease-out',
+        faster: 'faster 750ms ease-out'
       },
       keyframes: {
         navHover: {
