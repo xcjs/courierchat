@@ -9,6 +9,13 @@ export default defineNuxtConfig({
     '@nuxt/icon'
   ],
 
+  imports: {
+    dirs: [
+      'composables',
+      'features/*/composables'
+    ]
+  },
+
   typescript: {
     strict: true,
     typeCheck: true

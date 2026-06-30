@@ -40,6 +40,25 @@ article.login form {
   animation-delay: 25ms;
 }
 
+/* Login panel entrance: fade in and slide in from the left (preserved from
+   legacy animate.css fadeIn + slideInLeft combination). */
+@keyframes animLoginPanel {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+article.login {
+  animation-name: animLoginPanel;
+  animation-duration: 750ms;
+  animation-fill-mode: both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animated.slower,
   .animated.faster {
@@ -50,6 +69,10 @@ article.login form {
   .icon-rail a:focus-visible span.anim-nav-hover {
     animation: none;
     opacity: 1;
+  }
+
+  article.login {
+    animation: none;
   }
 
   .page-enter-active,

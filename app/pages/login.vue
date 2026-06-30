@@ -63,7 +63,16 @@ async function onSubmit (): Promise<void> {
   if (!trimmed) { return }
   if (createRoom.value && !roomName.value.trim()) { return }
 
-  // Placeholder: real claim flow wired in feature work.
+  const { checkAvailability } = useUsernameService()
+  const status = await checkAvailability(trimmed)
+
+  if (!status.available) {
+    error.value = status.reason === 'in-use'
+      ? 'That username is already in use. Try another.'
+      : 'That username is not valid.'
+    return
+  }
+
   const session = useSessionStore()
   session.setSession(trimmed)
 
