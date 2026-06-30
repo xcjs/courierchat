@@ -63,6 +63,16 @@ function onAnimationEnd (): void {
   usernameInput.value?.focus();
 }
 
+function parseDuration (cssValue: string): number {
+  if (cssValue.endsWith('ms')) {
+    return parseFloat(cssValue.slice(0, -2));
+  }
+  if (cssValue.endsWith('s')) {
+    return parseFloat(cssValue.slice(0, -1)) * 1000;
+  }
+  return 0;
+}
+
 onMounted(() => {
   const panel = document.querySelector('article.login');
   if (panel === null) {
@@ -71,14 +81,23 @@ onMounted(() => {
   }
 
   const styles = getComputedStyle(panel);
-  const duration = styles.animationDuration;
-  // '0s' or empty means no animation (reduced-motion or disabled) — focus now.
-  if (duration === '' || duration === '0s') {
+  const duration = parseDuration(styles.animationDuration);
+  const delay = parseDuration(styles.animationDelay);
+
+  if (duration === 0) {
+    // No animation (reduced-motion or disabled) — focus now.
     usernameInput.value?.focus();
     return;
   }
 
   panel.addEventListener('animationend', onAnimationEnd, { once: true });
+
+  // Safety net: if the animation ended before the listener was attached
+  // (SSR/hydration race), the event will never fire. Fall back to a timeout.
+  const totalMs = duration + delay + 50;
+  setTimeout(() => {
+    usernameInput.value?.focus();
+  }, totalMs);
 });
 
 onBeforeUnmount(() => {
