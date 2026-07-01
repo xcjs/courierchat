@@ -311,7 +311,8 @@ export class SignalingServer {
   }
 
   private handleLeave (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
-    const roomName = envelope.room;
+    const payload = envelope.payload as JoinPayload;
+    const roomName = payload?.room ?? envelope.room;
     if (!roomName || !session.joinedRooms.has(roomName)) {
       this.sendError(sender, SignalingErrorCode.NotJoined, 'Not in this room', now);
       return { action: 'continue' };
