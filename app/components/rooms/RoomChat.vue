@@ -151,10 +151,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
+import { SendStatus } from '~/features/room/types/RoomChat';
 import type { UseRoomTransportReturn } from '~/features/transport/composables/useRoomTransport';
 import { useFileTransfer } from '~/features/transport/composables/useFileTransfer';
 import { useSessionStore } from '~/stores/Session';
-import { useNotificationsStore } from '~/stores/Notifications';
+import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
 
 const props = defineProps<{
   roomName: string;
@@ -174,13 +175,13 @@ props.transport.setFileTransferHandlers({
   onTransferComplete: fileTransfer.onTransferComplete,
   onTransferError: (id, reason) => {
     fileTransfer.onTransferError(id, reason);
-    notifications.push(`File transfer failed: ${reason}`, 'error');
+    notifications.push(`File transfer failed: ${reason}`, NotificationSeverity.Error);
   },
   onOutgoingProgress: fileTransfer.onOutgoingProgress,
   onOutgoingComplete: fileTransfer.onOutgoingComplete,
   onOutgoingError: (id, reason) => {
     fileTransfer.onOutgoingError(id, reason);
-    notifications.push(`File send failed: ${reason}`, 'error');
+    notifications.push(`File send failed: ${reason}`, NotificationSeverity.Error);
   }
 });
 
@@ -209,9 +210,9 @@ function onSubmit (): void {
   const message = sendMessage(username.value, draftText.value);
   const delivered = props.transport.sendMessage(message);
   if (delivered.length > 0) {
-    setMessageStatus(message.id, 'delivered');
+    setMessageStatus(message.id, SendStatus.Delivered);
   } else if (props.transport.mode.value === 'relay') {
-    setMessageStatus(message.id, 'delivered');
+    setMessageStatus(message.id, SendStatus.Delivered);
   }
   void nextTick(scrollToBottom);
   notifyTyping(false);
@@ -262,17 +263,17 @@ async function onFileSelect (e: Event): Promise<void> {
 
   const peer = props.transport.peers.value[0];
   if (!peer) {
-    notifications.push('No peers connected.', 'error');
+    notifications.push('No peers connected.', NotificationSeverity.Error);
     return;
   }
   if (props.transport.mode.value === 'relay') {
-    notifications.push('Direct connection unavailable — file transfer not possible.', 'error');
+    notifications.push('Direct connection unavailable — file transfer not possible.', NotificationSeverity.Error);
     return;
   }
 
   const id = await props.transport.sendFile(peer.peerId, file);
   if (id === null) {
-    notifications.push('Direct connection unavailable — file transfer not possible.', 'error');
+    notifications.push('Direct connection unavailable — file transfer not possible.', NotificationSeverity.Error);
     return;
   }
   const safeFile = file as File;

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useSessionStore } from './Session';
+import { Tier } from '#shared/types/Tier';
 
 describe('SessionStore', () => {
   beforeEach(() => {
@@ -16,9 +17,9 @@ describe('SessionStore', () => {
 
   it('setSession stores username and tiers; isAuthenticated becomes true', () => {
     const session = useSessionStore();
-    session.setSession('alice', ['adult']);
+    session.setSession('alice', [Tier.Adult]);
     expect(session.username).toBe('alice');
-    expect(session.tiers).toEqual(['adult']);
+    expect(session.tiers).toEqual([Tier.Adult]);
     expect(session.isAuthenticated).toBe(true);
   });
 
@@ -32,7 +33,7 @@ describe('SessionStore', () => {
 
   it('isAuthenticated is false when username is null even with tiers', () => {
     const session = useSessionStore();
-    session.setSession('charlie', ['minor']);
+    session.setSession('charlie', [Tier.Minor]);
     session.clear();
     expect(session.username).toBeNull();
     expect(session.tiers).toEqual([]);
@@ -41,7 +42,7 @@ describe('SessionStore', () => {
 
   it('clear resets username and tiers', () => {
     const session = useSessionStore();
-    session.setSession('dana', ['adult', 'minor']);
+    session.setSession('dana', [Tier.Adult, Tier.Minor]);
     session.clear();
     expect(session.username).toBeNull();
     expect(session.tiers).toEqual([]);
@@ -50,8 +51,8 @@ describe('SessionStore', () => {
 
   it('supports multiple tiers for future partitioning', () => {
     const session = useSessionStore();
-    session.setSession('eve', ['adult', 'minor']);
-    expect(session.tiers).toEqual(['adult', 'minor']);
+    session.setSession('eve', [Tier.Adult, Tier.Minor]);
+    expect(session.tiers).toEqual([Tier.Adult, Tier.Minor]);
     expect(session.isAuthenticated).toBe(true);
   });
 });

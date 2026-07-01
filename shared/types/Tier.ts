@@ -1,3 +1,6 @@
-export type Tier = 'minor' | 'adult';
+export enum Tier {
+  Minor = 'minor',
+  Adult = 'adult'
+}
 
-export const ALL_TIERS: readonly Tier[] = ['minor', 'adult'] as const;
+export const ALL_TIERS: readonly Tier[] = [Tier.Minor, Tier.Adult];

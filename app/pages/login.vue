@@ -65,6 +65,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { Tier } from '#shared/types/Tier';
 
 definePageMeta({ layout: 'auth' });
 
@@ -136,7 +137,7 @@ async function onSubmit (): Promise<void> {
   }
 
   const session = useSessionStore();
-  session.setSession(trimmed, isAdult.value ? ['adult'] : ['minor']);
+  session.setSession(trimmed, isAdult.value ? [Tier.Adult] : [Tier.Minor]);
 
   if (createRoom.value) {
     await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`);

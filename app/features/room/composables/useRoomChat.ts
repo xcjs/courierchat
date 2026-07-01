@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-import type { SendStatus } from '../types/RoomChat';
+import { SendStatus } from '../types/RoomChat';
 import { useState } from '#imports';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
@@ -35,7 +35,7 @@ export function useRoomChat (roomName: string): RoomChat {
     }
     const message: ChatMessage = { id: genId(), author, content: trimmed, timestamp: Date.now() };
     messages.value = [...messages.value, message];
-    messageStatus.value = { ...messageStatus.value, [message.id]: 'pending' };
+    messageStatus.value = { ...messageStatus.value, [message.id]: SendStatus.Pending };
     draft.value = '';
     return message;
   }

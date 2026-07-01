@@ -1,10 +1,11 @@
 import { computed, readonly, type ComputedRef, type Ref } from 'vue';
 import { SignalingClient } from '../services/SignalingClient';
-import type { SignalingConnectionState, SignalingHandlers } from '../types/Transport';
+import { SignalingConnectionState } from '../types/Transport';
+import type { SignalingHandlers } from '../types/Transport';
 import type { Tier } from '#shared/types/Tier';
 import { useRuntimeConfig } from '#imports';
 import { usePresenceStore } from '~/stores/Presence';
-import { useNotificationsStore } from '~/stores/Notifications';
+import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
 
 /**
  * useSignaling wraps the framework-agnostic SignalingClient in a Nuxt
@@ -29,7 +30,7 @@ export interface UseSignalingReturn {
 
 export function useSignaling (): UseSignalingReturn {
   const client = useState<SignalingClient | null>('signaling:client', () => null);
-  const connectionState = useState<SignalingConnectionState>('signaling:state', () => 'disconnected');
+  const connectionState = useState<SignalingConnectionState>('signaling:state', () => SignalingConnectionState.Disconnected);
   const signalingError = useState<string | null>('signaling:error', () => null);
 
   const runtimeConfig = useRuntimeConfig();
@@ -41,7 +42,7 @@ export function useSignaling (): UseSignalingReturn {
     ? [{ urls: `stun:${stunHost}:${stunPort}` }]
     : [];
 
-  const isConnected = computed(() => connectionState.value === 'connected');
+  const isConnected = computed(() => connectionState.value === SignalingConnectionState.Connected);
 
   function getClient (): SignalingClient | null {
     return client.value;
@@ -65,11 +66,11 @@ export function useSignaling (): UseSignalingReturn {
     const instance = new SignalingClient({
       url: buildUrl(),
       lifecycle: {
-        onOpen: () => { connectionState.value = 'connected'; },
-        onClose: () => { connectionState.value = 'disconnected'; },
+        onOpen: () => { connectionState.value = SignalingConnectionState.Connected; },
+        onClose: () => { connectionState.value = SignalingConnectionState.Disconnected; },
         onError: () => {
           signalingError.value = 'Connection error';
-          notifications.push('Signaling connection error', 'error');
+          notifications.push('Signaling connection error', NotificationSeverity.Error);
         }
       }
     });
@@ -84,7 +85,7 @@ export function useSignaling (): UseSignalingReturn {
       }
     });
     client.value = instance;
-    connectionState.value = 'connecting';
+    connectionState.value = SignalingConnectionState.Connecting;
     signalingError.value = null;
     await instance.connect(username, tiers);
   }
@@ -95,7 +96,7 @@ export function useSignaling (): UseSignalingReturn {
   function disconnect (): void {
     client.value?.disconnect();
     client.value = null;
-    connectionState.value = 'disconnected';
+    connectionState.value = SignalingConnectionState.Disconnected;
     usePresenceStore().reset();
   }
 

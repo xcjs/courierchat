@@ -14,7 +14,12 @@ export enum UiTransportMode {
 /**
  * Connection state of the signaling WebSocket.
  */
-export type SignalingConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
+export enum SignalingConnectionState {
+  Disconnected = 'disconnected',
+  Connecting = 'connecting',
+  Connected = 'connected',
+  Reconnecting = 'reconnecting'
+}
 
 /**
  * Per-room transport state surfaced to the UI.

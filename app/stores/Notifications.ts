@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export type NotificationSeverity = 'info' | 'error';
+export enum NotificationSeverity {
+  Info = 'info',
+  Error = 'error'
+}
 
 export interface NotificationEntry {
   id: number
@@ -18,7 +21,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   let nextId = 0;
   const timers = new Map<number, ReturnType<typeof setTimeout>>();
 
-  function push (message: string, severity: NotificationSeverity = 'info', ttl = DEFAULT_TTL_MS): void {
+  function push (message: string, severity: NotificationSeverity = NotificationSeverity.Info, ttl = DEFAULT_TTL_MS): void {
     const entry: NotificationEntry = {
       id: nextId++,
       message,

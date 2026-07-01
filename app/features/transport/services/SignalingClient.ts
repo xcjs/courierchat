@@ -1,8 +1,8 @@
-import type {
-  SignalingHandlers,
-  SignalingTransport,
-  SignalingLifecycleHandlers,
-  SignalingConnectionState
+import {
+  SignalingConnectionState,
+  type SignalingHandlers,
+  type SignalingTransport,
+  type SignalingLifecycleHandlers
 } from '../types/Transport';
 import {
   SignalingMessageType,
@@ -54,7 +54,7 @@ export class SignalingClient {
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
-  private state: SignalingConnectionState = 'disconnected';
+  private state: SignalingConnectionState = SignalingConnectionState.Disconnected;
   private helloSent = false;
   private url: string;
   private readonly autoReconnect: boolean;
@@ -110,7 +110,7 @@ export class SignalingClient {
   }
 
   isConnected (): boolean {
-    return this.state === 'connected';
+    return this.state === SignalingConnectionState.Connected;
   }
 
   /**
@@ -120,7 +120,7 @@ export class SignalingClient {
   connect (username: string, tiers: Tier[]): Promise<void> {
     this.username = username;
     this.tiers = tiers;
-    this.state = 'connecting';
+    this.state = SignalingConnectionState.Connecting;
     this.helloSent = false;
     this.reconnectAttempts = 0;
     return this.openSocket();
@@ -142,7 +142,7 @@ export class SignalingClient {
 
       ws.onopen = () => {
         opened = true;
-        this.state = 'connected';
+        this.state = SignalingConnectionState.Connected;
         this.lifecycle.onOpen?.();
         this.sendHello();
         this.startHeartbeat();
@@ -158,7 +158,7 @@ export class SignalingClient {
         if (!opened) { reject(new Error('WebSocket connection failed')); }
       };
       ws.onclose = (ev: CloseEvent) => {
-        this.state = 'disconnected';
+        this.state = SignalingConnectionState.Disconnected;
         this.stopHeartbeat();
         this.lifecycle.onClose?.(ev.code, ev.reason);
         if (this.autoReconnect && this.reconnectAttempts < RECONNECT_MAX_ATTEMPTS) {
@@ -174,7 +174,7 @@ export class SignalingClient {
       RECONNECT_BASE_DELAY_MS * 2 ** (this.reconnectAttempts - 1),
       RECONNECT_MAX_DELAY_MS
     );
-    this.state = 'reconnecting';
+    this.state = SignalingConnectionState.Reconnecting;
     this.reconnectTimer = setTimeout(() => {
       if (this.username === null) { return; }
       this.openSocket().catch(() => {
@@ -192,7 +192,7 @@ export class SignalingClient {
     this.stopReconnect();
     this.transport?.close(1000, 'client disconnect');
     this.transport = null;
-    this.state = 'disconnected';
+    this.state = SignalingConnectionState.Disconnected;
     this.peerId = null;
     this.helloSent = false;
   }

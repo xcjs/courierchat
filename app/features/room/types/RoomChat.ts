@@ -1,6 +1,10 @@
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
-export type SendStatus = 'pending' | 'delivered' | 'failed';
+export enum SendStatus {
+  Pending = 'pending',
+  Delivered = 'delivered',
+  Failed = 'failed'
+}
 
 export interface RoomChatState {
   messages: ChatMessage[];

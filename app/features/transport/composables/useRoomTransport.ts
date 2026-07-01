@@ -6,7 +6,7 @@ import type { FileTransferHandlers } from '../services/FileTransferManager';
 import type { RoomTransportState } from '../types/Transport';
 import { UiTransportMode } from '../types/Transport';
 import { useSignaling } from './useSignaling';
-import { useNotificationsStore } from '~/stores/Notifications';
+import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
 import { TransportMode, type PeerIdentity, type ChatMessagePayload } from '#shared/types/Signaling';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
@@ -155,7 +155,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
       },
       onRoomDestroyed: (room) => {
         if (room !== roomName) { return; }
-        useNotificationsStore().push(`Room "${room}" was destroyed`, 'info');
+        useNotificationsStore().push(`Room "${room}" was destroyed`, NotificationSeverity.Info);
         leave();
       },
       onTransportMode: (room, wireMode, hubId) => {

@@ -121,7 +121,7 @@ import { computed } from 'vue';
 import { useSessionStore } from '~/stores/Session';
 import { useConnectionStore } from '~/stores/Connection';
 import { usePresenceStore } from '~/stores/Presence';
-import type { Tier } from '#shared/types/Tier';
+import { Tier } from '#shared/types/Tier';
 import { UiTransportMode } from '~/features/transport/types/Transport';
 
 definePageMeta({ layout: 'default' });
@@ -134,8 +134,8 @@ const username = computed(() => session.username);
 const onlineUsernames = computed(() => presence.onlineUsernames);
 const tierLabel = computed(() => {
   const t: Tier[] = session.tiers;
-  if (t.includes('adult')) { return 'adult'; }
-  if (t.includes('minor')) { return 'minor'; }
+  if (t.includes(Tier.Adult)) { return 'adult'; }
+  if (t.includes(Tier.Minor)) { return 'minor'; }
   return 'none';
 });
 
