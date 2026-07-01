@@ -15,6 +15,14 @@ export default defineNuxtConfig({
     }
   },
 
+  runtimeConfig: {
+    stun: {
+      enabled: true,
+      port: 3478,
+      host: '0.0.0.0'
+    }
+  },
+
   imports: {
     dirs: [
       'composables',
