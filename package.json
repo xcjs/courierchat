@@ -8,9 +8,11 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "pretest": "nuxt prepare",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
+    "pretypecheck": "nuxt prepare",
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
