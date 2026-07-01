@@ -53,10 +53,69 @@
       {{ typingLabel }}
     </div>
 
+    <div
+      v-if="fileError"
+      class="px-6 py-1 text-xs text-red-500"
+    >
+      {{ fileError }}
+    </div>
+
+    <div
+      v-if="fileTransfer.transfers.value.length"
+      class="px-6 py-1 space-y-1"
+    >
+      <div
+        v-for="transfer in fileTransfer.transfers.value"
+        :key="transfer.id"
+        class="flex items-center gap-2 text-xs text-text-content/70"
+      >
+        <Icon
+          :name="transfer.direction === 'outgoing' ? 'lucide:arrow-up' : 'lucide:arrow-down'"
+          size="12"
+        />
+        <span class="truncate flex-1">{{ transfer.meta.name }}</span>
+        <span class="shrink-0">{{ formatFileSize(transfer.meta.size) }}</span>
+        <span
+          v-if="transfer.status === 'active'"
+          class="shrink-0"
+        >{{ Math.round(transfer.progress * 100) }}%</span>
+        <span
+          v-else-if="transfer.status === 'complete'"
+          class="shrink-0 text-green-500"
+        >
+          <button
+            v-if="transfer.direction === 'incoming' && transfer.file"
+            class="underline"
+            @click="downloadFile(transfer.id)"
+          >Save</button>
+          <template v-else>Done</template>
+        </span>
+        <span
+          v-else
+          class="shrink-0 text-red-500"
+        >Failed</span>
+      </div>
+    </div>
+
     <form
       class="flex items-end gap-2 px-4 py-3 border-t border-text-content/10 bg-white"
       @submit.prevent="onSubmit"
     >
+      <input
+        ref="fileInputEl"
+        type="file"
+        class="hidden"
+        @change="onFileSelect"
+      />
+      <button
+        type="button"
+        class="shrink-0 w-9 h-9 rounded-full bg-background-primary/10 text-text-content flex items-center justify-center disabled:opacity-40"
+        :disabled="!username || transport.peers.value.length === 0"
+        aria-label="Send file"
+        @click="fileInputEl?.click()"
+      >
+        <Icon name="lucide:paperclip" size="16" />
+      </button>
       <textarea
         ref="inputEl"
         v-model="draftText"
@@ -83,6 +142,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
 import type { UseRoomTransportReturn } from '~/features/transport/composables/useRoomTransport';
+import { useFileTransfer } from '~/features/transport/composables/useFileTransfer';
 import { useSessionStore } from '~/stores/Session';
 
 const props = defineProps<{
@@ -94,10 +154,23 @@ const session = useSessionStore();
 const username = computed(() => session.username);
 
 const { messages, draft, typingUsers, sendMessage, setDraft } = useRoomChat(props.roomName);
+const fileTransfer = useFileTransfer();
+
+props.transport.setFileTransferHandlers({
+  onTransferStart: fileTransfer.onTransferStart,
+  onTransferProgress: fileTransfer.onTransferProgress,
+  onTransferComplete: fileTransfer.onTransferComplete,
+  onTransferError: fileTransfer.onTransferError,
+  onOutgoingProgress: fileTransfer.onOutgoingProgress,
+  onOutgoingComplete: fileTransfer.onOutgoingComplete,
+  onOutgoingError: fileTransfer.onOutgoingError
+});
 
 const inputEl = ref<HTMLTextAreaElement | null>(null);
+const fileInputEl = ref<HTMLInputElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
 const draftText = ref(draft.value);
+const fileError = ref<string>('');
 let typingStopTimer: ReturnType<typeof setTimeout> | null = null;
 let lastTypingSent = false;
 
@@ -157,6 +230,52 @@ function autoGrow (e: Event): void {
   el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
 }
 
+async function onFileSelect (e: Event): Promise<void> {
+  const input = e.target as HTMLInputElement;
+  const files = input.files;
+  if (!files || files.length === 0) { return; }
+  const file = files[0];
+  if (!file) { return; }
+  input.value = '';
+  fileError.value = '';
+
+  const peer = props.transport.peers.value[0];
+  if (!peer) {
+    fileError.value = 'No peers connected.';
+    return;
+  }
+  if (props.transport.mode.value === 'relay') {
+    fileError.value = 'Direct connection unavailable - file transfer not possible.';
+    return;
+  }
+
+  const id = await props.transport.sendFile(peer.peerId, file);
+  if (id === null) {
+    fileError.value = 'Direct connection unavailable - file transfer not possible.';
+    return;
+  }
+  const safeFile = file as File;
+  fileTransfer.addOutgoing(id, peer.peerId, { id, name: safeFile.name, size: safeFile.size, mimeType: safeFile.type });
+}
+
+function formatFileSize (bytes: number): string {
+  if (bytes < 1024) { return `${bytes} B`; }
+  if (bytes < 1024 * 1024) { return `${(bytes / 1024).toFixed(1)} KB`; }
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function downloadFile (id: string): void {
+  const transfer = fileTransfer.transfers.value.find(t => t.id === id);
+  const file = transfer?.file;
+  if (!file) { return; }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = transfer?.meta.name ?? 'download';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function scrollToBottom (): void {
   const el = scrollContainer.value;
   if (el) { el.scrollTop = el.scrollHeight; }
@@ -185,5 +304,6 @@ onBeforeUnmount(() => {
   if (lastTypingSent) {
     props.transport.sendTyping(false);
   }
+  fileTransfer.clear();
 });
 </script>

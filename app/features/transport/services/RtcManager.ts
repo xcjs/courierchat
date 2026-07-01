@@ -18,6 +18,10 @@ export interface RtcManagerHandlers {
   onSendAnswer?: (to: string, sdp: string) => void;
   /** An ICE candidate needs to be sent to the remote peer via signaling. */
   onSendIceCandidate?: (to: string, candidate: RTCIceCandidateInit) => void;
+  /** A file-transfer control message (JSON) arrived on the file channel. */
+  onFileControl?: (peerId: string, data: string) => void;
+  /** A binary chunk arrived on the file channel. */
+  onFileBinary?: (peerId: string, buffer: ArrayBuffer) => void;
 }
 
 /**
@@ -32,11 +36,13 @@ export interface RtcConfig {
 }
 
 const DEFAULT_LABEL = 'chat';
+const FILE_LABEL = 'file';
 
 interface PeerEntry {
   peer: PeerIdentity;
   pc: RTCPeerConnection;
   channel: RTCDataChannel | null;
+  fileChannel: RTCDataChannel | null;
   /** True when the local peer initiated the offer (impolite peer). */
   initiator: boolean;
 }
@@ -79,9 +85,14 @@ export class RtcManager {
       ordered: true
     });
     this.attachChannelHandlers(peer.peerId, channel);
-    const entry: PeerEntry = { peer, pc, channel: null, initiator: true };
+    const fileChannel = pc.createDataChannel(FILE_LABEL, {
+      ordered: true
+    });
+    this.attachFileChannelHandlers(peer.peerId, fileChannel);
+    const entry: PeerEntry = { peer, pc, channel: null, fileChannel: null, initiator: true };
     this.peers.set(peer.peerId, entry);
     entry.channel = channel;
+    entry.fileChannel = fileChannel;
     await this.createAndSendOffer(peer.peerId, pc);
   }
 
@@ -95,11 +106,17 @@ export class RtcManager {
     if (!entry) {
       const pc = this.createPeerConnection();
       pc.ondatachannel = (ev) => {
-        this.attachChannelHandlers(from, ev.channel);
-        const e = this.peers.get(from);
-        if (e) { e.channel = ev.channel; }
+        if (ev.channel.label === FILE_LABEL) {
+          this.attachFileChannelHandlers(from, ev.channel);
+          const e = this.peers.get(from);
+          if (e) { e.fileChannel = ev.channel; }
+        } else {
+          this.attachChannelHandlers(from, ev.channel);
+          const e = this.peers.get(from);
+          if (e) { e.channel = ev.channel; }
+        }
       };
-      entry = { peer, pc, channel: null, initiator: false };
+      entry = { peer, pc, channel: null, fileChannel: null, initiator: false };
       this.peers.set(from, entry);
     }
     await entry.pc.setRemoteDescription({ type: 'offer', sdp });
@@ -139,6 +156,16 @@ export class RtcManager {
   }
 
   /**
+   * Get the file DataChannel for a peer, or null if not open.
+   */
+  getFileChannel (peerId: string): RTCDataChannel | null {
+    const entry = this.peers.get(peerId);
+    if (!entry?.fileChannel) { return null; }
+    if (entry.fileChannel.readyState !== 'open') { return null; }
+    return entry.fileChannel;
+  }
+
+  /**
    * Broadcast a chat message to all connected peers. Returns the list of
    * peerIds it was delivered to. In mesh mode this is all peers; in star
    * mode the hub broadcasts to all leaves, leaves send only to the hub.
@@ -160,6 +187,7 @@ export class RtcManager {
   disconnectPeer (peerId: string): void {
     const entry = this.peers.get(peerId);
     if (!entry) { return; }
+    if (entry.fileChannel) { entry.fileChannel.close(); }
     if (entry.channel) { entry.channel.close(); }
     entry.pc.close();
     this.peers.delete(peerId);
@@ -236,6 +264,17 @@ export class RtcManager {
         this.handlers.onMessage?.(peerId, msg);
       } catch {
         // Ignore malformed messages
+      }
+    };
+  }
+
+  private attachFileChannelHandlers (peerId: string, channel: RTCDataChannel): void {
+    channel.binaryType = 'arraybuffer';
+    channel.onmessage = (ev) => {
+      if (typeof ev.data === 'string') {
+        this.handlers.onFileControl?.(peerId, ev.data);
+      } else {
+        this.handlers.onFileBinary?.(peerId, ev.data as ArrayBuffer);
       }
     };
   }

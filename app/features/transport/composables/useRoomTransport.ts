@@ -1,6 +1,8 @@
 import { readonly, ref, type DeepReadonly, type Ref } from 'vue';
 import { RtcManager } from '../services/RtcManager';
 import type { RtcManagerHandlers } from '../services/RtcManager';
+import { FileTransferManager } from '../services/FileTransferManager';
+import type { FileTransferHandlers } from '../services/FileTransferManager';
 import type { RoomTransportState } from '../types/Transport';
 import { UiTransportMode } from '../types/Transport';
 import { useSignaling } from './useSignaling';
@@ -22,6 +24,8 @@ export interface UseRoomTransportReturn {
   leave: () => void;
   sendMessage: (message: ChatMessage) => void;
   sendTyping: (isTyping: boolean) => void;
+  sendFile: (peerId: string, file: File) => Promise<string | null>;
+  setFileTransferHandlers: (handlers: FileTransferHandlers) => void;
   setHandlers: (handlers: {
     onMessage?: (message: ChatMessage) => void;
     onPeerJoined?: (peer: PeerIdentity) => void;
@@ -50,6 +54,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   const localPeerId = ref<string | null>(null);
 
   let rtc: RtcManager | null = null;
+  const fileTransfer = new FileTransferManager();
   let handlersRegistered = false;
   let relayProbeTimer: ReturnType<typeof setTimeout> | null = null;
   let metricsTimer: ReturnType<typeof setInterval> | null = null;
@@ -93,6 +98,8 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         signaling.getClient()?.sendIceCandidate(to, payload);
       },
       onMessage: (_peerId, message) => { externalHandlers.onMessage?.(message); },
+      onFileControl: (peerId, data) => { fileTransfer.handleControlMessage(peerId, data); },
+      onFileBinary: (peerId, buffer) => { fileTransfer.handleBinaryMessage(peerId, buffer); },
       onPeerConnected: () => {
         // A DataChannel opened; cancel any pending relay probe since we have
         // at least one reachable peer now.
@@ -274,6 +281,22 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     signaling.getClient()?.sendTyping(roomName, isTyping);
   }
 
+  function setFileTransferHandlers (handlers: FileTransferHandlers): void {
+    fileTransfer.setHandlers(handlers);
+  }
+
+  async function sendFile (peerId: string, file: File): Promise<string | null> {
+    if (mode.value === UiTransportMode.Relay) { return null; }
+    const r = ensureRtc();
+    const channel = r.getFileChannel(peerId);
+    if (!channel) { return null; }
+    try {
+      return await fileTransfer.sendFile(peerId, file, channel);
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Schedule a relay-fallback probe. After a grace period, if we still have
    * zero connected DataChannels in mesh/star mode, request relay fallback
@@ -331,6 +354,8 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     leave,
     sendMessage,
     sendTyping,
+    sendFile,
+    setFileTransferHandlers,
     setHandlers,
     mode: readonly(mode),
     hubPeerId: readonly(hubPeerId),
