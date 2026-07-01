@@ -23,7 +23,7 @@ import type { ChatMessage } from '#shared/types/ChatMessage';
 export interface UseRoomTransportReturn {
   join: () => void;
   leave: () => void;
-  sendMessage: (message: ChatMessage) => void;
+  sendMessage: (message: ChatMessage) => string[];
   sendTyping: (isTyping: boolean) => void;
   sendFile: (peerId: string, file: File) => Promise<string | null>;
   setFileTransferHandlers: (handlers: FileTransferHandlers) => void;
@@ -260,12 +260,13 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   /**
    * Send a chat message over the appropriate transport. In mesh/star the
    * message is broadcast over DataChannels to connected peers. In relay mode
-   * it is sent to the server for relay-broadcast. Also returns the message
-   * locally so the caller can echo it into its own message list.
+   * it is sent to the server for relay-broadcast. Returns the list of peer IDs
+   * the message was delivered to (empty in relay mode since delivery is
+   * server-mediated and unconfirmed).
    */
-  function sendMessage (message: ChatMessage): void {
+  function sendMessage (message: ChatMessage): string[] {
     const client = signaling.getClient();
-    if (!client) { return; }
+    if (!client) { return []; }
     if (mode.value === UiTransportMode.Relay) {
       const payload: ChatMessagePayload = {
         id: message.id,
@@ -274,9 +275,11 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         timestamp: message.timestamp
       };
       client.sendChatMessage(roomName, payload);
+      return [];
     } else if (rtc !== null) {
-      rtc.broadcast(message);
+      return rtc.broadcast(message);
     }
+    return [];
   }
 
   function sendTyping (isTyping: boolean): void {

@@ -1,4 +1,5 @@
 import type { Ref } from 'vue';
+import type { SendStatus } from '../types/RoomChat';
 import { useState } from '#imports';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
@@ -11,10 +12,12 @@ export interface RoomChat {
   draft: Ref<string>;
   participants: Ref<string[]>;
   typingUsers: Ref<string[]>;
+  messageStatus: Ref<Record<string, SendStatus>>;
   sendMessage: (author: string, content: string) => ChatMessage;
   pushRemote: (message: ChatMessage) => void;
   setDraft: (value: string) => void;
   setTyping: (username: string, isTyping: boolean) => void;
+  setMessageStatus: (messageId: string, status: SendStatus) => void;
   clear: () => void;
 }
 
@@ -23,6 +26,7 @@ export function useRoomChat (roomName: string): RoomChat {
   const draft = useState<string>(`room:${roomName}:draft`, () => '');
   const participants = useState<string[]>(`room:${roomName}:participants`, () => []);
   const typingUsers = useState<string[]>(`room:${roomName}:typing`, () => []);
+  const messageStatus = useState<Record<string, SendStatus>>(`room:${roomName}:status`, () => ({}));
 
   function sendMessage (author: string, content: string): ChatMessage {
     const trimmed = content.trim();
@@ -31,6 +35,7 @@ export function useRoomChat (roomName: string): RoomChat {
     }
     const message: ChatMessage = { id: genId(), author, content: trimmed, timestamp: Date.now() };
     messages.value = [...messages.value, message];
+    messageStatus.value = { ...messageStatus.value, [message.id]: 'pending' };
     draft.value = '';
     return message;
   }
@@ -54,12 +59,17 @@ export function useRoomChat (roomName: string): RoomChat {
     }
   }
 
+  function setMessageStatus (messageId: string, status: SendStatus): void {
+    messageStatus.value = { ...messageStatus.value, [messageId]: status };
+  }
+
   function clear (): void {
     messages.value = [];
     draft.value = '';
     participants.value = [];
     typingUsers.value = [];
+    messageStatus.value = {};
   }
 
-  return { messages, draft, participants, typingUsers, sendMessage, pushRemote, setDraft, setTyping, clear };
+  return { messages, draft, participants, typingUsers, messageStatus, sendMessage, pushRemote, setDraft, setTyping, setMessageStatus, clear };
 }

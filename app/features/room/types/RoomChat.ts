@@ -1,9 +1,9 @@
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
+export type SendStatus = 'pending' | 'delivered' | 'failed';
+
 export interface RoomChatState {
   messages: ChatMessage[];
-  pending: ChatMessage[];
   participants: string[];
+  messageStatus: Record<string, SendStatus>;
 }
-
-export type SendStatus = 'pending' | 'delivered' | 'failed';

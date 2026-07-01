@@ -43,6 +43,23 @@
         >
           {{ message.content }}
         </div>
+        <div
+          v-if="message.author === username && messageStatus[message.id]"
+          class="flex items-center gap-0.5 mt-0.5 px-1 text-[10px] text-text-content/40"
+        >
+          <template v-if="messageStatus[message.id] === 'pending'">
+            <Icon name="lucide:clock" size="10" />
+            <span>Sending…</span>
+          </template>
+          <template v-else-if="messageStatus[message.id] === 'delivered'">
+            <Icon name="lucide:check" size="10" />
+            <span>Delivered</span>
+          </template>
+          <template v-else>
+            <Icon name="lucide:alert-triangle" size="10" />
+            <span>Failed</span>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -148,7 +165,7 @@ const session = useSessionStore();
 const notifications = useNotificationsStore();
 const username = computed(() => session.username);
 
-const { messages, draft, typingUsers, sendMessage, setDraft } = useRoomChat(props.roomName);
+const { messages, draft, typingUsers, messageStatus, sendMessage, setDraft, setMessageStatus } = useRoomChat(props.roomName);
 const fileTransfer = useFileTransfer();
 
 props.transport.setFileTransferHandlers({
@@ -190,7 +207,12 @@ const typingLabel = computed(() => {
 function onSubmit (): void {
   if (!canSend.value || !username.value) { return; }
   const message = sendMessage(username.value, draftText.value);
-  props.transport.sendMessage(message);
+  const delivered = props.transport.sendMessage(message);
+  if (delivered.length > 0) {
+    setMessageStatus(message.id, 'delivered');
+  } else if (props.transport.mode.value === 'relay') {
+    setMessageStatus(message.id, 'delivered');
+  }
   void nextTick(scrollToBottom);
   notifyTyping(false);
 }
