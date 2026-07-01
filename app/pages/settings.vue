@@ -60,7 +60,7 @@
             In-process STUN
           </dt>
           <dd class="text-text-content/70">
-            enabled
+            {{ stunEnabledLabel }}
             <span class="text-text-content/40">(per ADR 0002)</span>
           </dd>
         </div>
@@ -69,7 +69,7 @@
             TURN relay
           </dt>
           <dd class="text-text-content/70">
-            disabled
+            {{ turnLabel }}
             <span class="text-text-content/40">(per ADR 0002)</span>
           </dd>
         </div>
@@ -98,12 +98,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useSessionStore } from '~/stores/Session';
+import { useConnectionStore } from '~/stores/Connection';
 import type { Tier } from '#shared/types/Tier';
 import { UiTransportMode } from '~/features/transport/types/Transport';
 
 definePageMeta({ layout: 'default' });
 
 const session = useSessionStore();
+const connection = useConnectionStore();
 
 const username = computed(() => session.username);
 const tierLabel = computed(() => {
@@ -113,8 +115,10 @@ const tierLabel = computed(() => {
   return 'none';
 });
 
-const transportMode = computed<UiTransportMode>(() => UiTransportMode.Offline);
-const connected = computed(() => false);
+const transportMode = computed<UiTransportMode>(() => connection.transportMode);
+const connected = computed(() => connection.signalingConnected);
+const stunEnabledLabel = computed(() => 'enabled');
+const turnLabel = computed(() => 'disabled');
 
 const modeDotClass = computed<string>(() => {
   switch (transportMode.value) {

@@ -10,7 +10,8 @@ export interface RoomChat {
   messages: Ref<ChatMessage[]>;
   draft: Ref<string>;
   participants: Ref<string[]>;
-  sendMessage: (author: string, content: string) => void;
+  sendMessage: (author: string, content: string) => ChatMessage;
+  pushRemote: (message: ChatMessage) => void;
   setDraft: (value: string) => void;
   clear: () => void;
 }
@@ -20,14 +21,20 @@ export function useRoomChat (roomName: string): RoomChat {
   const draft = useState<string>(`room:${roomName}:draft`, () => '');
   const participants = useState<string[]>(`room:${roomName}:participants`, () => []);
 
-  function sendMessage (author: string, content: string): void {
+  function sendMessage (author: string, content: string): ChatMessage {
     const trimmed = content.trim();
-    if (trimmed === '') { return; }
-    messages.value = [
-      ...messages.value,
-      { id: genId(), author, content: trimmed, timestamp: Date.now() }
-    ];
+    if (trimmed === '') {
+      throw new Error('Cannot send an empty message');
+    }
+    const message: ChatMessage = { id: genId(), author, content: trimmed, timestamp: Date.now() };
+    messages.value = [...messages.value, message];
     draft.value = '';
+    return message;
+  }
+
+  function pushRemote (message: ChatMessage): void {
+    if (messages.value.some(m => m.id === message.id)) { return; }
+    messages.value = [...messages.value, message];
   }
 
   function setDraft (value: string): void {
@@ -40,5 +47,5 @@ export function useRoomChat (roomName: string): RoomChat {
     participants.value = [];
   }
 
-  return { messages, draft, participants, sendMessage, setDraft, clear };
+  return { messages, draft, participants, sendMessage, pushRemote, setDraft, clear };
 }

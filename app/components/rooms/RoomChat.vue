@@ -75,6 +75,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
+import { useRoomTransport } from '~/features/transport/composables/useRoomTransport';
 import { useSessionStore } from '~/stores/Session';
 
 const props = defineProps<{
@@ -85,6 +86,7 @@ const session = useSessionStore();
 const username = computed(() => session.username);
 
 const { messages, draft, sendMessage, setDraft } = useRoomChat(props.roomName);
+const transport = useRoomTransport(props.roomName);
 
 const inputEl = ref<HTMLTextAreaElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
@@ -97,7 +99,8 @@ const canSend = computed(() => Boolean(username.value) && draftText.value.trim()
 
 function onSubmit (): void {
   if (!canSend.value || !username.value) { return; }
-  sendMessage(username.value, draftText.value);
+  const message = sendMessage(username.value, draftText.value);
+  transport.sendMessage(message);
   void nextTick(scrollToBottom);
 }
 
