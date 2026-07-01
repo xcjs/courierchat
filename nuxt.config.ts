@@ -9,6 +9,12 @@ export default defineNuxtConfig({
     '@nuxt/icon'
   ],
 
+  nitro: {
+    experimental: {
+      websocket: true
+    }
+  },
+
   imports: {
     dirs: [
       'composables',

@@ -34,10 +34,10 @@ export class LowestLatencyStrategy implements HubElectionStrategy {
   elect (room: RoomRecord): RoomPeer | undefined {
     const candidates = Array.from(room.peers.values()).filter(p => p.latencyMs !== undefined);
     if (candidates.length === 0) { return undefined; }
-    let best = candidates[0];
+    let best = candidates[0]!;
     let tie = false;
     for (let i = 1; i < candidates.length; i++) {
-      const p = candidates[i];
+      const p = candidates[i]!;
       if (p.latencyMs! < best.latencyMs!) {
         best = p;
         tie = false;
@@ -64,9 +64,9 @@ export class HighestBandwidthStrategy implements HubElectionStrategy {
   elect (room: RoomRecord): RoomPeer | undefined {
     const candidates = Array.from(room.peers.values()).filter(p => p.bandwidthKbps !== undefined);
     if (candidates.length === 0) { return undefined; }
-    let best = candidates[0];
+    let best = candidates[0]!;
     for (let i = 1; i < candidates.length; i++) {
-      const p = candidates[i];
+      const p = candidates[i]!;
       if (p.bandwidthKbps! > best.bandwidthKbps!) {
         best = p;
       }
