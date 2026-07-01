@@ -72,6 +72,14 @@ export class SignalingClient {
     this.handlers = handlers;
   }
 
+  /**
+   * Merge additional handlers into the existing set without overwriting
+   * handlers already registered. Later callers win on conflict.
+   */
+  addHandlers (handlers: Partial<SignalingHandlers>): void {
+    this.handlers = { ...this.handlers, ...handlers };
+  }
+
   getState (): SignalingConnectionState {
     return this.state;
   }

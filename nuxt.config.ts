@@ -20,6 +20,11 @@ export default defineNuxtConfig({
       enabled: true,
       port: 3478,
       host: '0.0.0.0'
+    },
+    public: {
+      stunEnabled: true,
+      stunHost: '',
+      stunPort: 3478
     }
   },
 
