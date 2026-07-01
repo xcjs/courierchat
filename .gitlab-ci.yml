@@ -36,11 +36,16 @@ Test:
   tags:
     - docker
   script:
-    - npm test
+    - npm run test:coverage
+  coverage: '/All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s*([\d.]+)/'
   artifacts:
     name: coverage
     paths:
       - coverage
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
     expire_in: 1 week
 
 Typecheck:

@@ -18,6 +18,9 @@ logs
 .fleet
 .idea
 
+# Test coverage
+coverage
+
 # Local env files
 .env
 .env.*

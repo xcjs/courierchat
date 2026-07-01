@@ -7,7 +7,12 @@ export default defineVitestConfig({
       'test/**/*.test.ts',
       'app/**/*.test.ts',
       'server/**/*.test.ts'
-    ]
+    ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov', 'cobertura'],
+      reportsDirectory: 'coverage'
+    }
   },
   resolve: {
     alias: {
