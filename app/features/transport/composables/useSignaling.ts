@@ -4,6 +4,7 @@ import type { SignalingConnectionState, SignalingHandlers } from '../types/Trans
 import type { Tier } from '#shared/types/Tier';
 import { useRuntimeConfig } from '#imports';
 import { usePresenceStore } from '~/stores/Presence';
+import { useNotificationsStore } from '~/stores/Notifications';
 
 /**
  * useSignaling wraps the framework-agnostic SignalingClient in a Nuxt
@@ -59,13 +60,17 @@ export function useSignaling (): UseSignalingReturn {
     if (client.value?.isConnected()) { return; }
 
     const presence = usePresenceStore();
+    const notifications = useNotificationsStore();
 
     const instance = new SignalingClient({
       url: buildUrl(),
       lifecycle: {
         onOpen: () => { connectionState.value = 'connected'; },
         onClose: () => { connectionState.value = 'disconnected'; },
-        onError: () => { signalingError.value = 'Connection error'; }
+        onError: () => {
+          signalingError.value = 'Connection error';
+          notifications.push('Signaling connection error', 'error');
+        }
       }
     });
     // Register presence handlers before connecting so the Welcome snapshot

@@ -54,13 +54,6 @@
     </div>
 
     <div
-      v-if="fileError"
-      class="px-6 py-1 text-xs text-red-500"
-    >
-      {{ fileError }}
-    </div>
-
-    <div
       v-if="fileTransfer.transfers.value.length"
       class="px-6 py-1 space-y-1"
     >
@@ -144,6 +137,7 @@ import { useRoomChat } from '~/features/room/composables/useRoomChat';
 import type { UseRoomTransportReturn } from '~/features/transport/composables/useRoomTransport';
 import { useFileTransfer } from '~/features/transport/composables/useFileTransfer';
 import { useSessionStore } from '~/stores/Session';
+import { useNotificationsStore } from '~/stores/Notifications';
 
 const props = defineProps<{
   roomName: string;
@@ -151,6 +145,7 @@ const props = defineProps<{
 }>();
 
 const session = useSessionStore();
+const notifications = useNotificationsStore();
 const username = computed(() => session.username);
 
 const { messages, draft, typingUsers, sendMessage, setDraft } = useRoomChat(props.roomName);
@@ -160,17 +155,22 @@ props.transport.setFileTransferHandlers({
   onTransferStart: fileTransfer.onTransferStart,
   onTransferProgress: fileTransfer.onTransferProgress,
   onTransferComplete: fileTransfer.onTransferComplete,
-  onTransferError: fileTransfer.onTransferError,
+  onTransferError: (id, reason) => {
+    fileTransfer.onTransferError(id, reason);
+    notifications.push(`File transfer failed: ${reason}`, 'error');
+  },
   onOutgoingProgress: fileTransfer.onOutgoingProgress,
   onOutgoingComplete: fileTransfer.onOutgoingComplete,
-  onOutgoingError: fileTransfer.onOutgoingError
+  onOutgoingError: (id, reason) => {
+    fileTransfer.onOutgoingError(id, reason);
+    notifications.push(`File send failed: ${reason}`, 'error');
+  }
 });
 
 const inputEl = ref<HTMLTextAreaElement | null>(null);
 const fileInputEl = ref<HTMLInputElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
 const draftText = ref(draft.value);
-const fileError = ref<string>('');
 let typingStopTimer: ReturnType<typeof setTimeout> | null = null;
 let lastTypingSent = false;
 
@@ -237,21 +237,20 @@ async function onFileSelect (e: Event): Promise<void> {
   const file = files[0];
   if (!file) { return; }
   input.value = '';
-  fileError.value = '';
 
   const peer = props.transport.peers.value[0];
   if (!peer) {
-    fileError.value = 'No peers connected.';
+    notifications.push('No peers connected.', 'error');
     return;
   }
   if (props.transport.mode.value === 'relay') {
-    fileError.value = 'Direct connection unavailable - file transfer not possible.';
+    notifications.push('Direct connection unavailable — file transfer not possible.', 'error');
     return;
   }
 
   const id = await props.transport.sendFile(peer.peerId, file);
   if (id === null) {
-    fileError.value = 'Direct connection unavailable - file transfer not possible.';
+    notifications.push('Direct connection unavailable — file transfer not possible.', 'error');
     return;
   }
   const safeFile = file as File;
