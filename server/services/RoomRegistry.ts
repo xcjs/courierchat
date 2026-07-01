@@ -154,6 +154,19 @@ export class RoomRegistry {
     return this.byName.get(roomName);
   }
 
+  /**
+   * Force a room into Relay mode. Called when a client reports that no
+   * reachable hub exists (RTC failure). Once in Relay, the room stays in
+   * Relay until peer count drops below the mesh threshold on a re-eval.
+   */
+  setRelay (roomName: string): RoomRecord | undefined {
+    const room = this.byName.get(roomName);
+    if (!room) { return undefined; }
+    room.transportMode = TransportMode.Relay;
+    room.hubPeerId = undefined;
+    return room;
+  }
+
   /** List all rooms visible to a given tier set. */
   roomsVisibleToTiers (sessionTiers: readonly Tier[]): RoomRecord[] {
     return Array.from(this.byName.values()).filter(r => r.tiers.some(t => sessionTiers.includes(t)));
@@ -212,6 +225,11 @@ export class RoomRegistry {
    * Returns true if the most-recently-added peer became the hub (star mode).
    */
   private evaluateTransport (room: RoomRecord): boolean {
+    // Relay mode is sticky: once a room falls back to relay (last resort),
+    // it stays in relay until the room empties and is destroyed.
+    if (room.transportMode === TransportMode.Relay) {
+      return false;
+    }
     const count = room.peers.size;
     if (count <= this.meshThreshold) {
       room.transportMode = TransportMode.Mesh;

@@ -5,6 +5,7 @@ import {
   SignalingMessageType,
   SignalingErrorCode,
   TransportMode,
+  PresenceStatus,
   type SignalingEnvelope,
   type HelloPayload,
   type WelcomePayload,
@@ -16,6 +17,11 @@ import {
   type ChatMessagePayload,
   type TypingPayload,
   type RelayBroadcastPayload,
+  type RequestRelayPayload,
+  type PingPayload,
+  type PongPayload,
+  type PeerMetricsPayload,
+  type PresencePayload,
   type ErrorPayload
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
@@ -74,6 +80,7 @@ export class SignalingServer {
   private readonly usernames: UsernameRegistry;
   private readonly rooms: RoomRegistry;
   private readonly sessions = new Map<string, SignalingSession>();
+  private readonly senders = new Map<string, PeerSender>();
 
   constructor (opts: { meshThreshold?: number } = {}) {
     this.usernames = new UsernameRegistry();
@@ -81,15 +88,33 @@ export class SignalingServer {
     this.rooms.setHubElector(createDefaultHubElectionChain());
   }
 
-  /** Create a session for a new connection. */
-  connect (peerId: string): SignalingSession {
+  /**
+   * Check username availability against the live registry. Returns a
+   * UsernameStatus suitable for the /api/username-status route.
+   */
+  checkUsernameAvailability (username: unknown, now: number = Date.now()): { available: boolean; reason?: 'in-use' | 'invalid'; tiers?: Tier[] } {
+    if (typeof username !== 'string' || !username.trim()) {
+      return { available: false, reason: 'invalid' };
+    }
+    const result = this.usernames.checkAvailability(username, now);
+    if (result.available) { return { available: true }; }
+    if (result.reason === 'in-use') {
+      const holder = result.holderPeerId !== undefined ? this.sessions.get(result.holderPeerId) : undefined;
+      return { available: false, reason: 'in-use', tiers: holder?.tiers ?? [] };
+    }
+    return { available: false, reason: 'invalid' };
+  }
+
+  /** Create a session for a new connection and register its sender. */
+  connect (peerId: string, sender: PeerSender): SignalingSession {
     const session = new SignalingSession(peerId);
     this.sessions.set(peerId, session);
+    this.senders.set(peerId, sender);
     return session;
   }
 
   /** Clean up on disconnect: release username, leave all rooms. */
-  disconnect (peerId: string): Array<{ room: string; remaining: RoomPeer[]; wasHub: boolean; destroyed: boolean; leftUsername: string | null }> {
+  disconnect (peerId: string, now: number = Date.now()): Array<{ room: string; remaining: RoomPeer[]; wasHub: boolean; destroyed: boolean; leftUsername: string | null }> {
     const session = this.sessions.get(peerId);
     if (!session) { return []; }
 
@@ -109,6 +134,12 @@ export class SignalingServer {
       this.usernames.release(session.username, peerId);
     }
     this.sessions.delete(peerId);
+    this.senders.delete(peerId);
+
+    // Broadcast presence-offline to all remaining connected peers.
+    if (session.username) {
+      this.broadcastPresence(session.username, PresenceStatus.Offline, null, now);
+    }
     return results;
   }
 
@@ -135,14 +166,27 @@ export class SignalingServer {
       case SignalingMessageType.IceCandidate: return this.handleIceCandidate(session, sender, envelope, now);
       case SignalingMessageType.ChatMessage: return this.handleChatMessage(session, sender, envelope, now);
       case SignalingMessageType.Typing: return this.handleTyping(session, sender, envelope, now);
+      case SignalingMessageType.RequestRelay: return this.handleRequestRelay(session, sender, envelope, now);
+      case SignalingMessageType.Ping: return this.handlePing(session, sender, envelope, now);
+      case SignalingMessageType.PeerMetrics: return this.handlePeerMetrics(session, sender, envelope, now);
       default:
         this.sendError(sender, SignalingErrorCode.Unknown, `Unknown message type: ${envelope.type}`, now);
         return { action: 'continue' };
     }
   }
 
-  /** Reap stale peers across all registries. Returns evicted peerIds per room. */
+  /**
+   * Reap stale peers across all registries. Evicted username claims trigger
+   * presence-offline broadcasts; evicted room peers trigger PeerLeft (handled
+   * by the room registry). Returns evicted peerIds grouped by room.
+   */
   reapStale (now: number): Array<{ room: string; peerIds: string[] }> {
+    // Evict stale username claims and broadcast presence-offline.
+    const staleUsernames = this.usernames.reapStale(now);
+    for (const { username } of staleUsernames) {
+      this.broadcastPresence(username, PresenceStatus.Offline, null, now);
+    }
+    // Evict stale room peers (triggers PeerLeft via room registry).
     return this.rooms.reapStale(now);
   }
 
@@ -179,6 +223,9 @@ export class SignalingServer {
       onlineUsernames: this.usernames.onlineUsernames()
     };
     this.send(sender, SignalingMessageType.Welcome, welcomePayload, now);
+
+    // Broadcast presence-online to all other connected peers.
+    this.broadcastPresence(result.record.username, PresenceStatus.Online, sender, now);
     return { action: 'continue' };
   }
 
@@ -344,11 +391,16 @@ export class SignalingServer {
       return { action: 'continue' };
     }
 
-    // Relay the message to the target peer via their sender.
-    // In the real WebSocket handler, we look up the target's sender.
-    // For testability, we publish to a per-peer topic.
+    const targetSender = this.senders.get(targetPeerId);
+    if (!targetSender) {
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Target peer not connected', now);
+      return { action: 'continue' };
+    }
+
+    // Direct send to the target peer (not pub/sub). SDP/ICE relay is
+    // point-to-point: the target is not subscribed to a peer:<id> topic.
     const relayed = this.envelope(relayType, envelope.payload, now, envelope.room, session.peerId, targetPeerId);
-    sender.publish(`peer:${targetPeerId}`, JSON.stringify(relayed));
+    targetSender.send(JSON.stringify(relayed));
     return { action: 'continue' };
   }
 
@@ -383,6 +435,59 @@ export class SignalingServer {
     return { action: 'continue' };
   }
 
+  private handleRequestRelay (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
+    const payload = envelope.payload as RequestRelayPayload;
+    const roomName = payload?.room ?? envelope.room;
+    if (!roomName || !session.joinedRooms.has(roomName)) {
+      this.sendError(sender, SignalingErrorCode.NotJoined, 'Not in this room', now);
+      return { action: 'continue' };
+    }
+
+    const room = this.rooms.get(roomName);
+    if (!room) {
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Room not found', now);
+      return { action: 'continue' };
+    }
+
+    // Transition to Relay mode and broadcast to all peers in the room.
+    this.rooms.setRelay(roomName);
+    const modePayload: TransportModePayload = {
+      room: roomName,
+      mode: TransportMode.Relay,
+      hubPeerId: undefined
+    };
+    // Broadcast to all peers including the requester (the requester needs
+    // to confirm the transition). publish() excludes the sender, so we also
+    // send directly to the requester.
+    this.broadcastRoom(roomName, sender, SignalingMessageType.TransportMode, modePayload, now);
+    this.send(sender, SignalingMessageType.TransportMode, modePayload, now);
+    return { action: 'continue' };
+  }
+
+  private handlePing (_session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
+    const payload = envelope.payload as PingPayload;
+    const pong: PongPayload = { id: payload?.id ?? '', sentAt: payload?.sentAt ?? 0, receivedAt: now };
+    this.send(sender, SignalingMessageType.Pong, pong, now);
+    return { action: 'continue' };
+  }
+
+  private handlePeerMetrics (session: SignalingSession, _sender: PeerSender, envelope: SignalingEnvelope, _now: number): HandleResult {
+    const payload = envelope.payload as PeerMetricsPayload;
+    const roomName = payload?.room ?? envelope.room;
+    if (!roomName || !session.joinedRooms.has(roomName)) {
+      return { action: 'continue' };
+    }
+    // Store the reported metrics on the peer's RoomPeer record so the
+    // election chain can use them on the next hub election.
+    const room = this.rooms.get(roomName);
+    if (!room) { return { action: 'continue' }; }
+    const peer = room.peers.get(session.peerId);
+    if (!peer) { return { action: 'continue' }; }
+    if (typeof payload.latencyMs === 'number') { peer.latencyMs = payload.latencyMs; }
+    if (typeof payload.bandwidthKbps === 'number') { peer.bandwidthKbps = payload.bandwidthKbps; }
+    return { action: 'continue' };
+  }
+
   // --- Helpers ---
 
   private send (sender: PeerSender, type: SignalingMessageType, payload: unknown, now: number): void {
@@ -395,6 +500,19 @@ export class SignalingServer {
 
   private broadcastRoom (roomName: string, sender: PeerSender, type: SignalingMessageType, payload: unknown, now: number): void {
     sender.publish(roomName, JSON.stringify(this.envelope(type, payload, now, roomName)));
+  }
+
+  /**
+   * Broadcast a presence update to all connected peers except the source
+   * peer (if a sender is provided). Presence is site-wide, not room-scoped.
+   */
+  private broadcastPresence (username: string, status: PresenceStatus, sender: PeerSender | null, now: number): void {
+    const payload: PresencePayload = { username, status };
+    const envelopeStr = JSON.stringify(this.envelope(SignalingMessageType.Presence, payload, now));
+    for (const [peerId, peerSender] of this.senders) {
+      if (sender !== null && peerId === sender.peerId) { continue; }
+      peerSender.send(envelopeStr);
+    }
   }
 
   private envelope (type: SignalingMessageType, payload: unknown, now: number, room?: string, from?: string, to?: string): SignalingEnvelope {

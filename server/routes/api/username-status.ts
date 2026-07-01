@@ -1,6 +1,7 @@
-import { evaluateUsername } from '#server/services/UsernameEvaluation';
+import { useSignalingServer } from '#server/utils/signalingServer';
 import type { UsernameStatus } from '#shared/types/UsernameService';
 
 export default defineEventHandler((event): UsernameStatus => {
-  return evaluateUsername(getQuery(event).username);
+  const server = useSignalingServer();
+  return server.checkUsernameAvailability(getQuery(event).username);
 });

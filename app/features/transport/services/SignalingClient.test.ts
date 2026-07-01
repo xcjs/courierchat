@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SignalingHandlers } from '../types/Transport';
 import { SignalingClient } from './SignalingClient';
-import { SignalingMessageType, SignalingErrorCode, TransportMode } from '#shared/types/Signaling';
+import { SignalingMessageType, SignalingErrorCode, TransportMode, PresenceStatus } from '#shared/types/Signaling';
 
 /**
  * SignalingClient tests use handleIncoming() directly to feed server messages
@@ -40,6 +40,9 @@ describe('SignalingClient.handleIncoming', () => {
       onAnswerRelayed: vi.fn(),
       onIceCandidateRelayed: vi.fn(),
       onRelayBroadcast: vi.fn(),
+      onPong: vi.fn(),
+      onTyping: vi.fn(),
+      onPresence: vi.fn(),
       onError: vi.fn()
     };
     client.setHandlers(handlers);
@@ -104,6 +107,21 @@ describe('SignalingClient.handleIncoming', () => {
     expect(handlers.onRelayBroadcast).toHaveBeenCalledWith('lobby', msg);
   });
 
+  it('dispatches pong with id, sentAt, receivedAt', () => {
+    client.handleIncoming(envelope(SignalingMessageType.Pong, { id: 'ping-1', sentAt: 12345, receivedAt: 12350 }));
+    expect(handlers.onPong).toHaveBeenCalledWith('ping-1', 12345, 12350);
+  });
+
+  it('dispatches typing with room, username, isTyping', () => {
+    client.handleIncoming(envelope(SignalingMessageType.Typing, { room: 'lobby', username: 'alice', isTyping: true }));
+    expect(handlers.onTyping).toHaveBeenCalledWith('lobby', 'alice', true);
+  });
+
+  it('dispatches presence with username and status', () => {
+    client.handleIncoming(envelope(SignalingMessageType.Presence, { username: 'alice', status: PresenceStatus.Online }));
+    expect(handlers.onPresence).toHaveBeenCalledWith('alice', PresenceStatus.Online);
+  });
+
   it('dispatches error with code and message', () => {
     client.handleIncoming(envelope(SignalingMessageType.Error, { code: SignalingErrorCode.UsernameInUse, message: 'Taken' }));
     expect(handlers.onError).toHaveBeenCalledWith(SignalingErrorCode.UsernameInUse, 'Taken');
@@ -122,7 +140,6 @@ describe('SignalingClient.handleIncoming', () => {
   it('ignores client-to-server message types', () => {
     client.handleIncoming(envelope(SignalingMessageType.ChatMessage, { id: 'm', author: 'a', content: 'x', timestamp: 0 }));
     client.handleIncoming(envelope(SignalingMessageType.Heartbeat, {}));
-    client.handleIncoming(envelope(SignalingMessageType.Typing, { room: 'r', username: 'a', isTyping: true }));
     // No handlers should fire for these server-bound types
     expect(handlers.onRelayBroadcast).not.toHaveBeenCalled();
   });

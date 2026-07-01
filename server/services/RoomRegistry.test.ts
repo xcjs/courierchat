@@ -198,4 +198,33 @@ describe('RoomRegistry', () => {
       expect(registry.reapStale(now + 1_000)).toEqual([]);
     });
   });
+
+  describe('setRelay', () => {
+    it('transitions a room to relay mode and clears the hub', () => {
+      registry.join('lounge', makePeer('p1', 'alice'));
+      registry.join('lounge', makePeer('p2', 'bob'));
+      registry.join('lounge', makePeer('p3', 'carol'));
+      registry.join('lounge', makePeer('p4', 'dave')); // star mode (>3)
+      const room = registry.get('lounge')!;
+      expect(room.transportMode).toBe(TransportMode.Star);
+      const relayRoom = registry.setRelay('lounge')!;
+      expect(relayRoom.transportMode).toBe(TransportMode.Relay);
+      expect(relayRoom.hubPeerId).toBeUndefined();
+    });
+
+    it('relay mode is sticky — evaluateTransport does not override relay', () => {
+      registry.join('lounge', makePeer('p1', 'alice'));
+      registry.join('lounge', makePeer('p2', 'bob'));
+      registry.setRelay('lounge');
+      // Leave and re-join should not revert relay to mesh/star.
+      registry.leave('lounge', 'p2');
+      registry.join('lounge', makePeer('p3', 'carol'));
+      const room = registry.get('lounge')!;
+      expect(room.transportMode).toBe(TransportMode.Relay);
+    });
+
+    it('returns undefined for an unknown room', () => {
+      expect(registry.setRelay('nope')).toBeUndefined();
+    });
+  });
 });

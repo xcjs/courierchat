@@ -78,6 +78,27 @@
 
     <section class="mb-8">
       <h2 class="text-lg font-medium text-text-content mb-3 flex items-center gap-2">
+        <Icon name="lucide:users" size="18" class="text-background-primary" />
+        Online Users
+      </h2>
+      <p v-if="!onlineUsernames.length" class="text-sm text-text-content/50">
+        No one is online right now.
+      </p>
+      <ul v-else class="text-sm space-y-1">
+        <li
+          v-for="name in onlineUsernames"
+          :key="name"
+          class="flex items-center gap-2"
+        >
+          <span class="w-2 h-2 rounded-full bg-green-500" />
+          <span class="text-text-content">{{ name }}</span>
+          <span v-if="name === username" class="text-text-content/40 text-xs">(you)</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-medium text-text-content mb-3 flex items-center gap-2">
         <Icon name="lucide:info" size="18" class="text-background-primary" />
         About This Build
       </h2>
@@ -99,6 +120,7 @@
 import { computed } from 'vue';
 import { useSessionStore } from '~/stores/Session';
 import { useConnectionStore } from '~/stores/Connection';
+import { usePresenceStore } from '~/stores/Presence';
 import type { Tier } from '#shared/types/Tier';
 import { UiTransportMode } from '~/features/transport/types/Transport';
 
@@ -106,8 +128,10 @@ definePageMeta({ layout: 'default' });
 
 const session = useSessionStore();
 const connection = useConnectionStore();
+const presence = usePresenceStore();
 
 const username = computed(() => session.username);
+const onlineUsernames = computed(() => presence.onlineUsernames);
 const tierLabel = computed(() => {
   const t: Tier[] = session.tiers;
   if (t.includes('adult')) { return 'adult'; }

@@ -1,15 +1,8 @@
 import type { Peer, Message } from 'crossws';
-import { SignalingServer, type PeerSender } from '#server/services/SignalingServer';
+import { useSignalingServer } from '#server/utils/signalingServer';
+import type { PeerSender } from '#server/services/SignalingServer';
 
-/**
- * Singleton SignalingServer instance. Nitro may hot-reload modules in dev,
- * so we stash on globalThis to preserve state across reloads.
- */
-const globalForSignaling = globalThis as unknown as { __signalingServer?: SignalingServer };
-const server = globalForSignaling.__signalingServer ?? new SignalingServer();
-if (!globalForSignaling.__signalingServer) {
-  globalForSignaling.__signalingServer = server;
-}
+const server = useSignalingServer();
 
 /**
  * Heartbeat reaper interval. Runs every 15s; evicts peers whose last
@@ -55,8 +48,9 @@ class NitroPeerSender implements PeerSender {
 
 export default defineWebSocketHandler({
   open (peer: Peer) {
-    const session = server.connect(peer.id);
-    peer.context.sender = new NitroPeerSender(peer);
+    const sender = new NitroPeerSender(peer);
+    const session = server.connect(peer.id, sender);
+    peer.context.sender = sender;
     peer.context.session = session;
   },
 
@@ -73,12 +67,12 @@ export default defineWebSocketHandler({
   },
 
   close (peer: Peer) {
-    server.disconnect(peer.id);
+    server.disconnect(peer.id, Date.now());
   },
 
   error (peer: Peer, error: unknown) {
     // eslint-disable-next-line no-console
     console.error(`[signaling] peer ${peer.id} error:`, error);
-    server.disconnect(peer.id);
+    server.disconnect(peer.id, Date.now());
   }
 });

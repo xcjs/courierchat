@@ -122,15 +122,16 @@ export class UsernameRegistry {
 
   /**
    * Evict claims whose last heartbeat is older than the stale window.
-   * Returns the evicted usernames so the server can broadcast presence-offline.
+   * Returns the evicted usernames (with peerIds) so the server can
+   * disconnect the peer and broadcast presence-offline.
    */
-  reapStale (now: number): string[] {
+  reapStale (now: number): Array<{ username: string; peerId: string }> {
     const cutoff = now - this.staleAfterMs;
-    const evicted: string[] = [];
+    const evicted: Array<{ username: string; peerId: string }> = [];
     for (const [name, record] of this.byUsername) {
       if (record.lastHeartbeat < cutoff) {
         this.byUsername.delete(name);
-        evicted.push(name);
+        evicted.push({ username: name, peerId: record.peerId });
       }
     }
     return evicted;

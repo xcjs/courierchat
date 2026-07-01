@@ -46,6 +46,13 @@
       </div>
     </div>
 
+    <div
+      v-if="typingLabel"
+      class="px-6 py-1 text-xs text-text-content/50 italic min-h-[1.25rem]"
+    >
+      {{ typingLabel }}
+    </div>
+
     <form
       class="flex items-end gap-2 px-4 py-3 border-t border-text-content/10 bg-white"
       @submit.prevent="onSubmit"
@@ -58,7 +65,7 @@
         class="flex-1 resize-none rounded border border-text-content/15 px-3 py-2 text-sm text-text-content focus:outline-none focus:border-background-interactive max-h-32"
         :disabled="!username"
         @keydown.enter.exact.prevent="onSubmit"
-        @input="autoGrow"
+        @input="onInput"
       ></textarea>
       <button
         type="submit"
@@ -73,35 +80,75 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
-import { useRoomTransport } from '~/features/transport/composables/useRoomTransport';
+import type { UseRoomTransportReturn } from '~/features/transport/composables/useRoomTransport';
 import { useSessionStore } from '~/stores/Session';
 
 const props = defineProps<{
   roomName: string;
+  transport: UseRoomTransportReturn;
 }>();
 
 const session = useSessionStore();
 const username = computed(() => session.username);
 
-const { messages, draft, sendMessage, setDraft } = useRoomChat(props.roomName);
-const transport = useRoomTransport(props.roomName);
+const { messages, draft, typingUsers, sendMessage, setDraft } = useRoomChat(props.roomName);
 
 const inputEl = ref<HTMLTextAreaElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
 const draftText = ref(draft.value);
+let typingStopTimer: ReturnType<typeof setTimeout> | null = null;
+let lastTypingSent = false;
 
 watch(draft, (v) => { draftText.value = v; });
 watch(draftText, (v) => { setDraft(v); });
 
 const canSend = computed(() => Boolean(username.value) && draftText.value.trim() !== '');
 
+const typingLabel = computed(() => {
+  const others = typingUsers.value.filter(u => u !== username.value);
+  if (others.length === 0) { return ''; }
+  if (others.length === 1) { return `${others[0]} is typing…`; }
+  if (others.length === 2) { return `${others[0]} and ${others[1]} are typing…`; }
+  return `${others[0]} and ${others.length - 1} others are typing…`;
+});
+
 function onSubmit (): void {
   if (!canSend.value || !username.value) { return; }
   const message = sendMessage(username.value, draftText.value);
-  transport.sendMessage(message);
+  props.transport.sendMessage(message);
   void nextTick(scrollToBottom);
+  notifyTyping(false);
+}
+
+function onInput (e: Event): void {
+  autoGrow(e);
+  if (!username.value) { return; }
+  notifyTyping(true);
+}
+
+function notifyTyping (isTyping: boolean): void {
+  if (!username.value) { return; }
+  if (typingStopTimer !== null) {
+    clearTimeout(typingStopTimer);
+    typingStopTimer = null;
+  }
+  if (isTyping) {
+    if (!lastTypingSent) {
+      lastTypingSent = true;
+      props.transport.sendTyping(true);
+    }
+    typingStopTimer = setTimeout(() => {
+      lastTypingSent = false;
+      props.transport.sendTyping(false);
+    }, 3000);
+  } else {
+    if (lastTypingSent) {
+      lastTypingSent = false;
+      props.transport.sendTyping(false);
+    }
+  }
 }
 
 function autoGrow (e: Event): void {
@@ -128,5 +175,15 @@ watch(() => messages.value.length, () => {
 
 onMounted(() => {
   inputEl.value?.focus();
+});
+
+onBeforeUnmount(() => {
+  if (typingStopTimer !== null) {
+    clearTimeout(typingStopTimer);
+    typingStopTimer = null;
+  }
+  if (lastTypingSent) {
+    props.transport.sendTyping(false);
+  }
 });
 </script>

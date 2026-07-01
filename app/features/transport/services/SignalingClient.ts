@@ -7,6 +7,7 @@ import type {
 import {
   SignalingMessageType,
   TransportMode,
+  PresenceStatus,
   type SignalingEnvelope,
   type HelloPayload,
   type JoinPayload,
@@ -14,7 +15,10 @@ import {
   type AnswerPayload,
   type IceCandidatePayload,
   type ChatMessagePayload,
-  type TypingPayload
+  type TypingPayload,
+  type RequestRelayPayload,
+  type PingPayload,
+  type PeerMetricsPayload
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
 
@@ -73,11 +77,28 @@ export class SignalingClient {
   }
 
   /**
-   * Merge additional handlers into the existing set without overwriting
-   * handlers already registered. Later callers win on conflict.
+   * Merge additional handlers into the existing set. When both the existing
+   * and new handler exist for the same event, they are chained: the existing
+   * handler fires first, then the new one. This lets multiple consumers
+   * (e.g. presence store + room transport) react to the same message.
    */
   addHandlers (handlers: Partial<SignalingHandlers>): void {
-    this.handlers = { ...this.handlers, ...handlers };
+    const merged: SignalingHandlers = { ...this.handlers };
+    for (const key of Object.keys(handlers) as Array<keyof SignalingHandlers>) {
+      const existing = this.handlers[key];
+      const incoming = handlers[key];
+      if (existing !== undefined && incoming !== undefined) {
+        // Chain: existing fires first, then incoming.
+        const chained = (...args: unknown[]): void => {
+          (existing as (...a: unknown[]) => void)(...args);
+          (incoming as (...a: unknown[]) => void)(...args);
+        };
+        (merged as Record<string, unknown>)[key] = chained;
+      } else if (incoming !== undefined) {
+        (merged as Record<string, unknown>)[key] = incoming;
+      }
+    }
+    this.handlers = merged;
   }
 
   getState (): SignalingConnectionState {
@@ -215,6 +236,21 @@ export class SignalingClient {
     this.send(SignalingMessageType.Typing, payload, { room });
   }
 
+  sendRequestRelay (room: string): void {
+    const payload: RequestRelayPayload = { room };
+    this.send(SignalingMessageType.RequestRelay, payload, { room });
+  }
+
+  sendPing (id: string, sentAt: number): void {
+    const payload: PingPayload = { id, sentAt };
+    this.send(SignalingMessageType.Ping, payload);
+  }
+
+  sendPeerMetrics (room: string, metrics: Omit<PeerMetricsPayload, 'room'>): void {
+    const payload: PeerMetricsPayload = { room, ...metrics };
+    this.send(SignalingMessageType.PeerMetrics, payload, { room });
+  }
+
   private startHeartbeat (): void {
     this.stopHeartbeat();
     this.heartbeatTimer = setInterval(() => {
@@ -323,14 +359,29 @@ export class SignalingClient {
         this.handlers.onRelayBroadcast?.(p.room, p.message);
         break;
       }
+      case SignalingMessageType.Pong: {
+        const p = env.payload as { id: string; sentAt: number; receivedAt: number };
+        this.handlers.onPong?.(p.id, p.sentAt, p.receivedAt);
+        break;
+      }
+      case SignalingMessageType.Typing: {
+        const p = env.payload as { room: string; username: string; isTyping: boolean };
+        this.handlers.onTyping?.(p.room, p.username, p.isTyping);
+        break;
+      }
+      case SignalingMessageType.Presence: {
+        const p = env.payload as { username: string; status: PresenceStatus };
+        this.handlers.onPresence?.(p.username, p.status);
+        break;
+      }
       case SignalingMessageType.Error: {
         const p = env.payload as { code: string; message: string };
         this.handlers.onError?.(p.code, p.message);
         break;
       }
       default:
-        // chat-message, typing, presence, offer, answer, ice-candidate,
-        // heartbeat are client->server and not expected here.
+        // chat-message, offer, answer, ice-candidate, heartbeat
+        // are client->server and not expected here.
         break;
     }
   }

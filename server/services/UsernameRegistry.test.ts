@@ -150,7 +150,7 @@ describe('UsernameRegistry', () => {
       registry.claim('alice', 'peer-1', ['adult'], now);
       registry.claim('bob', 'peer-2', ['adult'], now + 10_000);
       const evicted = registry.reapStale(now + 46_000);
-      expect(evicted).toEqual(['alice']);
+      expect(evicted).toEqual([{ username: 'alice', peerId: 'peer-1' }]);
       expect(registry.get('alice')).toBeUndefined();
       expect(registry.get('bob')).toBeDefined();
     });

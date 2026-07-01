@@ -49,6 +49,14 @@ export enum SignalingMessageType {
   IceCandidateRelayed = 'ice-candidate-relayed',
   // Server -> client: errors
   Error = 'error',
+  // Client -> server: request relay fallback (no reachable hub / RTC failure)
+  RequestRelay = 'request-relay',
+  // Client -> server: latency probe
+  Ping = 'ping',
+  // Server -> client: latency probe response
+  Pong = 'pong',
+  // Client -> server: self-reported peer metrics for hub election
+  PeerMetrics = 'peer-metrics',
   // Peer -> peer (relayed by server): chat transport
   ChatMessage = 'chat-message',
   Typing = 'typing',
@@ -198,6 +206,51 @@ export interface TypingPayload {
 export interface PresencePayload {
   username: string;
   status: PresenceStatus;
+}
+
+/**
+ * Client -> server: request relay fallback for a room. Sent when the client
+ * detects that no DataChannel to the hub (or any peer in mesh) can be
+ * established. The server transitions the room to Relay mode and broadcasts
+ * a TransportMode message to all peers.
+ */
+export interface RequestRelayPayload {
+  room: string;
+}
+
+/**
+ * Client -> server: latency probe. The server echoes a Pong with the same
+ * id so the client can measure round-trip time. Carries the room so the
+ * server can update the peer's lastHeartbeat for the room.
+ */
+export interface PingPayload {
+  /** Client-generated unique id echoed back in Pong. */
+  id: string;
+  /** Client-local timestamp (ms) sent in the ping. */
+  sentAt: number;
+}
+
+/** Server -> client: latency probe response. */
+export interface PongPayload {
+  id: string;
+  /** The client-sent timestamp echoed back so the client can compute RTT. */
+  sentAt: number;
+  /** Server-receive timestamp (ms) for diagnostic purposes. */
+  receivedAt: number;
+}
+
+/**
+ * Client -> server: self-reported metrics for hub election. Peers report
+ * passively (ADR-0002 §resolved #2). The server stores these on the peer's
+ * RoomPeer record so the election chain (LowestLatency, HighestBandwidth)
+ * can use them.
+ */
+export interface PeerMetricsPayload {
+  room: string;
+  /** Round-trip latency to the server in ms (from ping/pong). */
+  latencyMs?: number;
+  /** Estimated downstream bandwidth in kbps. */
+  bandwidthKbps?: number;
 }
 
 export interface RelayBroadcastPayload {

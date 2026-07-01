@@ -16,7 +16,7 @@
       </NuxtLink>
     </div>
 
-    <RoomChat v-else :room-name="roomName" />
+    <RoomChat v-else :room-name="roomName" :transport="transport" />
   </div>
 </template>
 
@@ -69,10 +69,15 @@ function onPeerLeft (_peerId: string): void {
   connection.setActiveRoomPeerCount(Math.max(0, transport.peers.value.length));
 }
 
+function onTyping (username: string, isTyping: boolean): void {
+  roomChat.setTyping(username, isTyping);
+}
+
 transport.setHandlers({
   onMessage: onIncomingMessage,
   onPeerJoined,
-  onPeerLeft
+  onPeerLeft,
+  onTyping
 });
 
 watch(() => transport.mode.value, (mode) => {

@@ -26,6 +26,7 @@ export interface UseRoomTransportReturn {
     onMessage?: (message: ChatMessage) => void;
     onPeerJoined?: (peer: PeerIdentity) => void;
     onPeerLeft?: (peerId: string) => void;
+    onTyping?: (username: string, isTyping: boolean) => void;
   }) => void;
   mode: Readonly<Ref<UiTransportMode>>;
   hubPeerId: Readonly<Ref<string | null>>;
@@ -34,6 +35,9 @@ export interface UseRoomTransportReturn {
   joined: Readonly<Ref<boolean>>;
   state: RoomTransportState;
 }
+
+const RELAY_PROBE_DELAY_MS = 5_000;
+const METRIC_PING_INTERVAL_MS = 10_000;
 
 export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   const signaling = useSignaling();
@@ -47,12 +51,17 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
 
   let rtc: RtcManager | null = null;
   let handlersRegistered = false;
+  let relayProbeTimer: ReturnType<typeof setTimeout> | null = null;
+  let metricsTimer: ReturnType<typeof setInterval> | null = null;
+  let pingCounter = 0;
+  const pendingPings = new Map<string, number>();
 
   /** Callbacks invoked when messages arrive over any transport. */
   interface RoomTransportHandlers {
     onMessage?: (message: ChatMessage) => void;
     onPeerJoined?: (peer: PeerIdentity) => void;
     onPeerLeft?: (peerId: string) => void;
+    onTyping?: (username: string, isTyping: boolean) => void;
   }
   let externalHandlers: RoomTransportHandlers = {};
 
@@ -84,9 +93,23 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         signaling.getClient()?.sendIceCandidate(to, payload);
       },
       onMessage: (_peerId, message) => { externalHandlers.onMessage?.(message); },
-      onPeerConnected: () => {},
+      onPeerConnected: () => {
+        // A DataChannel opened; cancel any pending relay probe since we have
+        // at least one reachable peer now.
+        if (relayProbeTimer !== null) {
+          clearTimeout(relayProbeTimer);
+          relayProbeTimer = null;
+        }
+      },
       onPeerDisconnected: (peerId) => {
         if (mode.value !== UiTransportMode.Relay) { externalHandlers.onPeerLeft?.(peerId); }
+        // If we just lost our last connected peer in mesh/star, probe for
+        // relay fallback after a short grace period (allows reconnection).
+        if (mode.value === UiTransportMode.Mesh || mode.value === UiTransportMode.Star) {
+          if (rtc !== null && rtc.getConnectedPeerIds().length === 0 && peers.value.length > 0) {
+            scheduleRelayProbe();
+          }
+        }
       }
     };
     rtc.setHandlers(rtcHandlers);
@@ -173,6 +196,15 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
       onRelayBroadcast: (room, message) => {
         if (room !== roomName) { return; }
         externalHandlers.onMessage?.(message as ChatMessage);
+      },
+      onPong: (id, sentAt) => {
+        const rtt = Date.now() - sentAt;
+        pendingPings.delete(id);
+        signaling.getClient()?.sendPeerMetrics(roomName, { latencyMs: Math.max(0, rtt) });
+      },
+      onTyping: (room, username, isTyping) => {
+        if (room !== roomName) { return; }
+        externalHandlers.onTyping?.(username, isTyping);
       }
     });
     handlersRegistered = true;
@@ -188,6 +220,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     registerSignalingHandlers();
     joined.value = true;
     client.joinRoom(roomName);
+    startMetricsLoop();
     // Existing peers list is populated by the peer-joined messages the server
     // sends in response to our join (the server sends peer-joined for each
     // existing peer to the newcomer). Connections are initiated in the
@@ -201,6 +234,11 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   function leave (): void {
     if (!joined.value) { return; }
     joined.value = false;
+    if (relayProbeTimer !== null) {
+      clearTimeout(relayProbeTimer);
+      relayProbeTimer = null;
+    }
+    stopMetricsLoop();
     rtc?.disconnectAll();
     rtc = null;
     peers.value = [];
@@ -234,6 +272,50 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
 
   function sendTyping (isTyping: boolean): void {
     signaling.getClient()?.sendTyping(roomName, isTyping);
+  }
+
+  /**
+   * Schedule a relay-fallback probe. After a grace period, if we still have
+   * zero connected DataChannels in mesh/star mode, request relay fallback
+   * from the server. The server transitions the room to Relay mode and
+   * broadcasts it; our onTransportMode handler tears down RTC.
+   */
+  function scheduleRelayProbe (): void {
+    if (relayProbeTimer !== null) { clearTimeout(relayProbeTimer); }
+    relayProbeTimer = setTimeout(() => {
+      relayProbeTimer = null;
+      if (!joined.value) { return; }
+      if (mode.value !== UiTransportMode.Mesh && mode.value !== UiTransportMode.Star) { return; }
+      if (rtc === null || rtc.getConnectedPeerIds().length === 0) {
+        signaling.getClient()?.sendRequestRelay(roomName);
+      }
+    }, RELAY_PROBE_DELAY_MS);
+  }
+
+  /**
+   * Start a periodic latency probe. Every METRIC_PING_INTERVAL_MS the client
+   * sends a Ping with a unique id and a timestamp; the server echoes a Pong.
+   * The onPong handler computes RTT and reports it via PeerMetrics so the
+   * hub election chain can use it (ADR-0002 §resolved #2: peers report
+   * metrics passively).
+   */
+  function startMetricsLoop (): void {
+    stopMetricsLoop();
+    metricsTimer = setInterval(() => {
+      const client = signaling.getClient();
+      if (!client || !joined.value) { return; }
+      const id = `ping-${++pingCounter}`;
+      pendingPings.set(id, Date.now());
+      client.sendPing(id, Date.now());
+    }, METRIC_PING_INTERVAL_MS);
+  }
+
+  function stopMetricsLoop (): void {
+    if (metricsTimer !== null) {
+      clearInterval(metricsTimer);
+      metricsTimer = null;
+    }
+    pendingPings.clear();
   }
 
   const state: RoomTransportState = {

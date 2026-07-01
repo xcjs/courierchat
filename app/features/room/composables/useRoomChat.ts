@@ -10,9 +10,11 @@ export interface RoomChat {
   messages: Ref<ChatMessage[]>;
   draft: Ref<string>;
   participants: Ref<string[]>;
+  typingUsers: Ref<string[]>;
   sendMessage: (author: string, content: string) => ChatMessage;
   pushRemote: (message: ChatMessage) => void;
   setDraft: (value: string) => void;
+  setTyping: (username: string, isTyping: boolean) => void;
   clear: () => void;
 }
 
@@ -20,6 +22,7 @@ export function useRoomChat (roomName: string): RoomChat {
   const messages = useState<ChatMessage[]>(`room:${roomName}:messages`, () => []);
   const draft = useState<string>(`room:${roomName}:draft`, () => '');
   const participants = useState<string[]>(`room:${roomName}:participants`, () => []);
+  const typingUsers = useState<string[]>(`room:${roomName}:typing`, () => []);
 
   function sendMessage (author: string, content: string): ChatMessage {
     const trimmed = content.trim();
@@ -41,11 +44,22 @@ export function useRoomChat (roomName: string): RoomChat {
     draft.value = value;
   }
 
+  function setTyping (username: string, isTyping: boolean): void {
+    if (isTyping) {
+      if (!typingUsers.value.includes(username)) {
+        typingUsers.value = [...typingUsers.value, username];
+      }
+    } else {
+      typingUsers.value = typingUsers.value.filter(u => u !== username);
+    }
+  }
+
   function clear (): void {
     messages.value = [];
     draft.value = '';
     participants.value = [];
+    typingUsers.value = [];
   }
 
-  return { messages, draft, participants, sendMessage, pushRemote, setDraft, clear };
+  return { messages, draft, participants, typingUsers, sendMessage, pushRemote, setDraft, setTyping, clear };
 }
