@@ -99,10 +99,9 @@
 import { computed } from 'vue';
 import { useSessionStore } from '~/stores/Session';
 import type { Tier } from '#shared/types/Tier';
+import { UiTransportMode } from '~/features/transport/types/Transport';
 
 definePageMeta({ layout: 'default' });
-
-type TransportMode = 'mesh' | 'star' | 'relay' | 'offline';
 
 const session = useSessionStore();
 
@@ -114,22 +113,20 @@ const tierLabel = computed(() => {
   return 'none';
 });
 
-const transportMode = computed<TransportMode>(() => 'offline');
+const transportMode = computed<UiTransportMode>(() => UiTransportMode.Offline);
 const connected = computed(() => false);
 
-const modeDotClass = computed(() => {
-  const mode: TransportMode = transportMode.value;
-  switch (mode) {
-    case 'mesh':
+const modeDotClass = computed<string>(() => {
+  switch (transportMode.value) {
+    case UiTransportMode.Mesh:
       return 'bg-background-primary';
-    case 'star':
+    case UiTransportMode.Star:
       return 'bg-background-interactive';
-    case 'relay':
+    case UiTransportMode.Relay:
       return 'bg-text-error';
-    case 'offline':
+    case UiTransportMode.Offline:
       return 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]';
-    default:
-      return 'bg-text-error';
   }
+  return '';
 });
 </script>

@@ -62,13 +62,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-
-type TransportMode = 'mesh' | 'star' | 'relay' | 'offline'
+import { UiTransportMode } from '~/features/transport/types/Transport'
 
 const props = defineProps<{
   roomName?: string
   memberCount?: number
-  transportMode: TransportMode
+  transportMode: UiTransportMode
   username?: string | null
 }>()
 
@@ -78,16 +77,17 @@ defineEmits<{
 
 const menuOpen = ref(false)
 
-const modeDotClass = computed(() => {
+const modeDotClass = computed<string>(() => {
   switch (props.transportMode) {
-    case 'mesh':
+    case UiTransportMode.Mesh:
       return 'bg-background-primary'
-    case 'star':
+    case UiTransportMode.Star:
       return 'bg-background-interactive'
-    case 'relay':
+    case UiTransportMode.Relay:
       return 'bg-text-error'
-    case 'offline':
+    case UiTransportMode.Offline:
       return 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]'
   }
+  return ''
 })
 </script>

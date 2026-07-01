@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SignalingServer, type PeerSender, type SignalingSession } from './SignalingServer';
-import type { SignalingEnvelope } from '#shared/types/Signaling';
+import { SignalingMessageType, SignalingErrorCode, type SignalingEnvelope } from '#shared/types/Signaling';
 
 /**
  * Mock sender that records all sent/published messages. Implements
@@ -60,13 +60,13 @@ describe('SignalingServer', () => {
 
   function hello (session: SignalingSession, sender: MockSender, username: string, tiers: ('minor' | 'adult')[] = ['adult']): void {
     server.handle(session, sender, JSON.stringify({
-      type: 'hello', payload: { username, tiers }, ts: now
+      type: SignalingMessageType.Hello, payload: { username, tiers }, ts: now
     }), now);
   }
 
   function join (session: SignalingSession, sender: MockSender, room: string): void {
     server.handle(session, sender, JSON.stringify({
-      type: 'join', room, payload: { room }, ts: now
+      type: SignalingMessageType.Join, room, payload: { room }, ts: now
     }), now);
   }
 
@@ -98,7 +98,7 @@ describe('SignalingServer', () => {
       const { session, sender } = connect('p1');
       hello(session, sender, 'alice');
       const welcome = sender.lastSent();
-      expect(welcome.type).toBe('welcome');
+      expect(welcome.type).toBe(SignalingMessageType.Welcome);
       expect(welcome.payload).toMatchObject({ peerId: 'p1', onlineUsernames: ['alice'] });
       expect(session.username).toBe('alice');
       expect(session.isAuthenticated).toBe(true);
@@ -109,7 +109,7 @@ describe('SignalingServer', () => {
       const b = connect('p2'); hello(b.session, b.sender, 'alice');
       const err = b.sender.lastSent();
       expect(err.type).toBe('error');
-      expect(err.payload).toMatchObject({ code: 'username-in-use' });
+      expect(err.payload).toMatchObject({ code: SignalingErrorCode.UsernameInUse });
       expect(b.session.username).toBeNull();
     });
 
@@ -120,7 +120,7 @@ describe('SignalingServer', () => {
       }), now);
       const err = sender.lastSent();
       expect(err.type).toBe('error');
-      expect(err.payload).toMatchObject({ code: 'username-invalid' });
+      expect(err.payload).toMatchObject({ code: SignalingErrorCode.UsernameInvalid });
     });
   });
 
@@ -134,8 +134,8 @@ describe('SignalingServer', () => {
       join(b.session, b.sender, 'lounge');
       // bob should receive transport-mode + peer-joined for alice
       const types = b.sender.sent.map(s => (JSON.parse(s) as SignalingEnvelope).type);
-      expect(types).toContain('transport-mode');
-      expect(types).toContain('peer-joined');
+      expect(types).toContain(SignalingMessageType.TransportMode);
+      expect(types).toContain(SignalingMessageType.PeerJoined);
     });
 
     it('publishes peer-joined to the room topic', () => {
@@ -144,7 +144,7 @@ describe('SignalingServer', () => {
       join(a.session, a.sender, 'lounge');
       join(b.session, b.sender, 'lounge');
       const published = a.sender.publishedFor('lounge');
-      expect(published.some(p => p.type === 'peer-joined')).toBe(true);
+      expect(published.some(p => p.type === SignalingMessageType.PeerJoined)).toBe(true);
     });
 
     it('subscribes the sender to the room topic', () => {
@@ -161,7 +161,7 @@ describe('SignalingServer', () => {
       }), now);
       const err = sender.lastSent();
       expect(err.type).toBe('error');
-      expect(err.payload).toMatchObject({ code: 'not-joined' });
+      expect(err.payload).toMatchObject({ code: SignalingErrorCode.NotJoined });
     });
 
     it('rejects tier-mismatched join', () => {
@@ -176,7 +176,7 @@ describe('SignalingServer', () => {
       }), now);
       const err = sender.lastSent();
       expect(err.type).toBe('error');
-      expect(err.payload).toMatchObject({ code: 'tier-mismatch' });
+      expect(err.payload).toMatchObject({ code: SignalingErrorCode.TierMismatch });
     });
 
     it('switches to star mode and broadcasts hub-elected above threshold', () => {
@@ -190,7 +190,7 @@ describe('SignalingServer', () => {
       }
       // The 4th join should trigger star mode + hub election
       const published = peers[3].sender.publishedFor('bigroom');
-      expect(published.some(p => p.type === 'hub-elected')).toBe(true);
+      expect(published.some(p => p.type === SignalingMessageType.HubElected)).toBe(true);
     });
   });
 
@@ -205,7 +205,7 @@ describe('SignalingServer', () => {
         type: 'leave', room: 'lounge', payload: {}, ts: now
       }), now);
       const published = a.sender.publishedFor('lounge');
-      expect(published.some(p => p.type === 'peer-left')).toBe(true);
+      expect(published.some(p => p.type === SignalingMessageType.PeerLeft)).toBe(true);
       expect(a.sender.unsubscribed).toContain('lounge');
       expect(a.session.joinedRooms.has('lounge')).toBe(false);
     });
@@ -217,7 +217,7 @@ describe('SignalingServer', () => {
         type: 'leave', room: 'lounge', payload: {}, ts: now
       }), now);
       const published = a.sender.publishedFor('lounge');
-      expect(published.some(p => p.type === 'room-destroyed')).toBe(true);
+      expect(published.some(p => p.type === SignalingMessageType.RoomDestroyed)).toBe(true);
     });
   });
 
@@ -247,7 +247,7 @@ describe('SignalingServer', () => {
       const published = a.sender.published.filter(p => p.topic === 'peer:p2');
       expect(published).toHaveLength(1);
       const relayed = JSON.parse(published[0].data) as SignalingEnvelope;
-      expect(relayed.type).toBe('offer-relayed');
+      expect(relayed.type).toBe(SignalingMessageType.OfferRelayed);
       expect(relayed.to).toBe('p2');
       expect(relayed.from).toBe('p1');
     });
@@ -268,9 +268,9 @@ describe('SignalingServer', () => {
       join(a.session, a.sender, 'lounge');
       // mesh mode (1 peer) — should not broadcast
       server.handle(a.session, a.sender, JSON.stringify({
-        type: 'chat-message', room: 'lounge', payload: { id: '1', author: 'alice', content: 'hi', timestamp: now }, ts: now
+        type: SignalingMessageType.ChatMessage, room: 'lounge', payload: { id: '1', author: 'alice', content: 'hi', timestamp: now }, ts: now
       }), now);
-      expect(a.sender.publishedFor('lounge').filter(p => p.type === 'relay-broadcast')).toHaveLength(0);
+      expect(a.sender.publishedFor('lounge').filter(p => p.type === SignalingMessageType.RelayBroadcast)).toHaveLength(0);
     });
   });
 

@@ -2,11 +2,71 @@ import type { Tier } from './Tier';
 
 /**
  * Transport mode for a room.
- * - mesh: full peer-to-peer mesh (small rooms, <= mesh threshold)
- * - star: hub-and-spoke with an elected hub peer retransmitting to leaves
- * - relay: server WebSocket relay (last resort when no reachable hub exists)
+ * - Mesh: full peer-to-peer mesh (small rooms, <= mesh threshold)
+ * - Star: hub-and-spoke with an elected hub peer retransmitting to leaves
+ * - Relay: server WebSocket relay (last resort when no reachable hub exists)
  */
-export type TransportMode = 'mesh' | 'star' | 'relay';
+export enum TransportMode {
+  Mesh = 'mesh',
+  Star = 'star',
+  Relay = 'relay'
+}
+
+/**
+ * Connection presence status for a peer.
+ */
+export enum PresenceStatus {
+  Online = 'online',
+  Offline = 'offline'
+}
+
+/**
+ * Signaling message types exchanged over the signaling WebSocket.
+ * Client-to-server types are sent by the client; server-to-client types are
+ * dispatched by SignalingClient.handleIncoming and SignalingServer.handle.
+ */
+export enum SignalingMessageType {
+  // Client -> server: connection lifecycle
+  Hello = 'hello',
+  Join = 'join',
+  Leave = 'leave',
+  Heartbeat = 'heartbeat',
+  // Client -> server: WebRTC signaling relay
+  Offer = 'offer',
+  Answer = 'answer',
+  IceCandidate = 'ice-candidate',
+  // Server -> client: room state
+  Welcome = 'welcome',
+  PeerJoined = 'peer-joined',
+  PeerLeft = 'peer-left',
+  RoomDestroyed = 'room-destroyed',
+  TransportMode = 'transport-mode',
+  // Server -> client: hub election
+  HubElected = 'hub-elected',
+  // Server -> client: relayed WebRTC signaling
+  OfferRelayed = 'offer-relayed',
+  AnswerRelayed = 'answer-relayed',
+  IceCandidateRelayed = 'ice-candidate-relayed',
+  // Server -> client: errors
+  Error = 'error',
+  // Peer -> peer (relayed by server): chat transport
+  ChatMessage = 'chat-message',
+  Typing = 'typing',
+  Presence = 'presence',
+  // Relay-mode broadcast (server relays chat content when no hub reachable)
+  RelayBroadcast = 'relay-broadcast'
+}
+
+/**
+ * Error codes returned by the server in an ErrorPayload.
+ */
+export enum SignalingErrorCode {
+  UsernameInUse = 'username-in-use',
+  UsernameInvalid = 'username-invalid',
+  NotJoined = 'not-joined',
+  TierMismatch = 'tier-mismatch',
+  Unknown = 'unknown'
+}
 
 /**
  * Identity of a participant in a room. The peerId is a server-assigned
@@ -18,37 +78,6 @@ export interface PeerIdentity {
   username: string;
   tiers: Tier[];
 }
-
-export type SignalingMessageType =
-  // Client -> server: connection lifecycle
-  | 'hello'
-  | 'join'
-  | 'leave'
-  | 'heartbeat'
-  // Client -> server: WebRTC signaling relay
-  | 'offer'
-  | 'answer'
-  | 'ice-candidate'
-  // Server -> client: room state
-  | 'welcome'
-  | 'peer-joined'
-  | 'peer-left'
-  | 'room-destroyed'
-  | 'transport-mode'
-  // Server -> client: hub election
-  | 'hub-elected'
-  // Server -> client: relayed WebRTC signaling
-  | 'offer-relayed'
-  | 'answer-relayed'
-  | 'ice-candidate-relayed'
-  // Server -> client: errors
-  | 'error'
-  // Peer -> peer (relayed by server): chat transport
-  | 'chat-message'
-  | 'typing'
-  | 'presence'
-  // Relay-mode broadcast (server relays chat content when no hub reachable)
-  | 'relay-broadcast';
 
 /**
  * Signaling envelope. Every message exchanged over the signaling WebSocket
@@ -168,20 +197,13 @@ export interface TypingPayload {
 
 export interface PresencePayload {
   username: string;
-  status: 'online' | 'offline';
+  status: PresenceStatus;
 }
 
 export interface RelayBroadcastPayload {
   room: string;
   message: ChatMessagePayload;
 }
-
-export type SignalingErrorCode =
-  | 'username-in-use'
-  | 'username-invalid'
-  | 'not-joined'
-  | 'tier-mismatch'
-  | 'unknown';
 
 /**
  * Server -> client: error response.

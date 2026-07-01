@@ -1,20 +1,22 @@
 import { UsernameRegistry } from './UsernameRegistry';
 import { RoomRegistry, type RoomPeer } from './RoomRegistry';
 import { createDefaultHubElectionChain } from './HubElectionStrategy';
-import type {
-  SignalingEnvelope,
+import {
   SignalingMessageType,
-  HelloPayload,
-  WelcomePayload,
-  JoinPayload,
-  PeerJoinedPayload,
-  PeerLeftPayload,
-  TransportModePayload,
-  HubElectedPayload,
-  ChatMessagePayload,
-  TypingPayload,
-  RelayBroadcastPayload,
-  ErrorPayload
+  SignalingErrorCode,
+  TransportMode,
+  type SignalingEnvelope,
+  type HelloPayload,
+  type WelcomePayload,
+  type JoinPayload,
+  type PeerJoinedPayload,
+  type PeerLeftPayload,
+  type TransportModePayload,
+  type HubElectedPayload,
+  type ChatMessagePayload,
+  type TypingPayload,
+  type RelayBroadcastPayload,
+  type ErrorPayload
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
 
@@ -119,22 +121,22 @@ export class SignalingServer {
     try {
       envelope = JSON.parse(raw) as SignalingEnvelope;
     } catch {
-      this.sendError(sender, 'unknown', 'Invalid JSON', now);
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Invalid JSON', now);
       return { action: 'continue' };
     }
 
     switch (envelope.type) {
-      case 'hello': return this.handleHello(session, sender, envelope, now);
-      case 'join': return this.handleJoin(session, sender, envelope, now);
-      case 'leave': return this.handleLeave(session, sender, envelope, now);
-      case 'heartbeat': return this.handleHeartbeat(session, sender, now);
-      case 'offer': return this.handleOffer(session, sender, envelope, now);
-      case 'answer': return this.handleAnswer(session, sender, envelope, now);
-      case 'ice-candidate': return this.handleIceCandidate(session, sender, envelope, now);
-      case 'chat-message': return this.handleChatMessage(session, sender, envelope, now);
-      case 'typing': return this.handleTyping(session, sender, envelope, now);
+      case SignalingMessageType.Hello: return this.handleHello(session, sender, envelope, now);
+      case SignalingMessageType.Join: return this.handleJoin(session, sender, envelope, now);
+      case SignalingMessageType.Leave: return this.handleLeave(session, sender, envelope, now);
+      case SignalingMessageType.Heartbeat: return this.handleHeartbeat(session, sender, now);
+      case SignalingMessageType.Offer: return this.handleOffer(session, sender, envelope, now);
+      case SignalingMessageType.Answer: return this.handleAnswer(session, sender, envelope, now);
+      case SignalingMessageType.IceCandidate: return this.handleIceCandidate(session, sender, envelope, now);
+      case SignalingMessageType.ChatMessage: return this.handleChatMessage(session, sender, envelope, now);
+      case SignalingMessageType.Typing: return this.handleTyping(session, sender, envelope, now);
       default:
-        this.sendError(sender, 'unknown', `Unknown message type: ${envelope.type}`, now);
+        this.sendError(sender, SignalingErrorCode.Unknown, `Unknown message type: ${envelope.type}`, now);
         return { action: 'continue' };
     }
   }
@@ -159,13 +161,13 @@ export class SignalingServer {
   private handleHello (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
     const payload = envelope.payload as HelloPayload;
     if (!payload || typeof payload.username !== 'string') {
-      this.sendError(sender, 'username-invalid', 'Missing username', now);
+      this.sendError(sender, SignalingErrorCode.UsernameInvalid, 'Missing username', now);
       return { action: 'continue' };
     }
 
     const result = this.usernames.claim(payload.username, session.peerId, payload.tiers ?? [], now);
     if (!result.ok) {
-      this.sendError(sender, result.reason === 'in-use' ? 'username-in-use' : 'username-invalid', `Username ${result.reason}`, now);
+      this.sendError(sender, result.reason === 'in-use' ? SignalingErrorCode.UsernameInUse : SignalingErrorCode.UsernameInvalid, `Username ${result.reason}`, now);
       return { action: 'continue' };
     }
 
@@ -176,25 +178,25 @@ export class SignalingServer {
       peerId: session.peerId,
       onlineUsernames: this.usernames.onlineUsernames()
     };
-    this.send(sender, 'welcome', welcomePayload, now);
+    this.send(sender, SignalingMessageType.Welcome, welcomePayload, now);
     return { action: 'continue' };
   }
 
   private handleJoin (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
     if (!session.isAuthenticated) {
-      this.sendError(sender, 'not-joined', 'Not authenticated', now);
+      this.sendError(sender, SignalingErrorCode.NotJoined, 'Not authenticated', now);
       return { action: 'continue' };
     }
 
     const payload = envelope.payload as JoinPayload;
     const roomName = payload?.room ?? envelope.room;
     if (!roomName) {
-      this.sendError(sender, 'unknown', 'Missing room name', now);
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Missing room name', now);
       return { action: 'continue' };
     }
 
     if (session.joinedRooms.has(roomName)) {
-      this.sendError(sender, 'not-joined', 'Already joined this room', now);
+      this.sendError(sender, SignalingErrorCode.NotJoined, 'Already joined this room', now);
       return { action: 'continue' };
     }
 
@@ -207,7 +209,7 @@ export class SignalingServer {
 
     const joinResult = this.rooms.join(roomName, peer);
     if (!joinResult.ok) {
-      const code = joinResult.reason === 'tier-mismatch' ? 'tier-mismatch' : 'not-joined';
+      const code = joinResult.reason === 'tier-mismatch' ? SignalingErrorCode.TierMismatch : SignalingErrorCode.NotJoined;
       this.sendError(sender, code, `Join failed: ${joinResult.reason}`, now);
       return { action: 'continue' };
     }
@@ -219,7 +221,7 @@ export class SignalingServer {
     const existingPeers = joinResult.existingPeers ?? [];
 
     // Send transport mode to the joiner.
-    this.send(sender, 'transport-mode', {
+    this.send(sender, SignalingMessageType.TransportMode, {
       room: roomName,
       mode: room.transportMode,
       hubPeerId: room.hubPeerId
@@ -232,7 +234,7 @@ export class SignalingServer {
         room: roomName,
         isHub: room.hubPeerId === existing.peerId
       };
-      this.send(sender, 'peer-joined', peerJoinedPayload, now);
+      this.send(sender, SignalingMessageType.PeerJoined, peerJoinedPayload, now);
     }
 
     // Notify existing peers that the new peer joined.
@@ -241,12 +243,12 @@ export class SignalingServer {
       room: roomName,
       isHub: room.hubPeerId === session.peerId
     };
-    sender.publish(roomName, JSON.stringify(this.envelope('peer-joined', joinedPayload, now, roomName)));
+    sender.publish(roomName, JSON.stringify(this.envelope(SignalingMessageType.PeerJoined, joinedPayload, now, roomName)));
 
     // In star mode, broadcast hub-elected so all peers know who the hub is.
     // This covers both the mesh-to-star transition (existing peers learn the
     // hub) and the case where the joiner itself is the hub.
-    if (room.transportMode === 'star' && room.hubPeerId) {
+    if (room.transportMode === TransportMode.Star && room.hubPeerId) {
       const hubPeer = room.peers.get(room.hubPeerId);
       if (hubPeer) {
         const hubPayload: HubElectedPayload = {
@@ -254,7 +256,7 @@ export class SignalingServer {
           hubPeerId: hubPeer.peerId,
           hubUsername: hubPeer.username
         };
-        this.broadcastRoom(roomName, sender, 'hub-elected', hubPayload, now);
+        this.broadcastRoom(roomName, sender, SignalingMessageType.HubElected, hubPayload, now);
       }
     }
 
@@ -264,7 +266,7 @@ export class SignalingServer {
   private handleLeave (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
     const roomName = envelope.room;
     if (!roomName || !session.joinedRooms.has(roomName)) {
-      this.sendError(sender, 'not-joined', 'Not in this room', now);
+      this.sendError(sender, SignalingErrorCode.NotJoined, 'Not in this room', now);
       return { action: 'continue' };
     }
 
@@ -282,11 +284,11 @@ export class SignalingServer {
       room: roomName,
       wasHub: leaveResult.wasHub
     };
-    this.broadcastRoom(roomName, sender, 'peer-left', leftPayload, now);
+    this.broadcastRoom(roomName, sender, SignalingMessageType.PeerLeft, leftPayload, now);
 
     // If the room was destroyed, notify remaining subscribers.
     if (leaveResult.destroyed) {
-      this.broadcastRoom(roomName, sender, 'room-destroyed', { room: roomName }, now);
+      this.broadcastRoom(roomName, sender, SignalingMessageType.RoomDestroyed, { room: roomName }, now);
       return;
     }
 
@@ -301,7 +303,7 @@ export class SignalingServer {
             hubPeerId: hubPeer.peerId,
             hubUsername: hubPeer.username
           };
-          this.broadcastRoom(roomName, sender, 'hub-elected', hubPayload, now);
+          this.broadcastRoom(roomName, sender, SignalingMessageType.HubElected, hubPayload, now);
         }
       }
     }
@@ -318,27 +320,27 @@ export class SignalingServer {
   }
 
   private handleOffer (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
-    return this.relayToPeer(session, sender, envelope, 'offer-relayed', now);
+    return this.relayToPeer(session, sender, envelope, SignalingMessageType.OfferRelayed, now);
   }
 
   private handleAnswer (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
-    return this.relayToPeer(session, sender, envelope, 'answer-relayed', now);
+    return this.relayToPeer(session, sender, envelope, SignalingMessageType.AnswerRelayed, now);
   }
 
   private handleIceCandidate (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
-    return this.relayToPeer(session, sender, envelope, 'ice-candidate-relayed', now);
+    return this.relayToPeer(session, sender, envelope, SignalingMessageType.IceCandidateRelayed, now);
   }
 
   private relayToPeer (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, relayType: SignalingMessageType, now: number): HandleResult {
     const targetPeerId = envelope.to;
     if (!targetPeerId) {
-      this.sendError(sender, 'unknown', 'Missing target peerId', now);
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Missing target peerId', now);
       return { action: 'continue' };
     }
 
     const targetSession = this.sessions.get(targetPeerId);
     if (!targetSession) {
-      this.sendError(sender, 'unknown', 'Target peer not found', now);
+      this.sendError(sender, SignalingErrorCode.Unknown, 'Target peer not found', now);
       return { action: 'continue' };
     }
 
@@ -353,7 +355,7 @@ export class SignalingServer {
   private handleChatMessage (session: SignalingSession, sender: PeerSender, envelope: SignalingEnvelope, now: number): HandleResult {
     const roomName = envelope.room;
     if (!roomName || !session.joinedRooms.has(roomName)) {
-      this.sendError(sender, 'not-joined', 'Not in this room', now);
+      this.sendError(sender, SignalingErrorCode.NotJoined, 'Not in this room', now);
       return { action: 'continue' };
     }
 
@@ -361,10 +363,10 @@ export class SignalingServer {
     // through the signaling server. This handler is only used in relay
     // fallback mode, where the server broadcasts the message to the room.
     const room = this.rooms.get(roomName);
-    if (room?.transportMode === 'relay') {
+    if (room?.transportMode === TransportMode.Relay) {
       const payload = envelope.payload as ChatMessagePayload;
       const broadcastPayload: RelayBroadcastPayload = { room: roomName, message: payload };
-      this.broadcastRoom(roomName, sender, 'relay-broadcast', broadcastPayload, now);
+      this.broadcastRoom(roomName, sender, SignalingMessageType.RelayBroadcast, broadcastPayload, now);
     }
     return { action: 'continue' };
   }
@@ -377,7 +379,7 @@ export class SignalingServer {
 
     const payload = envelope.payload as TypingPayload;
     // Relay typing indicators to the room via pub/sub.
-    this.broadcastRoom(roomName, sender, 'typing', payload, now);
+    this.broadcastRoom(roomName, sender, SignalingMessageType.Typing, payload, now);
     return { action: 'continue' };
   }
 
@@ -388,7 +390,7 @@ export class SignalingServer {
   }
 
   private sendError (sender: PeerSender, code: ErrorPayload['code'], message: string, now: number): void {
-    this.send(sender, 'error', { code, message } satisfies ErrorPayload, now);
+    this.send(sender, SignalingMessageType.Error, { code, message } satisfies ErrorPayload, now);
   }
 
   private broadcastRoom (roomName: string, sender: PeerSender, type: SignalingMessageType, payload: unknown, now: number): void {

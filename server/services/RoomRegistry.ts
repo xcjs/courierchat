@@ -1,6 +1,6 @@
 import type { HubElectionStrategy } from './HubElectionStrategy';
 import type { Tier } from '#shared/types/Tier';
-import type { TransportMode } from '#shared/types/Signaling';
+import { TransportMode } from '#shared/types/Signaling';
 
 /**
  * A participant in a room. Bound to a peerId and a username claim.
@@ -80,7 +80,7 @@ export class RoomRegistry {
       name,
       tiers,
       peers: new Map(),
-      transportMode: 'mesh',
+      transportMode: TransportMode.Mesh,
       explicit: true,
       icon
     };
@@ -100,7 +100,7 @@ export class RoomRegistry {
         name: roomName,
         tiers: [...peer.tiers],
         peers: new Map(),
-        transportMode: 'mesh',
+        transportMode: TransportMode.Mesh,
         explicit: false
       };
       this.byName.set(roomName, room);
@@ -214,13 +214,13 @@ export class RoomRegistry {
   private evaluateTransport (room: RoomRecord): boolean {
     const count = room.peers.size;
     if (count <= this.meshThreshold) {
-      room.transportMode = 'mesh';
+      room.transportMode = TransportMode.Mesh;
       room.hubPeerId = undefined;
       return false;
     }
 
     // Star mode: elect a hub if none is present or the current hub is gone.
-    room.transportMode = 'star';
+    room.transportMode = TransportMode.Star;
     if (!room.hubPeerId || !room.peers.has(room.hubPeerId)) {
       const elected = this.electHub(room);
       room.hubPeerId = elected?.peerId;

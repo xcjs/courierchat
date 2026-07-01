@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { RoomRegistry, type RoomPeer } from './RoomRegistry';
 import { createDefaultHubElectionChain } from './HubElectionStrategy';
+import { TransportMode } from '#shared/types/Signaling';
 
 function makePeer (peerId: string, username: string, tiers: ('minor' | 'adult')[] = ['adult'], now = 1_000_000): RoomPeer {
   return { peerId, username, tiers, lastHeartbeat: now };
@@ -84,7 +85,7 @@ describe('RoomRegistry', () => {
     it('sets transport mode to mesh for small rooms', () => {
       registry.join('lounge', makePeer('p1', 'alice'));
       const room = registry.get('lounge');
-      expect(room?.transportMode).toBe('mesh');
+      expect(room?.transportMode).toBe(TransportMode.Mesh);
       expect(room?.hubPeerId).toBeUndefined();
     });
 
@@ -93,10 +94,10 @@ describe('RoomRegistry', () => {
       registry.join('lounge', makePeer('p1', 'alice'));
       registry.join('lounge', makePeer('p2', 'bob'));
       registry.join('lounge', makePeer('p3', 'carol'));
-      expect(registry.get('lounge')?.transportMode).toBe('mesh');
+      expect(registry.get('lounge')?.transportMode).toBe(TransportMode.Mesh);
       registry.join('lounge', makePeer('p4', 'dave'));
       const room = registry.get('lounge');
-      expect(room?.transportMode).toBe('star');
+      expect(room?.transportMode).toBe(TransportMode.Star);
       expect(room?.hubPeerId).toBeDefined();
     });
   });

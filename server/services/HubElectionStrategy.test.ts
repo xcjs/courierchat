@@ -7,6 +7,7 @@ import {
   createDefaultHubElectionChain
 } from './HubElectionStrategy';
 import type { RoomPeer, RoomRecord } from './RoomRegistry';
+import { TransportMode } from '#shared/types/Signaling';
 
 function makePeer (peerId: string, opts: { latencyMs?: number; bandwidthKbps?: number } = {}): RoomPeer {
   return {
@@ -26,7 +27,7 @@ function makeRoom (peers: RoomPeer[]): RoomRecord {
     name: 'test-room',
     tiers: ['adult'],
     peers: map,
-    transportMode: 'star',
+    transportMode: TransportMode.Star,
     explicit: false
   };
 }

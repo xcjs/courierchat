@@ -31,15 +31,14 @@
 import { computed, ref } from 'vue';
 import { useRoute } from '#imports';
 import { useRoomsStore } from '~/stores/Rooms';
-
-type TransportMode = 'mesh' | 'star' | 'relay' | 'offline'
+import { UiTransportMode } from '~/features/transport/types/Transport';
 
 const route = useRoute();
 const session = useSessionStore();
 const roomsStore = useRoomsStore();
 
 const connected = ref(false);
-const transportMode = ref<TransportMode>('offline');
+const transportMode = ref<UiTransportMode>(UiTransportMode.Offline);
 
 const rooms = computed(() => roomsStore.roomsVisibleToTiers(session.tiers));
 const username = computed(() => session.username);
