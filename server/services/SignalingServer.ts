@@ -1,5 +1,5 @@
 import { UsernameRegistry } from './UsernameRegistry';
-import { RoomRegistry, type RoomPeer } from './RoomRegistry';
+import { RoomRegistry, type RoomPeer, type LeaveResult } from './RoomRegistry';
 import { createDefaultHubElectionChain } from './HubElectionStrategy';
 import {
   SignalingMessageType,
@@ -118,16 +118,28 @@ export class SignalingServer {
     const session = this.sessions.get(peerId);
     if (!session) { return []; }
 
+    const sender = this.senders.get(peerId);
     const results: Array<{ room: string; remaining: RoomPeer[]; wasHub: boolean; destroyed: boolean; leftUsername: string | null }> = [];
     for (const roomName of session.joinedRooms) {
-      const leaveResult = this.rooms.leave(roomName, peerId);
-      results.push({
-        room: roomName,
-        remaining: leaveResult.remaining,
-        wasHub: leaveResult.wasHub,
-        destroyed: leaveResult.destroyed,
-        leftUsername: session.username
-      });
+      if (sender) {
+        const leaveResult = this.leaveRoom(session, sender, roomName, now);
+        results.push({
+          room: roomName,
+          remaining: leaveResult.remaining,
+          wasHub: leaveResult.wasHub,
+          destroyed: leaveResult.destroyed,
+          leftUsername: session.username
+        });
+      } else {
+        const leaveResult = this.rooms.leave(roomName, peerId);
+        results.push({
+          room: roomName,
+          remaining: leaveResult.remaining,
+          wasHub: leaveResult.wasHub,
+          destroyed: leaveResult.destroyed,
+          leftUsername: session.username
+        });
+      }
     }
 
     if (session.username) {
@@ -322,7 +334,7 @@ export class SignalingServer {
     return { action: 'continue' };
   }
 
-  private leaveRoom (session: SignalingSession, sender: PeerSender, roomName: string, now: number): void {
+  private leaveRoom (session: SignalingSession, sender: PeerSender, roomName: string, now: number): LeaveResult {
     const leaveResult = this.rooms.leave(roomName, session.peerId);
     session.joinedRooms.delete(roomName);
     sender.unsubscribe(roomName);
@@ -337,7 +349,7 @@ export class SignalingServer {
     // If the room was destroyed, notify remaining subscribers.
     if (leaveResult.destroyed) {
       this.broadcastRoom(roomName, sender, SignalingMessageType.RoomDestroyed, { room: roomName }, now);
-      return;
+      return leaveResult;
     }
 
     // If the hub left and a new hub was elected, notify remaining peers.
@@ -355,6 +367,7 @@ export class SignalingServer {
         }
       }
     }
+    return leaveResult;
   }
 
   private handleHeartbeat (session: SignalingSession, _sender: PeerSender, now: number): HandleResult {

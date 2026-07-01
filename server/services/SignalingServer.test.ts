@@ -221,6 +221,71 @@ describe('SignalingServer', () => {
     });
   });
 
+  describe('disconnect broadcasts room events', () => {
+    it('broadcasts PeerLeft to room peers on disconnect', () => {
+      const a = connect('p1'); hello(a.session, a.sender, 'alice');
+      const b = connect('p2'); hello(b.session, b.sender, 'bob');
+      join(a.session, a.sender, 'lounge');
+      join(b.session, b.sender, 'lounge');
+      a.sender.published.length = 0;
+      b.sender.published.length = 0;
+
+      server.disconnect('p1', now);
+
+      const published = a.sender.publishedFor('lounge');
+      expect(published.some(p => p.type === SignalingMessageType.PeerLeft)).toBe(true);
+      expect(a.sender.unsubscribed).toContain('lounge');
+    });
+
+    it('broadcasts HubElected when the hub disconnects', () => {
+      const star = new SignalingServer({ meshThreshold: 1 });
+      const sa = new MockSender('p1');
+      const sb = new MockSender('p2');
+      const sc = new MockSender('p3');
+      const sessA = star.connect('p1', sa);
+      const sessB = star.connect('p2', sb);
+      const sessC = star.connect('p3', sc);
+      star.handle(sessA, sa, JSON.stringify({
+        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'] }, ts: now
+      }), now);
+      star.handle(sessB, sb, JSON.stringify({
+        type: SignalingMessageType.Hello, payload: { username: 'bob', tiers: ['adult'] }, ts: now
+      }), now);
+      star.handle(sessC, sc, JSON.stringify({
+        type: SignalingMessageType.Hello, payload: { username: 'carol', tiers: ['adult'] }, ts: now
+      }), now);
+      star.handle(sessA, sa, JSON.stringify({
+        type: SignalingMessageType.Join, room: 'lounge', payload: { room: 'lounge' }, ts: now
+      }), now);
+      star.handle(sessB, sb, JSON.stringify({
+        type: SignalingMessageType.Join, room: 'lounge', payload: { room: 'lounge' }, ts: now
+      }), now);
+      star.handle(sessC, sc, JSON.stringify({
+        type: SignalingMessageType.Join, room: 'lounge', payload: { room: 'lounge' }, ts: now
+      }), now);
+      sa.published.length = 0;
+      sb.published.length = 0;
+
+      star.disconnect('p1', now);
+
+      const published = sa.publishedFor('lounge');
+      expect(published.some(p => p.type === SignalingMessageType.PeerLeft)).toBe(true);
+      expect(published.some(p => p.type === SignalingMessageType.HubElected)).toBe(true);
+    });
+
+    it('broadcasts RoomDestroyed when the last peer disconnects', () => {
+      const a = connect('p1'); hello(a.session, a.sender, 'alice');
+      join(a.session, a.sender, 'lounge');
+      a.sender.published.length = 0;
+
+      const results = server.disconnect('p1', now);
+
+      const published = a.sender.publishedFor('lounge');
+      expect(published.some(p => p.type === SignalingMessageType.RoomDestroyed)).toBe(true);
+      expect(results.some(r => r.destroyed && r.room === 'lounge')).toBe(true);
+    });
+  });
+
   describe('heartbeat', () => {
     it('refreshes username and room heartbeat timestamps', () => {
       const { session, sender } = connect('p1');
