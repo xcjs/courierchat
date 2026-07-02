@@ -23,6 +23,8 @@
       ref="scrollEl"
       class="flex-1 w-full relative overflow-y-clip overflow-x-visible"
       @wheel="onWheel"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
     >
       <div
         ref="listEl"
@@ -36,6 +38,8 @@
           class="relative block focus:outline-none"
           :aria-label="`Room: ${room.name}`"
           :aria-current="room.name === activeRoomName ? 'true' : undefined"
+          @touchstart="onRoomTouchStart(room.name)"
+          @touchend="onRoomTouchEnd"
         >
           <span
             class="nav-icon bg-white text-background-interactive text-lg"
@@ -47,7 +51,10 @@
             </template>
             <img v-else src="/courierchat.svg" alt="" class="w-full h-full" />
           </span>
-          <span class="nav-label nav-label--interactive animated faster anim-nav-hover">
+          <span
+            class="nav-label nav-label--interactive animated faster anim-nav-hover"
+            :class="touchedRoom === room.name ? 'touched' : ''"
+          >
             {{ room.name }}
             <button
               type="button"
@@ -83,6 +90,9 @@ defineEmits<{
 const scrollEl = ref<HTMLElement | null>(null)
 const listEl = ref<HTMLElement | null>(null)
 const offset = ref(0)
+const touchStartY = ref(0)
+const touchStartOffset = ref(0)
+const touchedRoom = ref<string | null>(null)
 
 function onWheel(e: WheelEvent) {
   const container = scrollEl.value
@@ -92,6 +102,34 @@ function onWheel(e: WheelEvent) {
   if (maxScroll <= 0) return
   e.preventDefault()
   offset.value = Math.max(0, Math.min(maxScroll, offset.value + e.deltaY))
+}
+
+function onTouchStart(e: TouchEvent) {
+  const touch = e.touches[0]
+  if (!touch) return
+  touchStartY.value = touch.clientY
+  touchStartOffset.value = offset.value
+}
+
+function onTouchMove(e: TouchEvent) {
+  const container = scrollEl.value
+  const list = listEl.value
+  if (!container || !list) return
+  const touch = e.touches[0]
+  if (!touch) return
+  const maxScroll = list.scrollHeight - container.clientHeight
+  if (maxScroll <= 0) return
+  e.preventDefault()
+  const delta = touchStartY.value - touch.clientY
+  offset.value = Math.max(0, Math.min(maxScroll, touchStartOffset.value + delta))
+}
+
+function onRoomTouchStart(name: string) {
+  touchedRoom.value = name
+}
+
+function onRoomTouchEnd() {
+  touchedRoom.value = null
 }
 
 watch(() => props.rooms.length, () => {

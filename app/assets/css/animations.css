@@ -12,7 +12,8 @@
 .icon-rail a:hover span.anim-nav-hover,
 .icon-rail a:focus-visible span.anim-nav-hover,
 .icon-rail button:hover span.anim-nav-hover,
-.icon-rail button:focus-visible span.anim-nav-hover {
+.icon-rail button:focus-visible span.anim-nav-hover,
+.icon-rail span.anim-nav-hover.touched {
   opacity: 1;
   transform: none;
   transition: opacity 200ms ease, transform 200ms ease;
@@ -63,7 +64,8 @@ article.login {
   .icon-rail a:hover span.anim-nav-hover,
   .icon-rail a:focus-visible span.anim-nav-hover,
   .icon-rail button:hover span.anim-nav-hover,
-  .icon-rail button:focus-visible span.anim-nav-hover {
+  .icon-rail button:focus-visible span.anim-nav-hover,
+  .icon-rail span.anim-nav-hover.touched {
     transition: none;
     opacity: 1;
     transform: none;
