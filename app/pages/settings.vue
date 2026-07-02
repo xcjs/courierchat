@@ -37,14 +37,14 @@
       <dl class="text-sm space-y-2">
         <div class="flex justify-between border-b border-text-content/10 pb-2">
           <dt class="font-medium text-text-content">
-            Transport mode
+            Status
           </dt>
           <dd class="flex items-center gap-2 text-text-content/70 capitalize">
             <span
               class="w-2 h-2 rounded-full"
-              :class="modeDotClass"
+              :class="connected ? 'bg-green-500' : 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]'"
             />
-            {{ transportMode }}
+            {{ connected ? 'online' : 'offline' }}
           </dd>
         </div>
         <div class="flex justify-between border-b border-text-content/10 pb-2">
@@ -61,16 +61,6 @@
           </dt>
           <dd class="text-text-content/70">
             {{ stunEnabledLabel }}
-            <span class="text-text-content/40">(per ADR 0002)</span>
-          </dd>
-        </div>
-        <div class="flex justify-between border-b border-text-content/10 pb-2">
-          <dt class="font-medium text-text-content">
-            TURN relay
-          </dt>
-          <dd class="text-text-content/70">
-            {{ turnLabel }}
-            <span class="text-text-content/40">(per ADR 0002)</span>
           </dd>
         </div>
       </dl>
@@ -122,7 +112,6 @@ import { useSessionStore } from '~/stores/Session';
 import { useConnectionStore } from '~/stores/Connection';
 import { usePresenceStore } from '~/stores/Presence';
 import { Tier } from '#shared/types/Tier';
-import { UiTransportMode } from '~/features/transport/types/Transport';
 
 definePageMeta({ layout: 'default' });
 
@@ -139,22 +128,6 @@ const tierLabel = computed(() => {
   return 'none';
 });
 
-const transportMode = computed<UiTransportMode>(() => connection.transportMode);
 const connected = computed(() => connection.signalingConnected);
 const stunEnabledLabel = computed(() => 'enabled');
-const turnLabel = computed(() => 'disabled');
-
-const modeDotClass = computed<string>(() => {
-  switch (transportMode.value) {
-    case UiTransportMode.Mesh:
-      return 'bg-background-primary';
-    case UiTransportMode.Star:
-      return 'bg-background-interactive';
-    case UiTransportMode.Relay:
-      return 'bg-text-error';
-    case UiTransportMode.Offline:
-      return 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]';
-  }
-  return '';
-});
 </script>
