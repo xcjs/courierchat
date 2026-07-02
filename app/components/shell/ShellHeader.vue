@@ -1,6 +1,6 @@
 <template>
   <header
-    class="sticky top-0 z-20 bg-background-interactive shadow-courier-drop flex items-center px-4 h-14"
+    class="bg-background-interactive shadow-courier-drop flex items-center px-4 h-14 shrink-0 z-20"
   >
     <div class="flex items-center gap-2 min-w-0">
       <NuxtLink to="/rooms" aria-label="CourierChat home" class="shrink-0">

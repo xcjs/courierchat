@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-surface text-text-content">
+  <div class="h-dvh flex flex-col bg-surface text-text-content">
     <ShellHeader
       :room-name="activeRoomName ?? undefined"
       :member-count="memberCount"

@@ -158,6 +158,7 @@ import { useRoomChat } from '~/features/room/composables/useRoomChat';
 import { SendStatus } from '~/features/room/types/RoomChat';
 import type { UseRoomTransportReturn } from '~/features/transport/composables/useRoomTransport';
 import { useFileTransfer } from '~/features/transport/composables/useFileTransfer';
+import { UiTransportMode } from '~/features/transport/types/Transport';
 import { useSessionStore } from '~/stores/Session';
 import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
 
@@ -212,12 +213,17 @@ const typingLabel = computed(() => {
 async function onSubmit (): Promise<void> {
   if (!canSend.value || !username.value) { return; }
   const message = sendMessage(username.value, draftText.value);
-  const delivered = await props.transport.sendMessage(message);
-  const peerCount = props.transport.state.peers.length;
-  if (delivered.length > 0 || props.transport.mode.value === 'relay') {
-    setMessageStatus(message.id, SendStatus.Delivered);
-  } else if (peerCount === 0) {
-    setMessageStatus(message.id, SendStatus.Solo);
+  try {
+    const delivered = await props.transport.sendMessage(message);
+    const peerCount = props.transport.state.peers.length;
+    const mode = props.transport.mode.value;
+    if (delivered.length > 0 || mode === UiTransportMode.Relay) {
+      setMessageStatus(message.id, SendStatus.Delivered);
+    } else if (peerCount === 0) {
+      setMessageStatus(message.id, SendStatus.Solo);
+    }
+  } catch {
+    setMessageStatus(message.id, SendStatus.Failed);
   }
   void nextTick(scrollToBottom);
   notifyTyping(false);
