@@ -9,36 +9,20 @@
   animation-duration: 750ms;
 }
 
-@keyframes animNavHover {
-  0% {
-    transform-origin: left center;
-    transform: rotate3d(0, 0, 1, 90deg);
-    opacity: 0;
-  }
-  100% {
-    transform-origin: left center;
-    transform: none;
-    opacity: 1;
-  }
-}
-
 .icon-rail a:hover span.anim-nav-hover,
 .icon-rail a:focus-visible span.anim-nav-hover,
 .icon-rail button:hover span.anim-nav-hover,
 .icon-rail button:focus-visible span.anim-nav-hover {
-  animation-name: animNavHover;
-  animation-duration: 250ms;
-  animation-fill-mode: forwards;
+  opacity: 1;
+  transform: none;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
-.icon-rail a:active span.anim-nav-hover,
-.icon-rail button:active span.anim-nav-hover {
-  display: none;
-}
-
-/* Room labels start hidden and only reveal on hover via animNavHover. */
+/* Room labels start hidden and only reveal on hover via transition. */
 .icon-rail span.anim-nav-hover {
   opacity: 0;
+  transform: rotate3d(0, 0, 1, 90deg);
+  transform-origin: left center;
 }
 
 article.login > h1 {
@@ -78,8 +62,9 @@ article.login {
   .icon-rail a:focus-visible span.anim-nav-hover,
   .icon-rail button:hover span.anim-nav-hover,
   .icon-rail button:focus-visible span.anim-nav-hover {
-    animation: none;
+    transition: none;
     opacity: 1;
+    transform: none;
   }
 
   article.login {

@@ -31,10 +31,7 @@
         :aria-current="room.name === activeRoomName ? 'true' : undefined"
       >
         <span
-          class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30"
-          :class="room.name === activeRoomName
-            ? 'bg-background-interactive ring-2 ring-white/60'
-            : 'bg-background-interactive'"
+          class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30 bg-background-interactive"
         >
           <template v-if="room.icon">
             <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" />
