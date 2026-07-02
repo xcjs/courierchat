@@ -3,6 +3,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  devServer: {
+    https: true
+  },
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
