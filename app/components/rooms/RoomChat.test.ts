@@ -297,14 +297,14 @@ describe('RoomChat', () => {
 
     it('is disabled when no username', () => {
       sessionMock.username = '';
-      const transport = makeTransport({ peers: ref<PeerIdentity[]>([{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult] }]) });
+      const transport = makeTransport({ peers: ref<PeerIdentity[]>([{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult], publicKey: 'pk-bob' }]) });
       const wrapper = mountChat(transport);
       const fileBtn = wrapper.find('[aria-label="Send file"]');
       expect(fileBtn.attributes('disabled')).toBeDefined();
     });
 
     it('is enabled when peers exist and username set', () => {
-      const transport = makeTransport({ peers: ref<PeerIdentity[]>([{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult] }]) });
+      const transport = makeTransport({ peers: ref<PeerIdentity[]>([{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult], publicKey: 'pk-bob' }]) });
       const wrapper = mountChat(transport);
       const fileBtn = wrapper.find('[aria-label="Send file"]');
       expect(fileBtn.attributes('disabled')).toBeUndefined();

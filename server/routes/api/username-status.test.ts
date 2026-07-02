@@ -60,7 +60,7 @@ describe('SignalingServer.checkUsernameAvailability', () => {
     const handleResult = server.handle(
       session,
       sender,
-      JSON.stringify({ type: 'hello', payload: { username: 'bob', tiers } }),
+      JSON.stringify({ type: 'hello', payload: { username: 'bob', tiers, publicKey: 'pk-bob' } }),
       now
     );
     expect(handleResult.action).toBe('continue');

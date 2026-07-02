@@ -17,9 +17,9 @@ export interface RoomPeer {
   bandwidthKbps?: number;
   /**
    * Base64 SPKI DER public key for message signature verification.
-   * Optional for backward compatibility.
+   * Required for all peers.
    */
-  publicKey?: string;
+  publicKey: string;
 }
 
 /**

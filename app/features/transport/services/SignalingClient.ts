@@ -119,12 +119,12 @@ export class SignalingClient {
    * handshake completes and hello is sent, or rejects on error.
    *
    * @param publicKeyB64 - Base64 SPKI DER public key to send in Hello so
-   *   other peers can verify message signatures. Omit for legacy clients.
+   *   other peers can verify message signatures. Required for all clients.
    */
-  connect (username: string, tiers: Tier[], publicKeyB64?: string): Promise<void> {
+  connect (username: string, tiers: Tier[], publicKeyB64: string): Promise<void> {
     this.username = username;
     this.tiers = tiers;
-    this.publicKeyB64 = publicKeyB64 ?? null;
+    this.publicKeyB64 = publicKeyB64;
     this.state = SignalingConnectionState.Connecting;
     this.helloSent = false;
     this.reconnectAttempts = 0;
@@ -203,11 +203,8 @@ export class SignalingClient {
   }
 
   private sendHello (): void {
-    if (this.username === null || this.helloSent) { return; }
-    const payload: HelloPayload = { username: this.username, tiers: this.tiers };
-    if (this.publicKeyB64 !== null) {
-      payload.publicKey = this.publicKeyB64;
-    }
+    if (this.username === null || this.helloSent || this.publicKeyB64 === null) { return; }
+    const payload: HelloPayload = { username: this.username, tiers: this.tiers, publicKey: this.publicKeyB64 };
     this.send(SignalingMessageType.Hello, payload);
     this.helloSent = true;
   }
@@ -323,7 +320,7 @@ export class SignalingClient {
         );
         break;
       case SignalingMessageType.PeerJoined: {
-        const p = env.payload as { peer: { peerId: string; username: string; tiers: Tier[]; publicKey?: string }; room: string; isHub: boolean };
+        const p = env.payload as { peer: { peerId: string; username: string; tiers: Tier[]; publicKey: string }; room: string; isHub: boolean };
         this.handlers.onPeerJoined?.(p.peer, p.room, p.isHub);
         break;
       }

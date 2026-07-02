@@ -79,32 +79,28 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   /**
    * Verify a received message's signature before delivering it to the UI.
    *
-   * Verification policy (lenient for backward compatibility):
-   * - If the message has no signature, deliver it (legacy/unsigned messages
-   *   are accepted so the feature rolls out without breaking older clients).
-   * - If the message has a signature but we don't know the author's public
-   *   key, deliver it (we can't verify, but don't block on missing key data).
-   * - If the message has a signature AND we have the author's public key,
-   *   verify; drop the message if verification fails (tamper detected).
+   * Strict verification policy — all messages must be signed:
+   * - If the message has no signature, drop it.
+   * - If the author's public key is unknown (no matching peer or peer has no
+   *   publicKey), drop it.
+   * - If verification fails, drop it (tamper detected).
+   * Only messages with a valid signature verified against the author's known
+   * public key are delivered.
    */
   async function verifyAndDeliver (message: ChatMessage): Promise<void> {
-    if (message.signature) {
-      const crypto = signaling.getCrypto();
-      if (crypto) {
-        const peer = peers.value.find(p => p.username === message.author);
-        const publicKey = peer?.publicKey;
-        if (publicKey) {
-          const signable: SignableMessage = {
-            id: message.id,
-            author: message.author,
-            content: message.content,
-            timestamp: message.timestamp
-          };
-          const ok = await crypto.verify(signable, message.signature, publicKey);
-          if (!ok) { return; }
-        }
-      }
-    }
+    if (!message.signature) { return; }
+    const crypto = signaling.getCrypto();
+    if (!crypto) { return; }
+    const peer = peers.value.find(p => p.username === message.author);
+    if (!peer?.publicKey) { return; }
+    const signable: SignableMessage = {
+      id: message.id,
+      author: message.author,
+      content: message.content,
+      timestamp: message.timestamp
+    };
+    const ok = await crypto.verify(signable, message.signature, peer.publicKey);
+    if (!ok) { return; }
     externalHandlers.onMessage?.(message);
   }
 
@@ -293,7 +289,8 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   /**
    * Send a chat message over the appropriate transport. Signs the message
    * with the local ECDSA private key before sending so recipients can verify
-   * integrity. In mesh/star the message is broadcast over DataChannels to
+   * integrity. All messages must be signed; if signing fails the message is
+   * not sent. In mesh/star the message is broadcast over DataChannels to
    * connected peers. In relay mode it is sent to the server for
    * relay-broadcast. Returns the list of peer IDs the message was delivered
    * to (empty in relay mode since delivery is server-mediated and unconfirmed).
@@ -302,22 +299,20 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     const client = signaling.getClient();
     if (!client) { return []; }
 
-    // Sign the message for integrity. If crypto isn't available (legacy
-    // connection or key generation failed), send unsigned — recipients that
-    // have a public key for us will drop it, but the message still goes out.
+    // Sign the message for integrity. If crypto isn't available or signing
+    // fails, do not send — all messages must be signed.
     const crypto = signaling.getCrypto();
-    if (crypto) {
-      try {
-        const signable: SignableMessage = {
-          id: message.id,
-          author: message.author,
-          content: message.content,
-          timestamp: message.timestamp
-        };
-        message.signature = await crypto.sign(signable);
-      } catch {
-        // Signing failed — send without signature rather than blocking the user.
-      }
+    if (!crypto) { return []; }
+    try {
+      const signable: SignableMessage = {
+        id: message.id,
+        author: message.author,
+        content: message.content,
+        timestamp: message.timestamp
+      };
+      message.signature = await crypto.sign(signable);
+    } catch {
+      return [];
     }
 
     if (mode.value === UiTransportMode.Relay) {

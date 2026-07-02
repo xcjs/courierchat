@@ -152,13 +152,12 @@ purpose (`courierchat:v1:encryption`) to produce the wrapping key for each
 pair. This ensures keys are scoped per-room and per-purpose and prevents
 cross-room key reuse.
 
-### Backward compatibility
+### No backward compatibility
 
-The `encIv` and `encKey` fields are optional. Messages without them are
-treated as plaintext by recipients (same lenient policy as signatures:
-deliver unsigned/unencrypted messages for backward compatibility). A
-recipient that supports encryption will attempt to decrypt if the fields are
-present; if decryption fails (e.g., key mismatch), the message is dropped.
+The `encIv` and `encKey` fields are required on all wire-format messages once
+this ADR is implemented. Messages without them are dropped by recipients.
+There is no lenient mode — all messages must be encrypted. A recipient that
+fails to decrypt (e.g., key mismatch) drops the message.
 
 ### Performance considerations
 

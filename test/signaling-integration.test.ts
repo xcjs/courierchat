@@ -204,7 +204,7 @@ describe('Signaling integration', () => {
     };
 
     client.setHandlers(handlers);
-    await client.connect(username, tiers);
+    await client.connect(username, tiers, `pk-${username}`);
     // Wait for the microtask queue to flush (MockWebSocket opens in a microtask).
     await flushMicrotasks();
 

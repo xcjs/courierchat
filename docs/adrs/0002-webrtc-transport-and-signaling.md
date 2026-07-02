@@ -111,10 +111,11 @@ server. No external STUN. No TURN.
      signature against the author's public key and drop the message on
      mismatch. This prevents a hub from tampering with message content
      without invalidating the signature, and also protects against tampering
-     by the relay server. Verification is lenient for backward compatibility:
-     unsigned messages or messages from peers with no known public key are
-     delivered; only messages that have a signature AND a known public key
-     that fails verification are dropped.
+      by the relay server. Verification is strict: all messages must carry a
+      valid signature verified against the author's known public key.
+      Unsigned messages, messages from peers with no known public key, and
+      messages that fail verification are dropped. The server rejects Hello
+      messages that do not include a public key.
    - **Confidentiality (future):** end-to-end encryption between leaves
      (bypassing the hub) remains a separate future concern. The hub can
      still read message content; it cannot modify it. Sequence numbers
