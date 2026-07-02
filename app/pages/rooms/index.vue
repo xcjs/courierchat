@@ -84,6 +84,7 @@ import { ref, computed } from 'vue';
 import { useRoomsStore } from '~/stores/Rooms';
 import { useSessionStore } from '~/stores/Session';
 import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
+import CreateRoomModal from '~/components/rooms/CreateRoomModal.vue';
 import type { Tier } from '#shared/types/Tier';
 
 definePageMeta({ layout: 'default' });
