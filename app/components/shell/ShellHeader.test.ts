@@ -11,7 +11,7 @@ const nuxtLinkStub = {
 const iconStub = { template: '<span />' };
 const imgStub = { template: '<img />' };
 
-function mountHeader (props: { connected: boolean; roomName?: string; memberCount?: number; username?: string | null }): VueWrapper {
+function mountHeader (props: { connected: boolean; roomName?: string; memberCount?: number; transportMode?: string; username?: string | null }): VueWrapper {
   return mount(ShellHeader, {
     props,
     global: {
@@ -94,5 +94,19 @@ describe('ShellHeader', () => {
     await wrapper.find('[aria-label="User menu"]').trigger('click');
     const menu = wrapper.find('.absolute.right-0.top-10');
     expect(menu.text()).toContain('offline');
+  });
+
+  it('shows transport mode in menu when connected', async () => {
+    const wrapper = mountHeader({ username: 'alice', connected: true, transportMode: 'mesh' });
+    await wrapper.find('[aria-label="User menu"]').trigger('click');
+    const menu = wrapper.find('.absolute.right-0.top-10');
+    expect(menu.text()).toContain('mesh mode');
+  });
+
+  it('hides transport mode in menu when disconnected', async () => {
+    const wrapper = mountHeader({ username: 'alice', connected: false, transportMode: 'mesh' });
+    await wrapper.find('[aria-label="User menu"]').trigger('click');
+    const menu = wrapper.find('.absolute.right-0.top-10');
+    expect(menu.text()).not.toContain('mesh mode');
   });
 });

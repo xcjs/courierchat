@@ -4,6 +4,7 @@
       :room-name="activeRoomName ?? undefined"
       :member-count="memberCount"
       :connected="signalingConnected"
+      :transport-mode="transportMode"
       :username="username"
       @logout="onLogout"
     />
@@ -17,11 +18,6 @@
         <main class="flex-1 w-full overflow-y-auto bg-white">
           <slot />
         </main>
-        <ShellStatusBar
-          :connected="signalingConnected"
-          :heartbeat="heartbeatActive"
-          :transport-mode="transportMode"
-        />
       </div>
     </div>
   </div>
@@ -57,7 +53,6 @@ const memberCount = computed(() => {
 
 const transportMode = computed<UiTransportMode>(() => connection.transportMode);
 const signalingConnected = computed(() => connection.signalingConnected);
-const heartbeatActive = computed(() => connection.heartbeatActive);
 
 // Keep the connection store in sync with the active route.
 watch(activeRoomName, (name) => {

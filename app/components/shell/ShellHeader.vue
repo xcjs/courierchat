@@ -42,6 +42,7 @@
           >
             <div class="flex items-center gap-2 px-4 py-2 text-sm text-text-content/70 border-b border-text-content/10 mb-1 capitalize">
               {{ statusLabel }}
+              <span v-if="connected" class="text-text-content/50">· {{ transportMode }} mode</span>
             </div>
             <NuxtLink to="/settings" class="block px-4 py-2 text-sm text-text-content hover:bg-background-primary/10" @click="menuOpen = false">Settings</NuxtLink>
             <NuxtLink to="/about" class="block px-4 py-2 text-sm text-text-content hover:bg-background-primary/10" @click="menuOpen = false">About</NuxtLink>
@@ -68,9 +69,11 @@ const props = withDefaults(defineProps<{
   roomName?: string
   memberCount?: number
   connected?: boolean
+  transportMode?: string
   username?: string | null
 }>(), {
-  connected: false
+  connected: false,
+  transportMode: 'offline'
 })
 
 defineEmits<{
