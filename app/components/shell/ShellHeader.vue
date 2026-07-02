@@ -22,9 +22,9 @@
     <div class="ml-auto flex items-center gap-2">
       <template v-if="username">
         <span
-          :title="`Transport mode: ${transportMode}`"
+          :title="`Status: ${statusLabel}`"
           class="w-2 h-2 rounded-full leading-none shrink-0"
-          :class="modeDotClass"
+          :class="statusDotClass"
         ></span>
         <span class="text-sm leading-none text-text-content-inverted/80 hidden sm:inline">{{ username }}</span>
         <div class="relative">
@@ -41,7 +41,7 @@
             class="absolute right-0 top-10 bg-white shadow-courier-drop rounded-md py-1 w-44"
           >
             <div class="flex items-center gap-2 px-4 py-2 text-sm text-text-content/70 border-b border-text-content/10 mb-1 capitalize">
-              {{ transportMode }}
+              {{ statusLabel }}
             </div>
             <NuxtLink to="/settings" class="block px-4 py-2 text-sm text-text-content hover:bg-background-primary/10" @click="menuOpen = false">Settings</NuxtLink>
             <NuxtLink to="/about" class="block px-4 py-2 text-sm text-text-content hover:bg-background-primary/10" @click="menuOpen = false">About</NuxtLink>
@@ -61,13 +61,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { UiTransportMode } from '~/features/transport/types/Transport'
+import { ref } from 'vue'
+import { useConnectionStatus } from '~/features/connection/composables/useConnectionStatus'
 
 const props = defineProps<{
   roomName?: string
   memberCount?: number
-  transportMode: UiTransportMode
+  connected: boolean
   username?: string | null
 }>()
 
@@ -77,17 +77,5 @@ defineEmits<{
 
 const menuOpen = ref(false)
 
-const modeDotClass = computed<string>(() => {
-  switch (props.transportMode) {
-    case UiTransportMode.Mesh:
-      return 'bg-background-primary'
-    case UiTransportMode.Star:
-      return 'bg-background-interactive'
-    case UiTransportMode.Relay:
-      return 'bg-text-error'
-    case UiTransportMode.Offline:
-      return 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]'
-  }
-  return ''
-})
+const { statusLabel, statusDotClass } = useConnectionStatus(() => props.connected)
 </script>

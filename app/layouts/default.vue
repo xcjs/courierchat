@@ -3,7 +3,7 @@
     <ShellHeader
       :room-name="activeRoomName ?? undefined"
       :member-count="memberCount"
-      :transport-mode="transportMode"
+      :connected="signalingConnected"
       :username="username"
       @logout="onLogout"
     />

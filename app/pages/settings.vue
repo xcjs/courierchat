@@ -42,9 +42,9 @@
           <dd class="flex items-center gap-2 text-text-content/70 capitalize">
             <span
               class="w-2 h-2 rounded-full"
-              :class="connected ? 'bg-green-500' : 'bg-text-error shadow-[0_0_4px_1px_rgba(165,61,61,0.7)]'"
+              :class="statusDotClass"
             />
-            {{ connected ? 'online' : 'offline' }}
+            {{ statusLabel }}
           </dd>
         </div>
         <div class="flex justify-between border-b border-text-content/10 pb-2">
@@ -112,6 +112,7 @@ import { useSessionStore } from '~/stores/Session';
 import { useConnectionStore } from '~/stores/Connection';
 import { usePresenceStore } from '~/stores/Presence';
 import { Tier } from '#shared/types/Tier';
+import { useConnectionStatus } from '~/features/connection/composables/useConnectionStatus';
 
 definePageMeta({ layout: 'default' });
 
@@ -129,5 +130,6 @@ const tierLabel = computed(() => {
 });
 
 const connected = computed(() => connection.signalingConnected);
+const { statusLabel, statusDotClass } = useConnectionStatus(() => connected.value);
 const stunEnabledLabel = computed(() => 'enabled');
 </script>
