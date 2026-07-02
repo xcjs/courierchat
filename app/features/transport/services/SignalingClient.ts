@@ -18,7 +18,8 @@ import {
   type TypingPayload,
   type RequestRelayPayload,
   type PingPayload,
-  type PeerMetricsPayload
+  type PeerMetricsPayload,
+  type RoomSummary
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
 
@@ -214,8 +215,8 @@ export class SignalingClient {
     this.helloSent = true;
   }
 
-  joinRoom (room: string): void {
-    const payload: JoinPayload = { room };
+  joinRoom (room: string, icon?: string): void {
+    const payload: JoinPayload = { room, icon };
     this.send(SignalingMessageType.Join, payload);
   }
 
@@ -317,13 +318,13 @@ export class SignalingClient {
     }
     if (typeof env.type !== 'string') { return; }
     switch (env.type) {
-      case SignalingMessageType.Welcome:
-        this.peerId = (env.payload as { peerId: string }).peerId ?? null;
-        this.handlers.onWelcome?.(
-          (env.payload as { peerId: string }).peerId,
-          (env.payload as { onlineUsernames: string[] }).onlineUsernames ?? []
-        );
+      case SignalingMessageType.Welcome: {
+        const p = env.payload as { peerId: string; onlineUsernames: string[]; rooms: RoomSummary[] };
+        this.peerId = p.peerId ?? null;
+        this.handlers.onWelcome?.(p.peerId, p.onlineUsernames ?? []);
+        if (p.rooms) { this.handlers.onRoomList?.(p.rooms); }
         break;
+      }
       case SignalingMessageType.PeerJoined: {
         const p = env.payload as { peer: { peerId: string; username: string; tiers: Tier[]; publicKey: string; encPublicKey: string }; room: string; isHub: boolean };
         this.handlers.onPeerJoined?.(p.peer, p.room, p.isHub);
@@ -382,6 +383,11 @@ export class SignalingClient {
       case SignalingMessageType.Presence: {
         const p = env.payload as { username: string; status: PresenceStatus };
         this.handlers.onPresence?.(p.username, p.status);
+        break;
+      }
+      case SignalingMessageType.RoomList: {
+        const p = env.payload as { rooms: Array<{ name: string; tiers: import('#shared/types/Tier').Tier[]; memberCount: number; icon?: string }> };
+        this.handlers.onRoomList?.(p.rooms);
         break;
       }
       case SignalingMessageType.Error: {

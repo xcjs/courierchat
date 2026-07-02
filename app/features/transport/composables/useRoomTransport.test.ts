@@ -164,7 +164,7 @@ describe('useRoomTransport', () => {
     it('registers handlers, sets joined, calls joinRoom', () => {
       transport.join();
       expect(mockSignaling.addHandlers).toHaveBeenCalled();
-      expect(mockClient.joinRoom).toHaveBeenCalledWith('test-room');
+      expect(mockClient.joinRoom).toHaveBeenCalledWith('test-room', undefined);
       expect(transport.joined.value).toBe(true);
     });
 

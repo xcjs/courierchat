@@ -8,6 +8,7 @@ import type { Tier } from '#shared/types/Tier';
 import { useRuntimeConfig } from '#imports';
 import { usePresenceStore } from '~/stores/Presence';
 import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
+import { useRoomsStore } from '~/stores/Rooms';
 
 /**
  * useSignaling wraps the framework-agnostic SignalingClient in a Nuxt
@@ -99,6 +100,9 @@ export function useSignaling (): UseSignalingReturn {
       },
       onPresence: (user, status) => {
         presence.updatePresence(user, status);
+      },
+      onRoomList: (rooms) => {
+        useRoomsStore().setRoomsFromServer(rooms);
       }
     });
     client.value = instance;

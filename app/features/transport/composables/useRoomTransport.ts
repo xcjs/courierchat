@@ -8,6 +8,7 @@ import { UiTransportMode } from '../types/Transport';
 import type { SignableMessage } from '../services/MessageCrypto';
 import { useSignaling } from './useSignaling';
 import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
+import { useRoomsStore } from '~/stores/Rooms';
 import { TransportMode, type PeerIdentity, type ChatMessagePayload } from '#shared/types/Signaling';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 
@@ -271,7 +272,9 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     if (!client || !signaling.isConnected.value) { return; }
     registerSignalingHandlers();
     joined.value = true;
-    client.joinRoom(roomName);
+    const icon = useRoomsStore().getRoom(roomName)?.icon;
+    client.joinRoom(roomName, icon);
+    useRoomsStore().markJoined(roomName);
     startMetricsLoop();
     // Existing peers list is populated by the peer-joined messages the server
     // sends in response to our join (the server sends peer-joined for each
@@ -298,6 +301,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     hubPeerId.value = null;
     isHub.value = false;
     signaling.getClient()?.leaveRoom(roomName);
+    useRoomsStore().markLeft(roomName);
   }
 
   /**

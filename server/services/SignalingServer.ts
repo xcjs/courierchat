@@ -22,6 +22,8 @@ import {
   type PongPayload,
   type PeerMetricsPayload,
   type PresencePayload,
+  type RoomListPayload,
+  type RoomSummary,
   type ErrorPayload
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
@@ -254,7 +256,8 @@ export class SignalingServer {
 
     const welcomePayload: WelcomePayload = {
       peerId: session.peerId,
-      onlineUsernames: this.usernames.onlineUsernames()
+      onlineUsernames: this.usernames.onlineUsernames(),
+      rooms: this.rooms.summariesVisibleToTiers(session.tiers)
     };
     this.send(sender, SignalingMessageType.Welcome, welcomePayload, now);
 
@@ -290,7 +293,7 @@ export class SignalingServer {
       encPublicKey: session.encPublicKey!
     };
 
-    const joinResult = this.rooms.join(roomName, peer);
+    const joinResult = this.rooms.join(roomName, peer, payload?.icon);
     if (!joinResult.ok) {
       const code = joinResult.reason === 'tier-mismatch' ? SignalingErrorCode.TierMismatch : SignalingErrorCode.NotJoined;
       this.sendError(sender, code, `Join failed: ${joinResult.reason}`, now);
@@ -343,6 +346,11 @@ export class SignalingServer {
       }
     }
 
+    // Broadcast the updated room list to all connected peers so they see
+    // the new room (or updated member count). Each peer receives only the
+    // rooms visible to its own tiers.
+    this.broadcastRoomList(now);
+
     return { action: 'continue' };
   }
 
@@ -373,6 +381,7 @@ export class SignalingServer {
     // If the room was destroyed, notify remaining subscribers.
     if (leaveResult.destroyed) {
       this.broadcastRoom(roomName, sender, SignalingMessageType.RoomDestroyed, { room: roomName }, now);
+      this.broadcastRoomList(now);
       return leaveResult;
     }
 
@@ -391,6 +400,8 @@ export class SignalingServer {
         }
       }
     }
+
+    this.broadcastRoomList(now);
     return leaveResult;
   }
 
@@ -550,6 +561,27 @@ export class SignalingServer {
     for (const [peerId, peerSender] of this.senders) {
       if (sender !== null && peerId === sender.peerId) { continue; }
       peerSender.send(envelopeStr);
+    }
+  }
+
+  /**
+   * Send a RoomList message to a specific session, tier-filtered.
+   */
+  private sendRoomList (session: SignalingSession, sender: PeerSender, now: number): void {
+    const summaries: RoomSummary[] = this.rooms.summariesVisibleToTiers(session.tiers);
+    const payload: RoomListPayload = { rooms: summaries };
+    this.send(sender, SignalingMessageType.RoomList, payload, now);
+  }
+
+  /**
+   * Broadcast the room list to every connected session, each tier-filtered.
+   * Called after room create/join/leave/destroy so all clients stay in sync.
+   */
+  private broadcastRoomList (now: number): void {
+    for (const [peerId, session] of this.sessions) {
+      const sender = this.senders.get(peerId);
+      if (!sender) { continue; }
+      this.sendRoomList(session, sender, now);
     }
   }
 

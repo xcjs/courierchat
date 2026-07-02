@@ -18,7 +18,7 @@ describe('RoomsStore', () => {
     const store = useRoomsStore();
     store.addRoom('general', [Tier.Adult]);
     expect(store.rooms).toHaveLength(1);
-    expect(store.rooms[0]).toEqual({ name: 'general', icon: undefined, memberCount: 1, tiers: [Tier.Adult] });
+    expect(store.rooms[0]).toEqual({ name: 'general', icon: undefined, memberCount: 1, tiers: [Tier.Adult], joined: true });
   });
 
   it('addRoom is idempotent by name', () => {

@@ -100,9 +100,11 @@ export class RoomRegistry {
 
   /**
    * Join a room. The peer's tiers must intersect the room's tiers. On join,
-   * the transport mode is (re)evaluated and a hub may be elected.
+   * the transport mode is (re)evaluated and a hub may be elected. If the room
+   * is being implicitly created, the optional icon is applied to the room
+   * record.
    */
-  join (roomName: string, peer: RoomPeer): JoinResult {
+  join (roomName: string, peer: RoomPeer, icon?: string): JoinResult {
     let room = this.byName.get(roomName);
     if (!room) {
       // Implicit room creation: the room inherits the joining peer's tiers.
@@ -111,9 +113,13 @@ export class RoomRegistry {
         tiers: [...peer.tiers],
         peers: new Map(),
         transportMode: TransportMode.Mesh,
-        explicit: false
+        explicit: false,
+        icon
       };
       this.byName.set(roomName, room);
+    } else if (icon && !room.icon) {
+      // First joiner to provide an icon wins if the room has none.
+      room.icon = icon;
     }
 
     // Tier isolation: peer must share at least one tier with the room.
@@ -180,6 +186,20 @@ export class RoomRegistry {
   /** List all rooms visible to a given tier set. */
   roomsVisibleToTiers (sessionTiers: readonly Tier[]): RoomRecord[] {
     return Array.from(this.byName.values()).filter(r => r.tiers.some(t => sessionTiers.includes(t)));
+  }
+
+  /**
+   * Produce a room summary list (name, tiers, memberCount, icon) for all
+   * rooms visible to the given tier set. Used to sync the room list to
+   * clients via RoomList messages.
+   */
+  summariesVisibleToTiers (sessionTiers: readonly Tier[]): Array<{ name: string; tiers: Tier[]; memberCount: number; icon?: string }> {
+    return this.roomsVisibleToTiers(sessionTiers).map(r => ({
+      name: r.name,
+      tiers: r.tiers,
+      memberCount: r.peers.size,
+      icon: r.icon
+    }));
   }
 
   /** All room records (for admin/debug). */

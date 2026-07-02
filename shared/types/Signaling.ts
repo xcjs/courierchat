@@ -62,7 +62,9 @@ export enum SignalingMessageType {
   Typing = 'typing',
   Presence = 'presence',
   // Relay-mode broadcast (server relays chat content when no hub reachable)
-  RelayBroadcast = 'relay-broadcast'
+  RelayBroadcast = 'relay-broadcast',
+  // Server -> client: full room list snapshot (tier-filtered for the recipient)
+  RoomList = 'room-list'
 }
 
 /**
@@ -137,19 +139,45 @@ export interface HelloPayload {
 
 /**
  * Client -> server: join a room. Server adds the peer to the room, picks
- * the transport mode, and notifies existing peers.
+ * the transport mode, and notifies existing peers. The optional icon is sent
+ * so the server can attach it to the room record for the room list.
  */
 export interface JoinPayload {
   room: string;
+  icon?: string;
 }
 
 /**
- * Server -> client: accepted connection. Contains the assigned peerId and
- * the current global username registry snapshot (for presence).
+ * Summary of a room sent in the room list. Contains only the information
+ * clients need to display and join rooms — no peer identities or transport
+ * details. `memberCount` is the current peer count; `icon` is the optional
+ * lucide/emoji icon set when the room was created.
+ */
+export interface RoomSummary {
+  name: string;
+  tiers: Tier[];
+  memberCount: number;
+  icon?: string;
+}
+
+/**
+ * Server -> client: full room list snapshot, tier-filtered for the recipient.
+ * Sent on Welcome and broadcast whenever the room set changes (room created,
+ * peer joined/left, room destroyed).
+ */
+export interface RoomListPayload {
+  rooms: RoomSummary[];
+}
+
+/**
+ * Server -> client: accepted connection. Contains the assigned peerId,
+ * the current global username registry snapshot (for presence), and the
+ * list of rooms visible to the session's tiers.
  */
 export interface WelcomePayload {
   peerId: string;
   onlineUsernames: string[];
+  rooms: RoomSummary[];
 }
 
 /**

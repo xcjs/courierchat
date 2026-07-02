@@ -39,7 +39,7 @@ const roomsStore = useRoomsStore();
 const connection = useConnectionStore();
 const signaling = useSignaling();
 
-const rooms = computed(() => roomsStore.roomsVisibleToTiers(session.tiers));
+const rooms = computed(() => roomsStore.joinedRoomsVisibleToTiers(session.tiers));
 const username = computed(() => session.username);
 
 const activeRoomName = computed(() => {
@@ -93,7 +93,7 @@ function onCreateRoom (): void {
 }
 
 function onLeaveRoom (name: string): void {
-  roomsStore.removeRoom(name);
+  roomsStore.markLeft(name);
   if (activeRoomName.value === name) {
     navigateTo('/rooms');
   }
