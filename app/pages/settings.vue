@@ -40,10 +40,7 @@
             Status
           </dt>
           <dd class="flex items-center gap-2 text-text-content/70 capitalize">
-            <span
-              class="w-2 h-2 rounded-full"
-              :class="statusDotClass"
-            />
+            <Icon :name="statusIcon" size="14" :class="statusClass" />
             {{ statusLabel }}
           </dd>
         </div>
@@ -130,6 +127,7 @@ const tierLabel = computed(() => {
 });
 
 const connected = computed(() => connection.signalingConnected);
-const { statusLabel, statusDotClass } = useConnectionStatus(() => connected.value);
+const transportMode = computed(() => connection.transportMode);
+const { statusLabel, statusIcon, statusClass } = useConnectionStatus(() => connected.value, () => transportMode.value);
 const stunEnabledLabel = computed(() => 'enabled');
 </script>

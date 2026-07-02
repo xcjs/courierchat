@@ -2,16 +2,17 @@
 import { describe, it, expect } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
 import ShellHeader from './ShellHeader.vue';
+import { UiTransportMode } from '~/features/transport/types/Transport';
 
 const nuxtLinkStub = {
   template: '<a :href="to"><slot /></a>',
   props: ['to']
 };
 
-const iconStub = { template: '<span />' };
+const iconStub = { template: '<span class="icon-stub" />' };
 const imgStub = { template: '<img />' };
 
-function mountHeader (props: { connected: boolean; roomName?: string; memberCount?: number; transportMode?: string; username?: string | null }): VueWrapper {
+function mountHeader (props: { connected: boolean; roomName?: string; memberCount?: number; transportMode?: UiTransportMode; username?: string | null }): VueWrapper {
   return mount(ShellHeader, {
     props,
     global: {
@@ -70,16 +71,18 @@ describe('ShellHeader', () => {
     expect(wrapper.find('.absolute.right-0.top-10').exists()).toBe(false);
   });
 
-  it('renders online dot when connected', () => {
-    const wrapper = mountHeader({ username: 'alice', connected: true });
-    const dot = wrapper.find('.w-2.h-2.rounded-full');
-    expect(dot.classes()).toContain('bg-green-500');
+  it('renders offline icon when disconnected', () => {
+    const wrapper = mountHeader({ username: 'alice', connected: false });
+    const statusSpan = wrapper.find('[title^="Status:"]');
+    expect(statusSpan.exists()).toBe(true);
+    expect(statusSpan.html()).toContain('text-text-error');
   });
 
-  it('renders offline dot when disconnected', () => {
-    const wrapper = mountHeader({ username: 'alice', connected: false });
-    const dot = wrapper.find('.w-2.h-2.rounded-full');
-    expect(dot.classes()).toContain('bg-text-error');
+  it('renders online icon when connected', () => {
+    const wrapper = mountHeader({ username: 'alice', connected: true });
+    const statusSpan = wrapper.find('[title^="Status:"]');
+    expect(statusSpan.exists()).toBe(true);
+    expect(statusSpan.html()).toContain('text-green-500');
   });
 
   it('shows online status label in menu', async () => {
@@ -96,17 +99,18 @@ describe('ShellHeader', () => {
     expect(menu.text()).toContain('offline');
   });
 
-  it('shows transport mode in menu when connected', async () => {
-    const wrapper = mountHeader({ username: 'alice', connected: true, transportMode: 'mesh' });
+  it('shows mesh status label in menu when in mesh mode', async () => {
+    const wrapper = mountHeader({ username: 'alice', connected: true, transportMode: UiTransportMode.Mesh });
     await wrapper.find('[aria-label="User menu"]').trigger('click');
     const menu = wrapper.find('.absolute.right-0.top-10');
-    expect(menu.text()).toContain('mesh mode');
+    expect(menu.text()).toContain('mesh');
   });
 
-  it('hides transport mode in menu when disconnected', async () => {
-    const wrapper = mountHeader({ username: 'alice', connected: false, transportMode: 'mesh' });
+  it('shows relay status with amber icon in menu', async () => {
+    const wrapper = mountHeader({ username: 'alice', connected: true, transportMode: UiTransportMode.Relay });
     await wrapper.find('[aria-label="User menu"]').trigger('click');
     const menu = wrapper.find('.absolute.right-0.top-10');
+    expect(menu.text()).toContain('relay');
     expect(menu.text()).not.toContain('mesh mode');
   });
 });
