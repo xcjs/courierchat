@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FileTransferManager, type FileTransferHandlers } from './FileTransferManager';
-import type { FileTransferControl } from '#shared/types/FileTransfer';
+import type { FileTransferControl, FileTransferStart } from '#shared/types/FileTransfer';
 
 interface MockChannel extends RTCDataChannel {
   readyState: RTCDataChannelState;
@@ -264,5 +264,121 @@ describe('FileTransferManager cancellation', () => {
     const complete: FileTransferControl = { type: 'file-complete', id: 'tf-cl' };
     mgr.handleControlMessage('p-13', JSON.stringify(complete));
     expect(handlers.onTransferComplete).not.toHaveBeenCalled();
+  });
+});
+
+describe('FileTransferManager backpressure', () => {
+  let mgr: FileTransferManager;
+  let handlers: FileTransferHandlers;
+
+  beforeEach(() => {
+    mgr = new FileTransferManager();
+    handlers = makeHandlers();
+    mgr.setHandlers(handlers);
+  });
+
+  it('waits for bufferedamountlow event when bufferedAmount exceeds threshold', async () => {
+    const channel = makeMockChannel();
+    channel.bufferedAmountLowThreshold = 64;
+    const file = makeFile('big.dat', 32, 'application/octet-stream');
+
+    let lowListener: (() => void) | null = null;
+    (channel.addEventListener as ReturnType<typeof vi.fn>).mockImplementation((event: string, cb: () => void) => {
+      if (event === 'bufferedamountlow') { lowListener = cb; }
+    });
+    (channel.removeEventListener as ReturnType<typeof vi.fn>).mockImplementation(() => {});
+
+    const sendPromise = mgr.sendFile('p-bp1', file, channel);
+
+    (channel.send as ReturnType<typeof vi.fn>).mockImplementation((data: ArrayBuffer | string) => {
+      if (typeof data !== 'string') {
+        channel.bufferedAmount = 128;
+      }
+    });
+
+    await vi.waitFor(() => { expect(lowListener).not.toBeNull(); });
+
+    channel.bufferedAmount = 0;
+    lowListener!();
+
+    await sendPromise;
+
+    expect(handlers.onOutgoingComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends file-start with correct metadata for empty file', async () => {
+    const channel = makeMockChannel();
+    const file = makeFile('empty.txt', 0, 'text/plain');
+
+    const id = await mgr.sendFile('p-bp2', file, channel);
+
+    expect(id).toBeTruthy();
+    const sends = (channel.send as ReturnType<typeof vi.fn>).mock.calls.map(c => c[0]);
+    const startMsg = sends.find(s => typeof s === 'string' && s.includes('file-start'));
+    expect(startMsg).toBeTruthy();
+    const parsedStart = JSON.parse(startMsg as string) as FileTransferStart;
+    expect(parsedStart.type).toBe('file-start');
+    expect(parsedStart.size).toBe(0);
+    expect(handlers.onOutgoingComplete).toHaveBeenCalledWith(id);
+  });
+});
+
+describe('FileTransferManager multiple transfers', () => {
+  let mgr: FileTransferManager;
+  let handlers: FileTransferHandlers;
+
+  beforeEach(() => {
+    mgr = new FileTransferManager();
+    handlers = makeHandlers();
+    mgr.setHandlers(handlers);
+  });
+
+  it('tracks multiple incoming transfers independently', () => {
+    const start1: FileTransferControl = { type: 'file-start', id: 'tf-m1', name: 'a.txt', size: 5, mimeType: 'text/plain' };
+    const start2: FileTransferControl = { type: 'file-start', id: 'tf-m2', name: 'b.txt', size: 3, mimeType: 'text/plain' };
+    mgr.handleControlMessage('p-m1', JSON.stringify(start1));
+    mgr.handleControlMessage('p-m2', JSON.stringify(start2));
+
+    expect(handlers.onTransferStart).toHaveBeenCalledTimes(2);
+
+    mgr.handleBinaryMessage('p-m1', new ArrayBuffer(5));
+    expect(handlers.onTransferComplete).toHaveBeenCalledTimes(1);
+    expect((handlers.onTransferComplete as ReturnType<typeof vi.fn>).mock.calls[0]![0]).toBe('tf-m1');
+
+    mgr.handleBinaryMessage('p-m2', new ArrayBuffer(3));
+    expect(handlers.onTransferComplete).toHaveBeenCalledTimes(2);
+    expect((handlers.onTransferComplete as ReturnType<typeof vi.fn>).mock.calls[1]![0]).toBe('tf-m2');
+  });
+
+  it('handleBinaryMessage with oversized chunk still completes transfer', () => {
+    const start: FileTransferControl = { type: 'file-start', id: 'tf-ov', name: 'ov.bin', size: 3, mimeType: 'application/octet-stream' };
+    mgr.handleControlMessage('p-ov', JSON.stringify(start));
+
+    mgr.handleBinaryMessage('p-ov', new ArrayBuffer(10));
+
+    expect(handlers.onTransferComplete).toHaveBeenCalledTimes(1);
+    const file = (handlers.onTransferComplete as ReturnType<typeof vi.fn>).mock.calls[0]![1] as File;
+    expect(file.size).toBe(10);
+  });
+
+  it('cancelIncoming prevents completion via binary auto-complete', () => {
+    const start: FileTransferControl = { type: 'file-start', id: 'tf-cn', name: 'c.txt', size: 4, mimeType: 'text/plain' };
+    mgr.handleControlMessage('p-cn', JSON.stringify(start));
+    mgr.cancelIncoming('tf-cn');
+
+    mgr.handleBinaryMessage('p-cn', new ArrayBuffer(4));
+    expect(handlers.onTransferComplete).not.toHaveBeenCalled();
+    expect(handlers.onTransferProgress).not.toHaveBeenCalled();
+  });
+
+  it('sendFile generates unique IDs for concurrent transfers', async () => {
+    const channel = makeMockChannel();
+    const file1 = makeFile('a.txt', 4, 'text/plain');
+    const file2 = makeFile('b.txt', 4, 'text/plain');
+
+    const id1 = await mgr.sendFile('p-ua', file1, channel);
+    const id2 = await mgr.sendFile('p-ua', file2, channel);
+
+    expect(id1).not.toBe(id2);
   });
 });
