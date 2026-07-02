@@ -15,6 +15,11 @@ export interface RoomPeer {
   latencyMs?: number;
   /** Reported downstream bandwidth in kbps (optional, for election). */
   bandwidthKbps?: number;
+  /**
+   * Base64 SPKI DER public key for message signature verification.
+   * Optional for backward compatibility.
+   */
+  publicKey?: string;
 }
 
 /**

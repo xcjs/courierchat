@@ -45,10 +45,11 @@ describe('useSignaling', () => {
     expect(signaling.signalingError.value).toBeNull();
   });
 
-  it('connect creates a SignalingClient and calls connect', async () => {
+  it('connect creates a SignalingClient and calls connect with publicKey', async () => {
     await signaling.connect('alice', [Tier.Adult]);
-    expect(mocks.connect).toHaveBeenCalledWith('alice', [Tier.Adult]);
+    expect(mocks.connect).toHaveBeenCalledWith('alice', [Tier.Adult], expect.any(String));
     expect(signaling.getClient()).not.toBeNull();
+    expect(signaling.getCrypto()).not.toBeNull();
   });
 
   it('disconnect calls client.disconnect and clears state', async () => {
@@ -57,6 +58,7 @@ describe('useSignaling', () => {
 
     expect(mocks.disconnect).toHaveBeenCalled();
     expect(signaling.getClient()).toBeNull();
+    expect(signaling.getCrypto()).toBeNull();
     expect(signaling.connectionState.value).toBe(SignalingConnectionState.Disconnected);
     expect(signaling.isConnected.value).toBe(false);
   });

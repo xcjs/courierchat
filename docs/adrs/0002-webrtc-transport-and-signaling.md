@@ -102,11 +102,23 @@ server. No external STUN. No TURN.
    - In star topology, the hub peer sees every message and could drop or
      tamper with them. Unlike the operator-controlled server in the relay
      fallback, the hub is an untrusted anonymous peer. This is an accepted
-     tradeoff of pure-WebRTC scaling. Mitigations to consider in future ADRs:
-     message sequence numbers (detect drops), application-level checksums
-     (detect tampering), or rotating the hub periodically to limit any one
-     peer's influence. End-to-end encryption between leaves (bypassing the
-     hub) is the strongest mitigation but is out of scope for this ADR.
+     tradeoff of pure-WebRTC scaling.
+   - **Message integrity (implemented):** each client generates an ECDSA
+     P-256 keypair on connect and includes its public key (SPKI DER, base64)
+     in the Hello payload. The server distributes public keys to other peers
+     via PeerJoined. Every chat message carries a base64 signature over the
+     canonical form `id|author|content|timestamp`. Recipients verify the
+     signature against the author's public key and drop the message on
+     mismatch. This prevents a hub from tampering with message content
+     without invalidating the signature, and also protects against tampering
+     by the relay server. Verification is lenient for backward compatibility:
+     unsigned messages or messages from peers with no known public key are
+     delivered; only messages that have a signature AND a known public key
+     that fails verification are dropped.
+   - **Confidentiality (future):** end-to-end encryption between leaves
+     (bypassing the hub) remains a separate future concern. The hub can
+     still read message content; it cannot modify it. Sequence numbers
+     (detect drops) and hub rotation remain candidates for future work.
 
  6. Ephemeral rooms:
    - Rooms exist only in server memory while >=1 peer is connected.
@@ -159,8 +171,10 @@ Negative:
 - Three transport modes (mesh, star, relay) add client- and server-side
   complexity; the server must pick the right mode per room and handle hub
   election/failover.
-- The hub peer in star mode is untrusted and could drop or tamper with
-  messages (see section 5). Mitigations are deferred to future ADRs.
+- The hub peer in star mode is untrusted. Message **tampering** is now
+  prevented by ECDSA signatures (see section 5), but the hub can still
+  **drop** messages (no sequence-number mechanism yet) and **read** message
+  content (no E2E encryption yet).
 - File transfer is degraded or unavailable for peers behind NATs that block
   host candidates and where STUN is insufficient.
 
@@ -197,10 +211,13 @@ Negative:
 7. File transfer: no hard size limit (DataChannel handles chunking). On
    no-direct-connection, the UI shows "Direct connection unavailable - file
    transfer not possible."
-8. Hub-trust mitigations: deferred to a follow-up ADR. Near-term candidates to
-   evaluate there: message sequence numbers (detect drops), application-level
-   checksums (detect tampering), hub rotation. Longer-term option:
-   end-to-end leaf-to-leaf encryption bypassing the hub.
+8. Hub-trust mitigations: **message integrity via ECDSA P-256 signatures is
+   now implemented** (see section 5). Each client signs messages with a
+   Web Crypto keypair generated on connect; recipients verify against the
+   author's public key distributed via signaling. This prevents hub tampering.
+   Remaining candidates for future work: message sequence numbers (detect
+   drops), hub rotation, and end-to-end leaf-to-leaf encryption
+   (confidentiality, bypassing the hub).
 
 ## Open questions
 

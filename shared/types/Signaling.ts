@@ -85,6 +85,12 @@ export interface PeerIdentity {
   peerId: string;
   username: string;
   tiers: Tier[];
+  /**
+   * Base64 SPKI DER encoding of the peer's ECDSA P-256 public key. Used by
+   * recipients to verify message signatures. Present when the client
+   * supports message integrity; absent on legacy connections.
+   */
+  publicKey?: string;
 }
 
 /**
@@ -110,6 +116,12 @@ export interface SignalingEnvelope<T = unknown> {
 export interface HelloPayload {
   username: string;
   tiers: Tier[];
+  /**
+   * Base64 SPKI DER encoding of the client's ECDSA P-256 public key. The
+   * server stores this on the session and distributes it to other peers via
+   * Welcome/PeerJoined. Optional for backward compatibility.
+   */
+  publicKey?: string;
 }
 
 /**
@@ -195,6 +207,12 @@ export interface ChatMessagePayload {
   author: string;
   content: string;
   timestamp: number;
+  /**
+   * Base64 ECDSA signature over `${id}|${author}|${content}|${timestamp}`.
+   * Recipients verify it against the author's public key (distributed via
+   * signaling) and drop the message on mismatch.
+   */
+  signature?: string;
 }
 
 export interface TypingPayload {

@@ -59,6 +59,12 @@ export class SignalingSession {
   username: string | null = null;
   tiers: Tier[] = [];
   joinedRooms = new Set<string>();
+  /**
+   * Base64 SPKI DER public key sent by the client in Hello. Distributed
+   * to other peers via PeerJoined so they can verify message signatures.
+   * Optional for backward compatibility.
+   */
+  publicKey: string | null = null;
 
   constructor (peerId: string) {
     this.peerId = peerId;
@@ -229,6 +235,7 @@ export class SignalingServer {
 
     session.username = result.record.username;
     session.tiers = result.record.tiers;
+    session.publicKey = payload.publicKey ?? null;
 
     const welcomePayload: WelcomePayload = {
       peerId: session.peerId,
@@ -263,7 +270,8 @@ export class SignalingServer {
       peerId: session.peerId,
       username: session.username!,
       tiers: session.tiers,
-      lastHeartbeat: now
+      lastHeartbeat: now,
+      publicKey: session.publicKey ?? undefined
     };
 
     const joinResult = this.rooms.join(roomName, peer);
@@ -289,7 +297,7 @@ export class SignalingServer {
     // Notify the joiner of existing peers.
     for (const existing of existingPeers) {
       const peerJoinedPayload: PeerJoinedPayload = {
-        peer: { peerId: existing.peerId, username: existing.username, tiers: existing.tiers },
+        peer: { peerId: existing.peerId, username: existing.username, tiers: existing.tiers, publicKey: existing.publicKey },
         room: roomName,
         isHub: room.hubPeerId === existing.peerId
       };
@@ -298,7 +306,7 @@ export class SignalingServer {
 
     // Notify existing peers that the new peer joined.
     const joinedPayload: PeerJoinedPayload = {
-      peer: { peerId: session.peerId, username: session.username!, tiers: session.tiers },
+      peer: { peerId: session.peerId, username: session.username!, tiers: session.tiers, publicKey: session.publicKey ?? undefined },
       room: roomName,
       isHub: room.hubPeerId === session.peerId
     };

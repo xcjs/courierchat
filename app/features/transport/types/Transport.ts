@@ -1,4 +1,4 @@
-import type { TransportMode, PeerIdentity, PresenceStatus } from '#shared/types/Signaling';
+import type { TransportMode, PeerIdentity, PresenceStatus, ChatMessagePayload } from '#shared/types/Signaling';
 
 /**
  * UI-side transport mode. Extends the wire TransportMode with an Offline
@@ -47,7 +47,7 @@ export interface SignalingHandlers {
   onOfferRelayed?: (from: string, sdp: string, label: string) => void;
   onAnswerRelayed?: (from: string, sdp: string) => void;
   onIceCandidateRelayed?: (from: string, candidate: string, sdpMLineIndex: number | null, sdpMid: string | null) => void;
-  onRelayBroadcast?: (room: string, message: { id: string; author: string; content: string; timestamp: number }) => void;
+  onRelayBroadcast?: (room: string, message: ChatMessagePayload) => void;
   onPong?: (id: string, sentAt: number, receivedAt: number) => void;
   onTyping?: (room: string, username: string, isTyping: boolean) => void;
   onPresence?: (username: string, status: PresenceStatus) => void;

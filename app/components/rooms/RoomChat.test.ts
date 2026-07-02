@@ -317,13 +317,13 @@ describe('RoomChat', () => {
       const msg = makeMessage('1', 'alice', 'hello');
       chatMock.sendMessage.mockReturnValue(msg);
       const transport = makeTransport({
-        sendMessage: vi.fn().mockReturnValue(['peer1']) as UseRoomTransportReturn['sendMessage']
+        sendMessage: vi.fn().mockResolvedValue(['peer1']) as UseRoomTransportReturn['sendMessage']
       });
       const wrapper = mountChat(transport);
       await wrapper.find('form').trigger('submit.prevent');
+      await vi.waitFor(() => { expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Delivered); });
       expect(chatMock.sendMessage).toHaveBeenCalledWith('alice', 'hello');
       expect(transport.sendMessage).toHaveBeenCalledWith(msg);
-      expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Delivered);
     });
 
     it('sets delivered in relay mode even with 0 deliveries', async () => {
@@ -331,12 +331,12 @@ describe('RoomChat', () => {
       const msg = makeMessage('1', 'alice', 'hello');
       chatMock.sendMessage.mockReturnValue(msg);
       const transport = makeTransport({
-        sendMessage: vi.fn().mockReturnValue([]) as UseRoomTransportReturn['sendMessage'],
+        sendMessage: vi.fn().mockResolvedValue([]) as UseRoomTransportReturn['sendMessage'],
         mode: ref<UiTransportMode>(UiTransportMode.Relay)
       });
       const wrapper = mountChat(transport);
       await wrapper.find('form').trigger('submit.prevent');
-      expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Delivered);
+      await vi.waitFor(() => { expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Delivered); });
     });
 
     it('does not set delivered when 0 deliveries and not relay', async () => {
@@ -344,12 +344,13 @@ describe('RoomChat', () => {
       const msg = makeMessage('1', 'alice', 'hello');
       chatMock.sendMessage.mockReturnValue(msg);
       const transport = makeTransport({
-        sendMessage: vi.fn().mockReturnValue([]) as UseRoomTransportReturn['sendMessage'],
+        sendMessage: vi.fn().mockResolvedValue([]) as UseRoomTransportReturn['sendMessage'],
         mode: ref<UiTransportMode>(UiTransportMode.Mesh)
       });
       const wrapper = mountChat(transport);
       await wrapper.find('form').trigger('submit.prevent');
-      expect(chatMock.setMessageStatus).not.toHaveBeenCalled();
+      // Give the promise a chance to resolve
+      await vi.waitFor(() => { expect(chatMock.setMessageStatus).not.toHaveBeenCalled(); });
     });
   });
 

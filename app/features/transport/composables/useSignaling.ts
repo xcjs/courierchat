@@ -1,5 +1,6 @@
 import { computed, readonly, type ComputedRef, type Ref } from 'vue';
 import { SignalingClient } from '../services/SignalingClient';
+import { MessageCrypto } from '../services/MessageCrypto';
 import { SignalingConnectionState } from '../types/Transport';
 import type { SignalingHandlers } from '../types/Transport';
 import type { Tier } from '#shared/types/Tier';
@@ -19,6 +20,7 @@ import { useNotificationsStore, NotificationSeverity } from '~/stores/Notificati
  */
 export interface UseSignalingReturn {
   getClient: () => SignalingClient | null;
+  getCrypto: () => MessageCrypto | null;
   connect: (username: string, tiers: Tier[]) => Promise<void>;
   disconnect: () => void;
   addHandlers: (handlers: Partial<SignalingHandlers>) => void;
@@ -30,6 +32,7 @@ export interface UseSignalingReturn {
 
 export function useSignaling (): UseSignalingReturn {
   const client = useState<SignalingClient | null>('signaling:client', () => null);
+  const cryptoInstance = useState<MessageCrypto | null>('signaling:crypto', () => null);
   const connectionState = useState<SignalingConnectionState>('signaling:state', () => SignalingConnectionState.Disconnected);
   const signalingError = useState<string | null>('signaling:error', () => null);
 
@@ -63,6 +66,12 @@ export function useSignaling (): UseSignalingReturn {
     const presence = usePresenceStore();
     const notifications = useNotificationsStore();
 
+    // Generate the ECDSA keypair before connecting so the public key can be
+    // sent in Hello and distributed to other peers for signature verification.
+    const crypto = new MessageCrypto();
+    const keyMaterial = await crypto.generateKey();
+    cryptoInstance.value = crypto;
+
     const instance = new SignalingClient({
       url: buildUrl(),
       lifecycle: {
@@ -87,7 +96,14 @@ export function useSignaling (): UseSignalingReturn {
     client.value = instance;
     connectionState.value = SignalingConnectionState.Connecting;
     signalingError.value = null;
-    await instance.connect(username, tiers);
+    await instance.connect(username, tiers, keyMaterial.publicKeyB64);
+  }
+
+  /**
+   * Disconnect from the signaling server and clear the singleton.
+   */
+  function getCrypto (): MessageCrypto | null {
+    return cryptoInstance.value;
   }
 
   /**
@@ -96,6 +112,8 @@ export function useSignaling (): UseSignalingReturn {
   function disconnect (): void {
     client.value?.disconnect();
     client.value = null;
+    cryptoInstance.value?.clear();
+    cryptoInstance.value = null;
     connectionState.value = SignalingConnectionState.Disconnected;
     usePresenceStore().reset();
   }
@@ -109,6 +127,7 @@ export function useSignaling (): UseSignalingReturn {
 
   return {
     getClient,
+    getCrypto,
     connect,
     disconnect,
     addHandlers,

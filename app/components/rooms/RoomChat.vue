@@ -205,10 +205,10 @@ const typingLabel = computed(() => {
   return `${others[0]} and ${others.length - 1} others are typing…`;
 });
 
-function onSubmit (): void {
+async function onSubmit (): Promise<void> {
   if (!canSend.value || !username.value) { return; }
   const message = sendMessage(username.value, draftText.value);
-  const delivered = props.transport.sendMessage(message);
+  const delivered = await props.transport.sendMessage(message);
   if (delivered.length > 0) {
     setMessageStatus(message.id, SendStatus.Delivered);
   } else if (props.transport.mode.value === 'relay') {

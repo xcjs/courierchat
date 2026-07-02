@@ -249,6 +249,27 @@ describe('SignalingClient lifecycle', () => {
     expect(hello.payload.tiers).toEqual([Tier.Adult, Tier.Minor]);
   });
 
+  it('connect sends hello with publicKey when provided', async () => {
+    const client = makeClient();
+    const p = client.connect('alice', [Tier.Adult], 'pub-key-b64');
+    const ws = getLastWS();
+    ws.onopen!();
+    await p;
+    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey?: string } };
+    expect(hello.type).toBe(SignalingMessageType.Hello);
+    expect(hello.payload.publicKey).toBe('pub-key-b64');
+  });
+
+  it('connect sends hello without publicKey when not provided', async () => {
+    const client = makeClient();
+    const p = client.connect('alice', [Tier.Adult]);
+    const ws = getLastWS();
+    ws.onopen!();
+    await p;
+    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey?: string } };
+    expect(hello.payload.publicKey).toBeUndefined();
+  });
+
   it('connect fires lifecycle.onOpen', async () => {
     const onOpen = vi.fn();
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false, lifecycle: { onOpen } });

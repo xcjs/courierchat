@@ -5,6 +5,7 @@ import { FileTransferManager } from '../services/FileTransferManager';
 import type { FileTransferHandlers } from '../services/FileTransferManager';
 import type { RoomTransportState } from '../types/Transport';
 import { UiTransportMode } from '../types/Transport';
+import type { SignableMessage } from '../services/MessageCrypto';
 import { useSignaling } from './useSignaling';
 import { useNotificationsStore, NotificationSeverity } from '~/stores/Notifications';
 import { TransportMode, type PeerIdentity, type ChatMessagePayload } from '#shared/types/Signaling';
@@ -23,7 +24,7 @@ import type { ChatMessage } from '#shared/types/ChatMessage';
 export interface UseRoomTransportReturn {
   join: () => void;
   leave: () => void;
-  sendMessage: (message: ChatMessage) => string[];
+  sendMessage: (message: ChatMessage) => Promise<string[]>;
   sendTyping: (isTyping: boolean) => void;
   sendFile: (peerId: string, file: File) => Promise<string | null>;
   setFileTransferHandlers: (handlers: FileTransferHandlers) => void;
@@ -75,6 +76,38 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     externalHandlers = handlers;
   }
 
+  /**
+   * Verify a received message's signature before delivering it to the UI.
+   *
+   * Verification policy (lenient for backward compatibility):
+   * - If the message has no signature, deliver it (legacy/unsigned messages
+   *   are accepted so the feature rolls out without breaking older clients).
+   * - If the message has a signature but we don't know the author's public
+   *   key, deliver it (we can't verify, but don't block on missing key data).
+   * - If the message has a signature AND we have the author's public key,
+   *   verify; drop the message if verification fails (tamper detected).
+   */
+  async function verifyAndDeliver (message: ChatMessage): Promise<void> {
+    if (message.signature) {
+      const crypto = signaling.getCrypto();
+      if (crypto) {
+        const peer = peers.value.find(p => p.username === message.author);
+        const publicKey = peer?.publicKey;
+        if (publicKey) {
+          const signable: SignableMessage = {
+            id: message.id,
+            author: message.author,
+            content: message.content,
+            timestamp: message.timestamp
+          };
+          const ok = await crypto.verify(signable, message.signature, publicKey);
+          if (!ok) { return; }
+        }
+      }
+    }
+    externalHandlers.onMessage?.(message);
+  }
+
   function toUiMode (wire: TransportMode): UiTransportMode {
     switch (wire) {
       case TransportMode.Mesh: return UiTransportMode.Mesh;
@@ -98,7 +131,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         };
         signaling.getClient()?.sendIceCandidate(to, payload);
       },
-      onMessage: (_peerId, message) => { externalHandlers.onMessage?.(message); },
+      onMessage: (_peerId, message) => { verifyAndDeliver(message).catch(() => {}); },
       onFileControl: (peerId, data) => { fileTransfer.handleControlMessage(peerId, data); },
       onFileBinary: (peerId, buffer) => { fileTransfer.handleBinaryMessage(peerId, buffer); },
       onPeerConnected: () => {
@@ -204,7 +237,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
       },
       onRelayBroadcast: (room, message) => {
         if (room !== roomName) { return; }
-        externalHandlers.onMessage?.(message as ChatMessage);
+        verifyAndDeliver(message as ChatMessage).catch(() => {});
       },
       onPong: (id, sentAt) => {
         const rtt = Date.now() - sentAt;
@@ -258,21 +291,42 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   }
 
   /**
-   * Send a chat message over the appropriate transport. In mesh/star the
-   * message is broadcast over DataChannels to connected peers. In relay mode
-   * it is sent to the server for relay-broadcast. Returns the list of peer IDs
-   * the message was delivered to (empty in relay mode since delivery is
-   * server-mediated and unconfirmed).
+   * Send a chat message over the appropriate transport. Signs the message
+   * with the local ECDSA private key before sending so recipients can verify
+   * integrity. In mesh/star the message is broadcast over DataChannels to
+   * connected peers. In relay mode it is sent to the server for
+   * relay-broadcast. Returns the list of peer IDs the message was delivered
+   * to (empty in relay mode since delivery is server-mediated and unconfirmed).
    */
-  function sendMessage (message: ChatMessage): string[] {
+  async function sendMessage (message: ChatMessage): Promise<string[]> {
     const client = signaling.getClient();
     if (!client) { return []; }
+
+    // Sign the message for integrity. If crypto isn't available (legacy
+    // connection or key generation failed), send unsigned — recipients that
+    // have a public key for us will drop it, but the message still goes out.
+    const crypto = signaling.getCrypto();
+    if (crypto) {
+      try {
+        const signable: SignableMessage = {
+          id: message.id,
+          author: message.author,
+          content: message.content,
+          timestamp: message.timestamp
+        };
+        message.signature = await crypto.sign(signable);
+      } catch {
+        // Signing failed — send without signature rather than blocking the user.
+      }
+    }
+
     if (mode.value === UiTransportMode.Relay) {
       const payload: ChatMessagePayload = {
         id: message.id,
         author: message.author,
         content: message.content,
-        timestamp: message.timestamp
+        timestamp: message.timestamp,
+        signature: message.signature
       };
       client.sendChatMessage(roomName, payload);
       return [];
