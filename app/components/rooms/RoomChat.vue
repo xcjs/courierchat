@@ -55,6 +55,10 @@
             <Icon name="lucide:check" size="10" />
             <span>Delivered</span>
           </template>
+          <template v-else-if="messageStatus[message.id] === 'solo'">
+            <Icon name="lucide:user" size="10" />
+            <span>Sent (no one else here)</span>
+          </template>
           <template v-else>
             <Icon name="lucide:alert-triangle" size="10" />
             <span>Failed</span>
@@ -209,10 +213,11 @@ async function onSubmit (): Promise<void> {
   if (!canSend.value || !username.value) { return; }
   const message = sendMessage(username.value, draftText.value);
   const delivered = await props.transport.sendMessage(message);
-  if (delivered.length > 0) {
+  const peerCount = props.transport.state.peers.length;
+  if (delivered.length > 0 || props.transport.mode.value === 'relay') {
     setMessageStatus(message.id, SendStatus.Delivered);
-  } else if (props.transport.mode.value === 'relay') {
-    setMessageStatus(message.id, SendStatus.Delivered);
+  } else if (peerCount === 0) {
+    setMessageStatus(message.id, SendStatus.Solo);
   }
   void nextTick(scrollToBottom);
   notifyTyping(false);
@@ -305,9 +310,18 @@ function scrollToBottom (): void {
 
 function formatTime (ts: number): string {
   const d = new Date(ts);
-  const h = d.getHours().toString().padStart(2, '0');
-  const m = d.getMinutes().toString().padStart(2, '0');
-  return `${h}:${m}`;
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) {
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+  return d.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
 }
 
 watch(() => messages.value.length, () => {

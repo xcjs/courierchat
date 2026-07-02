@@ -339,13 +339,29 @@ describe('RoomChat', () => {
       await vi.waitFor(() => { expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Delivered); });
     });
 
-    it('does not set delivered when 0 deliveries and not relay', async () => {
+    it('sets solo status when no peers in room (empty room)', async () => {
       chatMock.draft.value = 'hello';
       const msg = makeMessage('1', 'alice', 'hello');
       chatMock.sendMessage.mockReturnValue(msg);
       const transport = makeTransport({
         sendMessage: vi.fn().mockResolvedValue([]) as UseRoomTransportReturn['sendMessage'],
-        mode: ref<UiTransportMode>(UiTransportMode.Mesh)
+        mode: ref<UiTransportMode>(UiTransportMode.Mesh),
+        peers: ref<PeerIdentity[]>([])
+      });
+      const wrapper = mountChat(transport);
+      await wrapper.find('form').trigger('submit.prevent');
+      await vi.waitFor(() => { expect(chatMock.setMessageStatus).toHaveBeenCalledWith('1', SendStatus.Solo); });
+    });
+
+    it('does not set delivered when 0 deliveries and peers exist but not relay', async () => {
+      chatMock.draft.value = 'hello';
+      const msg = makeMessage('1', 'alice', 'hello');
+      chatMock.sendMessage.mockReturnValue(msg);
+      const transport = makeTransport({
+        sendMessage: vi.fn().mockResolvedValue([]) as UseRoomTransportReturn['sendMessage'],
+        mode: ref<UiTransportMode>(UiTransportMode.Mesh),
+        peers: ref<PeerIdentity[]>([{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult], publicKey: 'pk-bob', encPublicKey: 'enc-bob' }]),
+        state: { room: 'test-room', mode: UiTransportMode.Mesh, hubPeerId: null, peers: [{ peerId: 'p1', username: 'bob', tiers: [Tier.Adult], publicKey: 'pk-bob', encPublicKey: 'enc-bob' }], isHub: false }
       });
       const wrapper = mountChat(transport);
       await wrapper.find('form').trigger('submit.prevent');
