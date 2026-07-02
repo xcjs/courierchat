@@ -75,7 +75,14 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const name = ref('');
+const props = withDefaults(defineProps<{
+  tiers: Tier[];
+  initialName?: string;
+}>(), {
+  initialName: ''
+});
+
+const name = ref(props.initialName);
 const icon = ref('');
 const nameInput = ref<HTMLInputElement | null>(null);
 
@@ -89,10 +96,6 @@ function onSubmit (): void {
   const iconValue = icon.value.trim();
   emit('create', trimmed, props.tiers, iconValue === '' ? undefined : iconValue);
 }
-
-const props = defineProps<{
-  tiers: Tier[];
-}>();
 
 function onKeydown (e: KeyboardEvent): void {
   if (e.key === 'Escape') emit('close');

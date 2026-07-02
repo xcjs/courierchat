@@ -9,20 +9,21 @@
       </span>
     </div>
 
-    <div class="relative mb-4">
+    <form class="relative mb-4" @submit.prevent="onSearchSubmit">
       <Icon
         name="lucide:search"
         size="16"
         class="absolute left-3 top-1/2 -translate-y-1/2 text-text-content/40 pointer-events-none"
       />
       <input
+        ref="searchInput"
         v-model="searchQuery"
         type="search"
         placeholder="Search rooms"
         class="w-full pl-9 pr-4 py-2 rounded border border-text-content/15 bg-white text-text-content text-sm focus:outline-none focus:border-background-interactive"
         @input="onSearch"
       >
-    </div>
+    </form>
 
     <div class="flex-1 min-h-0 overflow-y-auto -mx-2">
       <ul v-if="filteredRooms.length" class="space-y-1 px-2">
@@ -65,7 +66,6 @@
           {{ rooms.length === 0 ? "You're the first. Give people something to talk about!" : 'No rooms match your search.' }}
         </p>
         <button
-          v-if="rooms.length === 0"
           type="button"
           class="px-4 py-2 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
           @click="showCreate = true"
@@ -75,12 +75,12 @@
       </div>
     </div>
 
-    <CreateRoomModal v-if="showCreate" :tiers="sessionTiers" @create="onCreate" @close="showCreate = false" />
+    <CreateRoomModal v-if="showCreate" :tiers="sessionTiers" :initial-name="createInitialName" @create="onCreate" @close="showCreate = false" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoomsStore } from '~/stores/Rooms';
 import { useSessionStore } from '~/stores/Session';
 import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
@@ -102,13 +102,26 @@ const searchQuery = ref(roomsStore.search);
 const sessionTiers = computed<Tier[]>(() => sessionStore.tiers);
 
 const showCreate = ref(false);
+const createInitialName = ref('');
+const searchInput = ref<HTMLInputElement | null>(null);
 
 function onSearch (): void {
   roomsStore.setSearch(searchQuery.value);
+}
+
+function onSearchSubmit (): void {
+  const q = searchQuery.value.trim();
+  if (q === '') { return; }
+  createInitialName.value = q;
+  showCreate.value = true;
 }
 
 function onCreate (name: string, tiers: Tier[], icon?: string): void {
   useCreateRoom().createRoom(name, tiers, icon);
   showCreate.value = false;
 }
+
+onMounted(() => {
+  searchInput.value?.focus();
+});
 </script>

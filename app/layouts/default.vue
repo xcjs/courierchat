@@ -62,7 +62,7 @@ watch(activeRoomName, (name) => {
 watch(() => signaling.isConnected.value, (isConn) => {
   connection.setSignalingConnected(isConn);
   connection.setHeartbeatActive(isConn);
-});
+}, { immediate: true });
 
 async function ensureConnected (): Promise<void> {
   if (!session.isAuthenticated) { return; }

@@ -35,8 +35,8 @@
           :class="room.icon ? 'ring-[6px] ring-inset ring-background-interactive' : ''"
         >
           <template v-if="room.icon">
-            <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" class="text-background-interactive" />
-            <span v-else aria-hidden="true">{{ room.icon.slice(6) }}</span>
+            <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="34" class="text-background-interactive" />
+            <span v-else aria-hidden="true" class="text-2xl">{{ room.icon.slice(6) }}</span>
           </template>
           <img v-else src="/courierchat.svg" alt="" class="w-full h-full" />
         </span>
