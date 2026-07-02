@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Tier } from '#shared/types/Tier';
+import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
 
 definePageMeta({ layout: 'auth' });
 
@@ -140,7 +141,9 @@ async function onSubmit (): Promise<void> {
   session.setSession(trimmed, isAdult.value ? [Tier.Adult] : [Tier.Minor]);
 
   if (createRoom.value) {
-    await navigateTo(`/rooms/${encodeURIComponent(roomName.value.trim())}`);
+    const trimmedRoom = roomName.value.trim();
+    const tiers = isAdult.value ? [Tier.Adult] : [Tier.Minor];
+    useCreateRoom().createRoom(trimmedRoom, tiers);
   } else {
     await navigateTo('/rooms');
   }

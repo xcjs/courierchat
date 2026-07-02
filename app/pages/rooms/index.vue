@@ -83,6 +83,7 @@
 import { ref, computed } from 'vue';
 import { useRoomsStore } from '~/stores/Rooms';
 import { useSessionStore } from '~/stores/Session';
+import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
 import type { Tier } from '#shared/types/Tier';
 
 definePageMeta({ layout: 'default' });
@@ -106,8 +107,7 @@ function onSearch (): void {
 }
 
 function onCreate (name: string, tiers: Tier[], icon?: string): void {
-  roomsStore.addRoom(name, tiers, icon);
+  useCreateRoom().createRoom(name, tiers, icon);
   showCreate.value = false;
-  navigateTo(`/rooms/${encodeURIComponent(name)}`);
 }
 </script>
