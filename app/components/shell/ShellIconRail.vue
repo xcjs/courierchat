@@ -33,17 +33,17 @@
         <span
           class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30"
           :class="room.name === activeRoomName
-            ? 'bg-white/30 ring-2 ring-white/60'
-            : 'bg-white/10'"
+            ? 'bg-background-interactive ring-2 ring-white/60'
+            : 'bg-background-interactive'"
         >
           <template v-if="room.icon">
             <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" />
             <span v-else aria-hidden="true">{{ room.icon.slice(6) }}</span>
           </template>
-          <img v-else src="/courierchat.svg" alt="" class="w-10 h-10 rounded-full p-1" />
+          <img v-else src="/courierchat.svg" alt="" class="w-full h-full" />
         </span>
         <span
-          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20"
+          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-interactive px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20"
         >
           {{ room.name }}
         </span>

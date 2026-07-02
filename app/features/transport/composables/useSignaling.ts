@@ -41,7 +41,7 @@ export function useSignaling (): UseSignalingReturn {
 
   const runtimeConfig = useRuntimeConfig();
   const stunEnabled = runtimeConfig.public?.stunEnabled ?? false;
-  const stunHost = runtimeConfig.public?.stunHost || window.location.hostname;
+  const stunHost = runtimeConfig.public?.stunHost || (import.meta.client ? window.location.hostname : 'localhost');
   const stunPort = runtimeConfig.public?.stunPort ?? 3478;
 
   const iceServers = stunEnabled

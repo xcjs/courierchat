@@ -52,7 +52,7 @@
       <NuxtLink
         v-else
         to="/login"
-        class="text-sm text-text-content/70 hover:text-text-content"
+        class="text-sm text-text-content-inverted/80 hover:text-text-content-inverted"
       >
         Sign In
       </NuxtLink>
@@ -64,12 +64,14 @@
 import { ref } from 'vue'
 import { useConnectionStatus } from '~/features/connection/composables/useConnectionStatus'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   roomName?: string
   memberCount?: number
-  connected: boolean
+  connected?: boolean
   username?: string | null
-}>()
+}>(), {
+  connected: false
+})
 
 defineEmits<{
   logout: []

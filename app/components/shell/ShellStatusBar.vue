@@ -21,9 +21,12 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  connected: boolean
+withDefaults(defineProps<{
+  connected?: boolean
   heartbeat?: boolean
-  transportMode: string
-}>()
+  transportMode?: string
+}>(), {
+  connected: false,
+  transportMode: 'offline'
+})
 </script>
