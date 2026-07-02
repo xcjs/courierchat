@@ -29,6 +29,7 @@ import { useConnectionStore } from '~/stores/Connection';
 import { useSignaling } from '~/features/transport/composables/useSignaling';
 import { useRoomTransport } from '~/features/transport/composables/useRoomTransport';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
+import RoomChat from '~/components/rooms/RoomChat.vue';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 import type { PeerIdentity } from '#shared/types/Signaling';
 
