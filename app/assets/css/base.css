@@ -1,3 +1,9 @@
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+}
+
 /* Force white background on autofilled inputs (browsers default to pale yellow). */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
