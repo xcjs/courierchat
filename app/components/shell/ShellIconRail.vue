@@ -10,14 +10,10 @@
         aria-label="Create a Room"
         @click="$emit('create-room')"
       >
-        <span
-          class="w-14 h-14 rounded-full bg-background-primary flex items-center justify-center text-text-content-inverted relative z-30"
-        >
+        <span class="nav-icon bg-background-primary text-text-content-inverted">
           <Icon name="lucide:plus" size="28" />
         </span>
-        <span
-          class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-primary px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20 pointer-events-none"
-        >
+        <span class="nav-label nav-label--primary animated faster anim-nav-hover">
           New Room
         </span>
       </button>
@@ -25,8 +21,7 @@
 
     <div
       ref="scrollEl"
-      class="flex-1 w-full relative"
-      style="overflow-y: clip; overflow-x: visible;"
+      class="flex-1 w-full relative overflow-y-clip overflow-x-visible"
       @wheel="onWheel"
     >
       <div
@@ -43,7 +38,7 @@
           :aria-current="room.name === activeRoomName ? 'true' : undefined"
         >
           <span
-            class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30 bg-white text-background-interactive"
+            class="nav-icon bg-white text-background-interactive text-lg"
             :class="room.icon ? 'ring-[6px] ring-inset ring-background-interactive' : ''"
           >
             <template v-if="room.icon">
@@ -52,9 +47,7 @@
             </template>
             <img v-else src="/courierchat.svg" alt="" class="w-full h-full" />
           </span>
-          <span
-            class="animated faster anim-nav-hover shadow-courier-drop absolute left-0 top-0 h-full flex items-center rounded-full bg-background-interactive px-4 pl-16 text-text-content-inverted font-medium whitespace-nowrap z-20 pointer-events-none"
-          >
+          <span class="nav-label nav-label--interactive animated faster anim-nav-hover">
             {{ room.name }}
           </span>
         </NuxtLink>
@@ -96,3 +89,42 @@ watch(() => props.rooms.length, () => {
   offset.value = 0
 })
 </script>
+
+<style scoped>
+.nav-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 30;
+}
+
+.nav-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0 1rem 0 4rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.nav-label--primary {
+  background-color: rgb(35, 178, 143);
+  color: white;
+}
+
+.nav-label--interactive {
+  background-color: rgb(255, 138, 101);
+  color: white;
+}
+</style>
