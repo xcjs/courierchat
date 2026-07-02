@@ -13,6 +13,7 @@
         :rooms="rooms"
         :active-room-name="activeRoomName ?? undefined"
         @create-room="onCreateRoom"
+        @leave-room="onLeaveRoom"
       />
       <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
         <main class="flex-1 w-full overflow-y-auto bg-white">
@@ -89,6 +90,13 @@ watch(() => session.username, () => {
 
 function onCreateRoom (): void {
   navigateTo('/rooms');
+}
+
+function onLeaveRoom (name: string): void {
+  roomsStore.removeRoom(name);
+  if (activeRoomName.value === name) {
+    navigateTo('/rooms');
+  }
 }
 
 function onLogout (): void {

@@ -49,6 +49,14 @@
           </span>
           <span class="nav-label nav-label--interactive animated faster anim-nav-hover">
             {{ room.name }}
+            <button
+              type="button"
+              class="ml-2 flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 text-white shrink-0"
+              aria-label="Leave room"
+              @click.prevent.stop="$emit('leave-room', room.name)"
+            >
+              <Icon name="lucide:x" size="16" />
+            </button>
           </span>
         </NuxtLink>
       </div>
@@ -69,6 +77,7 @@ const props = defineProps<{
 
 defineEmits<{
   'create-room': []
+  'leave-room': [name: string]
 }>()
 
 const scrollEl = ref<HTMLElement | null>(null)
@@ -114,7 +123,6 @@ watch(() => props.rooms.length, () => {
   font-weight: 500;
   white-space: nowrap;
   z-index: 20;
-  pointer-events: none;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.5);
 }
 
