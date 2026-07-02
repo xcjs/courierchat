@@ -13,7 +13,7 @@
         v-model="name"
         type="text"
         placeholder="username"
-        class="block w-full text-2xl h-12 px-3 border border-text-content/20 rounded shadow-courier-drop bg-surface text-text-content"
+        class="block w-full text-2xl h-12 px-3 border border-text-content/20 rounded bg-surface text-text-content"
       >
       <p v-if="error" class="text-error text-sm mt-2">
         {{ error }}
