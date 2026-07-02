@@ -58,6 +58,14 @@ describe('IconPicker', () => {
     });
   });
 
+  it('filters emojis by keyword search', async () => {
+    const wrapper = mountPicker();
+    await wrapper.findAll('button').find(b => b.text() === 'Emojis')!.trigger('click');
+    await wrapper.find('input[type="search"]').setValue('heart');
+    const emojis = wrapper.findAll('[title^="emoji:"]');
+    expect(emojis.length).toBeGreaterThan(0);
+  });
+
   it('shows no-match message when search yields nothing', async () => {
     const wrapper = mountPicker();
     await wrapper.find('input[type="search"]').setValue('zzzzzzzzzzzzz');

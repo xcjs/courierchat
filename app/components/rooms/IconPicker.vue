@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import lucideIcons from '~/assets/lucide-icons.json';
-import emojis from '~/assets/emojis.json';
+import { search as searchEmojis } from 'node-emoji';
 
 defineProps<{
   selectedIcon?: string;
@@ -100,9 +100,7 @@ const filteredIcons = computed<string[]>(() => {
 });
 
 const filteredEmojis = computed<string[]>(() => {
-  const all = Object.values(emojis).flat() as string[];
   const q = search.value.trim().toLowerCase();
-  if (q === '') { return all; }
-  return all.filter(e => e.includes(q));
+  return searchEmojis(q).map(r => r.emoji);
 });
 </script>
