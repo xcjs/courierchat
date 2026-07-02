@@ -35,6 +35,33 @@
           placeholder="room name"
           class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-content"
         >
+        <div v-if="createRoom" class="mt-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-8 h-8 rounded-full bg-background-primary/10 flex items-center justify-center text-background-primary shrink-0">
+              <template v-if="roomIcon">
+                <Icon v-if="!roomIcon.startsWith('emoji:')" :name="roomIcon" size="16" />
+                <span v-else aria-hidden="true">{{ roomIcon.slice(6) }}</span>
+              </template>
+              <Icon v-else name="lucide:hash" size="16" />
+            </span>
+            <button
+              type="button"
+              class="text-xs text-text-content/50 hover:text-text-content"
+              @click="showIconPicker = !showIconPicker"
+            >
+              {{ showIconPicker ? 'Hide' : 'Pick icon' }}
+            </button>
+            <button
+              v-if="roomIcon"
+              type="button"
+              class="text-xs text-text-content/50 hover:text-text-content"
+              @click="roomIcon = ''"
+            >
+              Remove
+            </button>
+          </div>
+          <IconPicker v-if="showIconPicker" :selected-icon="roomIcon" @select="roomIcon = $event" />
+        </div>
       </div>
 
       <div class="mt-6">
@@ -67,12 +94,15 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Tier } from '#shared/types/Tier';
 import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
+import IconPicker from '~/components/rooms/IconPicker.vue';
 
 definePageMeta({ layout: 'auth' });
 
 const name = ref('');
 const roomName = ref('');
 const createRoom = ref(false);
+const roomIcon = ref('');
+const showIconPicker = ref(false);
 const isAdult = ref(false);
 const error = ref('');
 const usernameInput = ref<HTMLInputElement | null>(null);
@@ -143,7 +173,8 @@ async function onSubmit (): Promise<void> {
   if (createRoom.value) {
     const trimmedRoom = roomName.value.trim();
     const tiers = isAdult.value ? [Tier.Adult] : [Tier.Minor];
-    useCreateRoom().createRoom(trimmedRoom, tiers);
+    const icon = roomIcon.value.trim() || undefined;
+    useCreateRoom().createRoom(trimmedRoom, tiers, icon);
   } else {
     await navigateTo('/rooms');
   }

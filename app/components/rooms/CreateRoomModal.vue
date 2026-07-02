@@ -28,16 +28,7 @@
         <label class="block text-sm font-medium text-text-content mb-1" for="room-icon">
           Icon (optional)
         </label>
-        <div class="flex items-center gap-2 mb-6">
-          <input
-            id="room-icon"
-            v-model="icon"
-            type="text"
-            placeholder="emoji:💬 or lucide:hash"
-            class="flex-1 px-3 py-2 rounded border border-text-content/15 bg-white text-text-content text-sm focus:outline-none focus:border-background-interactive"
-            maxlength="32"
-            autocomplete="off"
-          >
+        <div class="flex items-center gap-2 mb-2">
           <span class="w-9 h-9 rounded-full bg-background-primary/10 flex items-center justify-center text-background-primary shrink-0">
             <template v-if="icon">
               <Icon v-if="!icon.startsWith('emoji:')" :name="icon" size="18" />
@@ -45,8 +36,16 @@
             </template>
             <Icon v-else name="lucide:hash" size="18" />
           </span>
+          <button
+            type="button"
+            class="text-xs text-text-content/50 hover:text-text-content"
+            @click="icon = ''"
+          >
+            {{ icon ? 'Remove' : '' }}
+          </button>
         </div>
-        <div class="flex justify-end gap-2">
+        <IconPicker :selected-icon="icon" @select="onIconSelect" />
+        <div class="flex justify-end gap-2 mt-4">
           <button
             type="button"
             class="px-4 py-2 rounded text-sm text-text-content/70 hover:text-text-content"
@@ -68,6 +67,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import IconPicker from './IconPicker.vue';
 import type { Tier } from '#shared/types/Tier';
 
 const emit = defineEmits<{
@@ -78,6 +78,10 @@ const emit = defineEmits<{
 const name = ref('');
 const icon = ref('');
 const nameInput = ref<HTMLInputElement | null>(null);
+
+function onIconSelect (value: string): void {
+  icon.value = value;
+}
 
 function onSubmit (): void {
   const trimmed = name.value.trim();

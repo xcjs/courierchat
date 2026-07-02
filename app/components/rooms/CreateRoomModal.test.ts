@@ -2,6 +2,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
 import CreateRoomModal from './CreateRoomModal.vue';
+import IconPicker from './IconPicker.vue';
 import { Tier } from '#shared/types/Tier';
 
 const linkStub = {
@@ -11,15 +12,19 @@ const linkStub = {
 
 const iconStub = { template: '<span />' };
 
+const iconPickerStub = {
+  template: '<div class="icon-picker-stub" />',
+  emits: ['select']
+};
+
 function mountModal (props: Partial<{ tiers: Tier[] }> = {}): VueWrapper {
   return mount(CreateRoomModal, {
     props: { tiers: props.tiers ?? [Tier.Adult, Tier.Minor] },
     global: {
-      stubs: { NuxtLink: linkStub, Icon: iconStub }
+      stubs: { NuxtLink: linkStub, Icon: iconStub, IconPicker: iconPickerStub }
     }
   });
 }
-
 afterEach(() => {
   document.body.innerHTML = '';
 });
@@ -48,8 +53,8 @@ describe('CreateRoomModal', () => {
     const wrapper = mountModal();
     const nameInput = wrapper.find('#room-name');
     await nameInput.setValue('  lounge  ');
-    const iconInput = wrapper.find('#room-icon');
-    await iconInput.setValue('lucide:hash');
+    wrapper.findComponent(IconPicker).vm.$emit('select', 'lucide:hash');
+    await wrapper.vm.$nextTick();
     const form = wrapper.find('form');
     await form.trigger('submit.prevent');
     const evt = wrapper.emitted('create');
