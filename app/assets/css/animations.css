@@ -16,6 +16,7 @@
   opacity: 1;
   transform: none;
   transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: auto;
 }
 
 /* Room labels start hidden and only reveal on hover via transition. */
@@ -23,6 +24,7 @@
   opacity: 0;
   transform: rotate3d(0, 0, 1, 90deg);
   transform-origin: left center;
+  pointer-events: none;
 }
 
 article.login > h1 {
@@ -65,6 +67,7 @@ article.login {
     transition: none;
     opacity: 1;
     transform: none;
+    pointer-events: auto;
   }
 
   article.login {

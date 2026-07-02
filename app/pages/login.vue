@@ -33,7 +33,7 @@
           v-model="roomName"
           type="text"
           placeholder="room name"
-          class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-content"
+          class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded text-text-content"
         >
         <div v-if="createRoom" class="mt-3">
           <button
