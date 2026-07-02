@@ -53,13 +53,13 @@ const room = computed(() => {
   return visible ? r : undefined;
 });
 
-const roomChat = useRoomChat(roomName.value);
 const transport = useRoomTransport(roomName.value);
 
 function onIncomingMessage (message: ChatMessage): void {
   // Avoid echoing our own messages back — the sender already added locally.
   if (message.author === session.username) { return; }
-  roomChat.pushRemote(message);
+  // Bind to the current room so messages route to the right state.
+  useRoomChat(roomName.value).pushRemote(message);
 }
 
 function onPeerJoined (_peer: PeerIdentity): void {
@@ -71,7 +71,7 @@ function onPeerLeft (_peerId: string): void {
 }
 
 function onTyping (username: string, isTyping: boolean): void {
-  roomChat.setTyping(username, isTyping);
+  useRoomChat(roomName.value).setTyping(username, isTyping);
 }
 
 transport.setHandlers({
@@ -107,14 +107,12 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   transport.leave();
-  roomChat.clear();
   connection.setActiveRoom(null);
 });
 
 // Re-join if the room name changes while mounted (param navigation).
 watch(roomName, (name) => {
   transport.leave();
-  roomChat.clear();
   if (name) {
     connection.setActiveRoom(name);
     tryJoin().catch(() => {});
