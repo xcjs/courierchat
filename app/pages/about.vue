@@ -42,27 +42,10 @@
       <h2 class="text-lg font-medium text-text-content mb-2">
         Architecture
       </h2>
-      <p class="text-sm text-text-content/70 leading-relaxed mb-3">
+      <p class="text-sm text-text-content/70 leading-relaxed">
         CourierChat is built on Nuxt and TypeScript, with WebRTC for
         peer-to-peer transport and an in-process STUN server for NAT traversal.
-        Architecture decisions are documented as ADRs:
       </p>
-      <ul class="text-sm space-y-1.5">
-        <li class="flex items-baseline gap-2">
-          <Icon name="lucide:file-text" size="14" class="text-background-primary shrink-0" />
-          <span>
-            <span class="font-medium text-text-content">ADR 0001</span> —
-            <span class="text-text-content/70">Technology stack migration (Nuxt, TypeScript, Docker, DDD)</span>
-          </span>
-        </li>
-        <li class="flex items-baseline gap-2">
-          <Icon name="lucide:file-text" size="14" class="text-background-primary shrink-0" />
-          <span>
-            <span class="font-medium text-text-content">ADR 0002</span> —
-            <span class="text-text-content/70">WebRTC transport and signaling (star topology, in-process STUN, no TURN)</span>
-          </span>
-        </li>
-      </ul>
     </section>
 
     <section class="mb-6">
