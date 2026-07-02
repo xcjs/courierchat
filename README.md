@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/courierchat.svg" alt="CourierChat" width="120">
+</p>
+
 # CourierChat
 
 Ephemeral chat rooms with basic anonymity. WebRTC-based peer-to-peer messaging with no persistent storage. Identities can be freely claimed and abandoned.
