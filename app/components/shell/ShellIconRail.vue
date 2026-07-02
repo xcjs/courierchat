@@ -32,6 +32,7 @@
       >
         <span
           class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30 bg-white text-background-interactive"
+          :class="room.icon ? 'ring-[6px] ring-inset ring-background-interactive' : ''"
         >
           <template v-if="room.icon">
             <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" class="text-background-interactive" />

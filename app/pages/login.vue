@@ -36,7 +36,11 @@
           class="mt-3 block w-full text-xl h-10 px-3 border border-text-content/20 rounded shadow-courier-drop text-text-content"
         >
         <div v-if="createRoom" class="mt-3">
-          <div class="flex items-center gap-2 mb-2">
+          <button
+            type="button"
+            class="flex items-center gap-2 mb-2"
+            @click="showIconPicker = !showIconPicker"
+          >
             <span class="w-8 h-8 rounded-full bg-background-primary/10 flex items-center justify-center text-background-primary shrink-0">
               <template v-if="roomIcon">
                 <Icon v-if="!roomIcon.startsWith('emoji:')" :name="roomIcon" size="16" />
@@ -44,22 +48,18 @@
               </template>
               <Icon v-else name="lucide:hash" size="16" />
             </span>
-            <button
-              type="button"
-              class="text-xs text-text-content/50 hover:text-text-content"
-              @click="showIconPicker = !showIconPicker"
-            >
+            <span class="text-xs text-text-content/50 hover:text-text-content">
               {{ showIconPicker ? 'Hide' : 'Pick icon' }}
-            </button>
-            <button
-              v-if="roomIcon"
-              type="button"
-              class="text-xs text-text-content/50 hover:text-text-content"
-              @click="roomIcon = ''"
-            >
-              Remove
-            </button>
-          </div>
+            </span>
+          </button>
+          <button
+            v-if="roomIcon"
+            type="button"
+            class="text-xs text-text-content/50 hover:text-text-content ml-2"
+            @click="roomIcon = ''"
+          >
+            Remove
+          </button>
           <IconPicker v-if="showIconPicker" :selected-icon="roomIcon" @select="roomIcon = $event" />
         </div>
       </div>
