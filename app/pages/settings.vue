@@ -86,6 +86,37 @@
 
     <section class="mb-8">
       <h2 class="text-lg font-medium text-text-content mb-3 flex items-center gap-2">
+        <Icon name="lucide:sun-moon" size="18" class="text-background-primary" />
+        Appearance
+      </h2>
+      <div class="flex items-center gap-3">
+        <label for="theme-select" class="text-sm font-medium text-text-content">
+          Theme
+        </label>
+        <select
+          id="theme-select"
+          :value="colorMode.preference"
+          class="px-3 py-1.5 rounded border border-text-content/15 bg-surface text-text-content text-sm focus:outline-none focus:border-background-interactive"
+          @change="onThemeChange"
+        >
+          <option value="system">
+            System
+          </option>
+          <option value="light">
+            Light
+          </option>
+          <option value="dark">
+            Dark
+          </option>
+        </select>
+        <span class="text-xs text-text-content/50">
+          Active: {{ colorMode.value }}
+        </span>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-medium text-text-content mb-3 flex items-center gap-2">
         <Icon name="lucide:info" size="18" class="text-background-primary" />
         About This Build
       </h2>
@@ -130,4 +161,10 @@ const connected = computed(() => connection.signalingConnected);
 const transportMode = computed(() => connection.transportMode);
 const { statusLabel, statusIcon, statusClass } = useConnectionStatus(() => connected.value, () => transportMode.value);
 const stunEnabledLabel = computed(() => 'enabled');
+
+const colorMode = useColorMode();
+
+function onThemeChange (e: Event): void {
+  colorMode.preference = (e.target as HTMLSelectElement).value;
+}
 </script>

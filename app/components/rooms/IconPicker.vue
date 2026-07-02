@@ -23,7 +23,7 @@
       v-model="search"
       type="search"
       :placeholder="tab === 'icons' ? 'Search icons…' : 'Search emojis…'"
-      class="w-full px-3 py-1.5 mb-2 rounded border border-text-content/15 bg-white text-text-content text-sm focus:outline-none focus:border-background-interactive"
+      class="w-full px-3 py-1.5 mb-2 rounded border border-text-content/15 bg-surface text-text-content text-sm focus:outline-none focus:border-background-interactive"
     >
 
     <div class="max-h-48 overflow-y-auto rounded border border-text-content/10 p-2">

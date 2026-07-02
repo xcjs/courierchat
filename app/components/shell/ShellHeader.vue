@@ -43,7 +43,7 @@
           </button>
           <div
             v-if="menuOpen"
-            class="absolute right-0 top-10 bg-white shadow-courier-drop rounded-md py-1 w-44"
+            class="absolute right-0 top-10 bg-surface shadow-courier-drop rounded-md py-1 w-44"
           >
             <div class="flex items-center gap-2 px-4 py-2 text-sm text-text-content/70 border-b border-text-content/10 mb-1 capitalize">
               <Icon :name="statusIcon" size="14" :class="statusClass" />

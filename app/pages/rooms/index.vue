@@ -20,7 +20,7 @@
         v-model="searchQuery"
         type="search"
         placeholder="Search rooms"
-        class="w-full pl-9 pr-4 py-2 rounded border border-text-content/15 bg-white text-text-content text-sm focus:outline-none focus:border-background-interactive"
+        class="w-full pl-9 pr-4 py-2 rounded border border-text-content/15 bg-surface text-text-content text-sm focus:outline-none focus:border-background-interactive"
         @input="onSearch"
       >
     </form>
@@ -33,7 +33,7 @@
             class="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-background-interactive/10 text-left"
             @click="showCreate = true"
           >
-            <span class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-background-interactive shrink-0">
+            <span class="w-9 h-9 rounded-full bg-surface-muted flex items-center justify-center text-background-interactive shrink-0">
               <Icon name="lucide:plus" size="18" />
             </span>
             <span class="text-sm font-medium text-text-content">Create a Room</span>
@@ -44,7 +44,7 @@
             :to="`/rooms/${encodeURIComponent(room.name)}`"
             class="flex items-center gap-3 px-3 py-2 rounded hover:bg-background-interactive/10 group"
           >
-            <span class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-background-interactive shrink-0">
+            <span class="w-9 h-9 rounded-full bg-surface-muted flex items-center justify-center text-background-interactive shrink-0">
               <template v-if="room.icon">
                 <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="18" class="text-background-interactive" />
                 <span v-else aria-hidden="true">{{ room.icon.slice(6) }}</span>

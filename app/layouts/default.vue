@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-white text-text-content">
+  <div class="h-screen flex flex-col bg-surface text-text-content">
     <ShellHeader
       :room-name="activeRoomName ?? undefined"
       :member-count="memberCount"
@@ -16,7 +16,7 @@
         @leave-room="onLeaveRoom"
       />
       <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <main class="flex-1 w-full overflow-y-auto bg-white">
+        <main class="flex-1 w-full overflow-y-auto bg-surface">
           <slot />
         </main>
       </div>

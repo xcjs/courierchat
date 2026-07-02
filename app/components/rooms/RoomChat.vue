@@ -112,7 +112,7 @@
     </div>
 
     <form
-      class="flex items-end gap-2 px-4 py-3 border-t border-text-content/10 bg-white"
+      class="flex items-end gap-2 px-4 py-3 border-t border-text-content/10 bg-surface"
       @submit.prevent="onSubmit"
     >
       <input
@@ -135,7 +135,7 @@
         v-model="draftText"
         rows="1"
         placeholder="Type a message…"
-        class="flex-1 resize-none rounded border border-text-content/15 px-3 py-2 text-sm text-text-content focus:outline-none focus:border-background-interactive max-h-32"
+        class="flex-1 resize-none rounded border border-text-content/15 px-3 py-2 text-sm text-text-content bg-surface focus:outline-none focus:border-background-interactive max-h-32"
         :disabled="!username"
         @keydown.enter.exact.prevent="onSubmit"
         @input="onInput"

@@ -7,9 +7,12 @@ export default <Partial<Config>>{
         'background-primary': 'rgb(35, 178, 143)',
         'background-interactive': 'rgb(255, 138, 101)',
         'text-primary': 'rgb(255, 138, 101)',
-        'text-content': 'rgb(51, 51, 51)',
+        'text-content': 'rgb(var(--color-text) / <alpha-value>)',
         'text-content-inverted': 'rgb(255, 255, 255)',
-        'text-error': 'rgb(165, 61, 61)'
+        'text-error': 'rgb(165, 61, 61)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-muted': 'rgb(var(--color-surface-muted) / <alpha-value>)',
+        'border-subtle': 'rgb(var(--color-border) / <alpha-value>)'
       },
       boxShadow: {
         'courier-drop': '0px 4px 5px 0px rgba(0, 0, 0, 0.5)'

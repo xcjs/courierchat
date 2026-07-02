@@ -6,7 +6,7 @@
     aria-label="Create a room"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-lg shadow-courier-drop p-6 w-full max-w-sm mx-4">
+    <div class="bg-surface rounded-lg shadow-courier-drop p-6 w-full max-w-sm mx-4">
       <h2 class="text-lg font-semibold text-text-content mb-4">
         Create a Room
       </h2>
@@ -20,7 +20,7 @@
           v-model="name"
           type="text"
           placeholder="e.g. general"
-          class="w-full px-3 py-2 rounded border border-text-content/15 bg-white text-text-content text-sm focus:outline-none focus:border-background-interactive mb-4"
+          class="w-full px-3 py-2 rounded border border-text-content/15 bg-surface text-text-content text-sm focus:outline-none focus:border-background-interactive mb-4"
           required
           maxlength="32"
           autocomplete="off"
