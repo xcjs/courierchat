@@ -204,7 +204,7 @@ describe('Signaling integration', () => {
     };
 
     client.setHandlers(handlers);
-    await client.connect(username, tiers, `pk-${username}`);
+    await client.connect(username, tiers, `pk-${username}`, `enc-${username}`);
     // Wait for the microtask queue to flush (MockWebSocket opens in a microtask).
     await flushMicrotasks();
 
@@ -322,7 +322,10 @@ describe('Signaling integration', () => {
       id: 'msg-1',
       author: 'alice',
       content: 'hello via relay',
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      signature: 'sig',
+      encIv: 'iv',
+      encKeys: { 'peer-2': 'wk' }
     });
     await flushMicrotasks();
 

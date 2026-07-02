@@ -56,7 +56,7 @@ describe('SignalingClient.handleIncoming', () => {
   });
 
   it('dispatches peer-joined with peer identity, room, isHub', () => {
-    const peer = { peerId: 'p-2', username: 'bob', tiers: ['adult'], publicKey: 'pk-bob' };
+    const peer = { peerId: 'p-2', username: 'bob', tiers: ['adult'], publicKey: 'pk-bob', encPublicKey: 'enc-bob' };
     client.handleIncoming(envelope(SignalingMessageType.PeerJoined, { peer, room: 'lobby', isHub: false }));
     expect(handlers.onPeerJoined).toHaveBeenCalledWith(peer, 'lobby', false);
   });
@@ -228,7 +228,7 @@ describe('SignalingClient lifecycle', () => {
   it('connect sets connecting state then connected on open', async () => {
     const client = makeClient();
     expect(client.getState()).toBe(SignalingConnectionState.Disconnected);
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     expect(client.getState()).toBe(SignalingConnectionState.Connecting);
     const ws = getLastWS();
     ws.onopen!();
@@ -239,32 +239,34 @@ describe('SignalingClient lifecycle', () => {
 
   it('connect sends hello on open', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult, Tier.Minor], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult, Tier.Minor], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
-    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey: string } };
+    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey: string; encPublicKey: string } };
     expect(hello.type).toBe(SignalingMessageType.Hello);
     expect(hello.payload.username).toBe('alice');
     expect(hello.payload.tiers).toEqual([Tier.Adult, Tier.Minor]);
     expect(hello.payload.publicKey).toBe('test-pub-key');
+    expect(hello.payload.encPublicKey).toBe('test-enc-key');
   });
 
   it('connect always includes publicKey in hello', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'pub-key-b64');
+    const p = client.connect('alice', [Tier.Adult], 'pub-key-b64', 'enc-key-b64');
     const ws = getLastWS();
     ws.onopen!();
     await p;
-    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey?: string } };
+    const hello = JSON.parse(ws.sent[0]!) as { type: string; payload: { username: string; tiers: Tier[]; publicKey?: string; encPublicKey?: string } };
     expect(hello.type).toBe(SignalingMessageType.Hello);
     expect(hello.payload.publicKey).toBe('pub-key-b64');
+    expect(hello.payload.encPublicKey).toBe('enc-key-b64');
   });
 
   it('connect fires lifecycle.onOpen', async () => {
     const onOpen = vi.fn();
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false, lifecycle: { onOpen } });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -273,7 +275,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('connect rejects on error before open', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onerror!(new Event('error'));
     await expect(p).rejects.toThrow('WebSocket connection failed');
@@ -284,7 +286,7 @@ describe('SignalingClient lifecycle', () => {
     const onWelcome = vi.fn();
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false, lifecycle: { onMessage } });
     client.setHandlers({ onWelcome });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -295,7 +297,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('heartbeat sends Heartbeat messages at interval', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -311,7 +313,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('disconnect stops heartbeat, closes transport, clears state', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -326,7 +328,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('disconnect does not attempt reconnect even if autoReconnect is true', async () => {
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: true });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -337,7 +339,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('onclose triggers reconnect with exponential backoff when autoReconnect enabled', async () => {
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: true });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -350,7 +352,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('reconnect backoff doubles: 1s → 2s → 4s → 8s → 16s', async () => {
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: true });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     let ws = getLastWS();
     ws.onopen!();
     await p;
@@ -367,7 +369,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('onclose does not reconnect when autoReconnect is false', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -380,7 +382,7 @@ describe('SignalingClient lifecycle', () => {
   it('onclose fires lifecycle.onClose with code and reason', async () => {
     const onClose = vi.fn();
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false, lifecycle: { onClose } });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -390,7 +392,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('joinRoom sends Join with room payload', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -402,7 +404,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('leaveRoom sends Leave with room payload', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -414,7 +416,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendOffer sends Offer with sdp+label and to field', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -429,7 +431,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendAnswer sends Answer with sdp and to field', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -443,7 +445,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendIceCandidate sends IceCandidate with candidate fields and to', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -457,11 +459,11 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendChatMessage sends ChatMessage with room', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
-    client.sendChatMessage('lobby', { id: 'm1', author: 'alice', content: 'hi', timestamp: 123, signature: 'sig' });
+    client.sendChatMessage('lobby', { id: 'm1', author: 'alice', content: 'hi', timestamp: 123, signature: 'sig', encIv: 'iv', encKeys: {} });
     const msg = JSON.parse(ws.sent[ws.sent.length - 1]!) as { type: string; room: string; payload: { id: string; author: string; content: string; timestamp: number; signature: string } };
     expect(msg.type).toBe(SignalingMessageType.ChatMessage);
     expect(msg.room).toBe('lobby');
@@ -470,7 +472,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendTyping sends Typing with room, username, isTyping', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -483,7 +485,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendRequestRelay sends RequestRelay with room', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -495,7 +497,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendPing sends Ping with id and sentAt', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -508,7 +510,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('sendPeerMetrics sends PeerMetrics with room and metrics', async () => {
     const client = makeClient();
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -524,7 +526,7 @@ describe('SignalingClient lifecycle', () => {
     const client = makeClient();
     expect(() => client.joinRoom('lobby')).not.toThrow();
     expect(() => client.sendOffer('p-2', 'sdp', 'chat')).not.toThrow();
-    expect(() => client.sendChatMessage('lobby', { id: 'm', author: 'a', content: 'x', timestamp: 0, signature: 'sig' })).not.toThrow();
+    expect(() => client.sendChatMessage('lobby', { id: 'm', author: 'a', content: 'x', timestamp: 0, signature: 'sig', encIv: 'iv', encKeys: {} })).not.toThrow();
   });
 
   it('addHandlers chains existing and incoming handlers (existing fires first)', () => {
@@ -547,7 +549,7 @@ describe('SignalingClient lifecycle', () => {
 
   it('connect resets reconnectAttempts', async () => {
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: true });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     let ws = getLastWS();
     ws.onopen!();
     await p;
@@ -560,7 +562,7 @@ describe('SignalingClient lifecycle', () => {
     expect(wsConstructorCalls).toBe(3);
     ws = getLastWS();
     ws.onopen!();
-    const p2 = client.connect('bob', [Tier.Adult], 'test-pub-key');
+    const p2 = client.connect('bob', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     ws = getLastWS();
     ws.onopen!();
     await p2;
@@ -572,7 +574,7 @@ describe('SignalingClient lifecycle', () => {
   it('onerror fires lifecycle.onError after open (no reject)', async () => {
     const onError = vi.fn();
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false, lifecycle: { onError } });
-    const p = client.connect('alice', [Tier.Adult], 'test-pub-key');
+    const p = client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key');
     const ws = getLastWS();
     ws.onopen!();
     await p;
@@ -584,7 +586,7 @@ describe('SignalingClient lifecycle', () => {
     const saved = globalThis.WebSocket;
     globalThis.WebSocket = undefined as unknown as typeof globalThis.WebSocket;
     const client = new SignalingClient({ url: 'ws://test', autoReconnect: false });
-    await expect(client.connect('alice', [Tier.Adult], 'test-pub-key')).rejects.toThrow('WebSocket is not available');
+    await expect(client.connect('alice', [Tier.Adult], 'test-pub-key', 'test-enc-key')).rejects.toThrow('WebSocket is not available');
     globalThis.WebSocket = saved;
   });
 });

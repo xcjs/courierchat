@@ -116,10 +116,13 @@ server. No external STUN. No TURN.
       Unsigned messages, messages from peers with no known public key, and
       messages that fail verification are dropped. The server rejects Hello
       messages that do not include a public key.
-   - **Confidentiality (future):** end-to-end encryption between leaves
-     (bypassing the hub) remains a separate future concern. The hub can
-     still read message content; it cannot modify it. Sequence numbers
-     (detect drops) and hub rotation remain candidates for future work.
+    - **Confidentiality (implemented, see ADR 0003):** end-to-end encryption
+      between leaves (bypassing the hub) is now implemented via ECDH P-256
+      pairwise keys and AES-GCM-256 per-message encryption (ADR 0003). The
+      hub cannot read message content between other leaves; it can only
+      forward opaque ciphertext. The relay server likewise cannot decrypt
+      messages in relay mode. Sequence numbers (detect drops) and hub
+      rotation remain candidates for future work.
 
  6. Ephemeral rooms:
    - Rooms exist only in server memory while >=1 peer is connected.

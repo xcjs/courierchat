@@ -73,7 +73,7 @@ function installRTCPeerConnection (): void {
 }
 
 function makePeer (peerId: string, username: string = peerId): PeerIdentity {
-  return { peerId, username, tiers: [Tier.Adult], publicKey: `pk-${username}` };
+  return { peerId, username, tiers: [Tier.Adult], publicKey: `pk-${username}`, encPublicKey: `enc-${username}` };
 }
 
 function makeHandlers (): RtcManagerHandlers {

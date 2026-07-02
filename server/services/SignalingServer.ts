@@ -65,6 +65,12 @@ export class SignalingSession {
    * Required for all connections.
    */
   publicKey: string | null = null;
+  /**
+   * Base64 SPKI DER ECDH P-256 public key sent by the client in Hello.
+   * Distributed to other peers via PeerJoined so they can derive pairwise
+   * encryption keys (ADR 0003). Required for all connections.
+   */
+  encPublicKey: string | null = null;
 
   constructor (peerId: string) {
     this.peerId = peerId;
@@ -230,6 +236,10 @@ export class SignalingServer {
       this.sendError(sender, SignalingErrorCode.UsernameInvalid, 'Missing public key', now);
       return { action: 'continue' };
     }
+    if (!payload.encPublicKey || typeof payload.encPublicKey !== 'string') {
+      this.sendError(sender, SignalingErrorCode.UsernameInvalid, 'Missing encryption public key', now);
+      return { action: 'continue' };
+    }
 
     const result = this.usernames.claim(payload.username, session.peerId, payload.tiers ?? [], now);
     if (!result.ok) {
@@ -240,6 +250,7 @@ export class SignalingServer {
     session.username = result.record.username;
     session.tiers = result.record.tiers;
     session.publicKey = payload.publicKey;
+    session.encPublicKey = payload.encPublicKey;
 
     const welcomePayload: WelcomePayload = {
       peerId: session.peerId,
@@ -275,7 +286,8 @@ export class SignalingServer {
       username: session.username!,
       tiers: session.tiers,
       lastHeartbeat: now,
-      publicKey: session.publicKey!
+      publicKey: session.publicKey!,
+      encPublicKey: session.encPublicKey!
     };
 
     const joinResult = this.rooms.join(roomName, peer);
@@ -301,7 +313,7 @@ export class SignalingServer {
     // Notify the joiner of existing peers.
     for (const existing of existingPeers) {
       const peerJoinedPayload: PeerJoinedPayload = {
-        peer: { peerId: existing.peerId, username: existing.username, tiers: existing.tiers, publicKey: existing.publicKey },
+        peer: { peerId: existing.peerId, username: existing.username, tiers: existing.tiers, publicKey: existing.publicKey, encPublicKey: existing.encPublicKey },
         room: roomName,
         isHub: room.hubPeerId === existing.peerId
       };
@@ -310,7 +322,7 @@ export class SignalingServer {
 
     // Notify existing peers that the new peer joined.
     const joinedPayload: PeerJoinedPayload = {
-      peer: { peerId: session.peerId, username: session.username!, tiers: session.tiers, publicKey: session.publicKey! },
+      peer: { peerId: session.peerId, username: session.username!, tiers: session.tiers, publicKey: session.publicKey!, encPublicKey: session.encPublicKey! },
       room: roomName,
       isHub: room.hubPeerId === session.peerId
     };

@@ -77,31 +77,45 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   }
 
   /**
-   * Verify a received message's signature before delivering it to the UI.
+   * Decrypt and verify a received message before delivering it to the UI.
    *
-   * Strict verification policy — all messages must be signed:
-   * - If the message has no signature, drop it.
+   * End-to-end encryption + signature verification policy (ADR 0003):
+   * - If the message lacks encIv/encKeys, drop it (unencrypted not allowed).
    * - If the author's public key is unknown (no matching peer or peer has no
-   *   publicKey), drop it.
-   * - If verification fails, drop it (tamper detected).
-   * Only messages with a valid signature verified against the author's known
-   * public key are delivered.
+   *   publicKey/encPublicKey), drop it.
+   * - Decrypt the ciphertext using the pairwise ECDH key derived from the
+   *   local ECDH private key and the author's encPublicKey. If decryption
+   *   fails, drop it.
+   * - Verify the signature against the DECRYPTED plaintext canonical form.
+   *   If verification fails, drop it (tamper detected).
+   * Only messages that decrypt successfully AND have a valid signature are
+   * delivered, with their content replaced by the decrypted plaintext.
    */
   async function verifyAndDeliver (message: ChatMessage): Promise<void> {
-    if (!message.signature) { return; }
+    if (!message.signature || !message.encIv || !message.encKeys) { return; }
     const crypto = signaling.getCrypto();
-    if (!crypto) { return; }
+    const encryption = signaling.getEncryption();
+    if (!crypto || !encryption) { return; }
     const peer = peers.value.find(p => p.username === message.author);
-    if (!peer?.publicKey) { return; }
+    if (!peer?.publicKey || !peer?.encPublicKey) { return; }
+    const localId = localPeerId.value;
+    if (!localId) { return; }
+    const decrypted = await encryption.decrypt(
+      { content: message.content, encIv: message.encIv, encKeys: message.encKeys },
+      roomName,
+      peer.encPublicKey,
+      localId
+    );
+    if (decrypted === null) { return; }
     const signable: SignableMessage = {
       id: message.id,
       author: message.author,
-      content: message.content,
+      content: decrypted,
       timestamp: message.timestamp
     };
     const ok = await crypto.verify(signable, message.signature, peer.publicKey);
     if (!ok) { return; }
-    externalHandlers.onMessage?.(message);
+    externalHandlers.onMessage?.({ ...message, content: decrypted });
   }
 
   function toUiMode (wire: TransportMode): UiTransportMode {
@@ -287,20 +301,21 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   }
 
   /**
-   * Send a chat message over the appropriate transport. Signs the message
-   * with the local ECDSA private key before sending so recipients can verify
-   * integrity. All messages must be signed; if signing fails the message is
-   * not sent. In mesh/star the message is broadcast over DataChannels to
-   * connected peers. In relay mode it is sent to the server for
-   * relay-broadcast. Returns the list of peer IDs the message was delivered
-   * to (empty in relay mode since delivery is server-mediated and unconfirmed).
+   * Send a chat message over the appropriate transport. The message is first
+   * signed (ECDSA over the plaintext canonical form) and then encrypted
+   * (AES-GCM-256 with a per-message CEK wrapped for each recipient via
+   * ECDH-derived pairwise keys, ADR 0003). If either signing or encryption
+   * fails the message is not sent. In mesh/star the message is broadcast over
+   * DataChannels to connected peers. In relay mode it is sent to the server
+   * for relay-broadcast (the server sees only ciphertext and wrapped keys).
+   * Returns the list of peer IDs the message was delivered to (empty in
+   * relay mode since delivery is server-mediated and unconfirmed).
    */
   async function sendMessage (message: ChatMessage): Promise<string[]> {
     const client = signaling.getClient();
     if (!client) { return []; }
 
-    // Sign the message for integrity. If crypto isn't available or signing
-    // fails, do not send — all messages must be signed.
+    // Sign the message over the PLAINTEXT canonical form for integrity.
     const crypto = signaling.getCrypto();
     if (!crypto) { return []; }
     try {
@@ -315,18 +330,37 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
       return [];
     }
 
+    // Encrypt the plaintext content for all known peers (ADR 0003).
+    const encryption = signaling.getEncryption();
+    if (!encryption) { return []; }
+    const localId = localPeerId.value ?? 'unknown';
+    let encrypted;
+    try {
+      encrypted = await encryption.encrypt(message.content, roomName, peers.value, localId);
+    } catch {
+      return [];
+    }
+
     if (mode.value === UiTransportMode.Relay) {
       const payload: ChatMessagePayload = {
         id: message.id,
         author: message.author,
-        content: message.content,
+        content: encrypted.content,
         timestamp: message.timestamp,
-        signature: message.signature
+        signature: message.signature,
+        encIv: encrypted.encIv,
+        encKeys: encrypted.encKeys
       };
       client.sendChatMessage(roomName, payload);
       return [];
     } else if (rtc !== null) {
-      return rtc.broadcast(message);
+      const wireMessage: ChatMessage = {
+        ...message,
+        content: encrypted.content,
+        encIv: encrypted.encIv,
+        encKeys: encrypted.encKeys
+      };
+      return rtc.broadcast(wireMessage);
     }
     return [];
   }

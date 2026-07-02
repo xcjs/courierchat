@@ -10,6 +10,7 @@ import type { ChatMessage } from '#shared/types/ChatMessage';
 const mockSignaling = vi.hoisted(() => ({
   getClient: vi.fn(),
   getCrypto: vi.fn().mockReturnValue(null),
+  getEncryption: vi.fn().mockReturnValue(null),
   isConnected: { value: true },
   addHandlers: vi.fn(),
   iceServers: [{ urls: 'stun:test:3478' }]
@@ -77,11 +78,25 @@ const mockClient = {
 };
 
 function makePeer (peerId: string, username = peerId): PeerIdentity {
-  return { peerId, username, tiers: [Tier.Adult], publicKey: `pk-${username}` };
+  return { peerId, username, tiers: [Tier.Adult], publicKey: `pk-${username}`, encPublicKey: `enc-${username}` };
 }
 
 function makeMessage (id: string): ChatMessage {
   return { id, author: 'alice', content: 'hello', timestamp: Date.now() };
+}
+
+/**
+ * Mock crypto + encryption pair for sendMessage tests. `sign` returns a fixed
+ * signature; `encrypt` returns fixed wire fields (ciphertext replaces
+ * plaintext). Mirrors the real MessageCrypto + MessageEncryption contract.
+ */
+function mockCryptoAndEncryption (overrides: { sign?: ReturnType<typeof vi.fn>; encrypt?: ReturnType<typeof vi.fn>; verify?: ReturnType<typeof vi.fn>; decrypt?: ReturnType<typeof vi.fn> } = {}): void {
+  const sign = overrides.sign ?? vi.fn().mockResolvedValue('sig-b64');
+  const encrypt = overrides.encrypt ?? vi.fn().mockResolvedValue({ content: 'ct-b64', encIv: 'iv-b64', encKeys: { 'peer-2': 'wk-b64' } });
+  const verify = overrides.verify ?? vi.fn().mockResolvedValue(true);
+  const decrypt = overrides.decrypt ?? vi.fn().mockResolvedValue('decrypted');
+  mockSignaling.getCrypto.mockReturnValue({ sign, verify });
+  mockSignaling.getEncryption.mockReturnValue({ encrypt, decrypt });
 }
 
 describe('useRoomTransport', () => {
@@ -97,6 +112,8 @@ describe('useRoomTransport', () => {
     rtcMocks.getFileChannel.mockReturnValue(null);
     fileTransferMocks.sendFile.mockResolvedValue('transfer-1');
     mockSignaling.getClient.mockReturnValue(mockClient);
+    mockSignaling.getCrypto.mockReturnValue(null);
+    mockSignaling.getEncryption.mockReturnValue(null);
     mockSignaling.isConnected.value = true;
     Object.values(mockClient).forEach((fn) => {
       if (typeof fn === 'function') { (fn as ReturnType<typeof vi.fn>).mockClear(); }
@@ -194,20 +211,18 @@ describe('useRoomTransport', () => {
     });
 
     it('sends via relay in relay mode and returns empty', async () => {
-      const sign = vi.fn().mockResolvedValue('sig-b64');
-      mockSignaling.getCrypto.mockReturnValue({ sign });
+      mockCryptoAndEncryption();
       transport.join();
       captureHandlers();
       registeredHandlers.onTransportMode!('test-room', TransportMode.Relay);
       const msg = makeMessage('m1');
       const result = await transport.sendMessage(msg);
-      expect(mockClient.sendChatMessage).toHaveBeenCalledWith('test-room', expect.objectContaining({ id: 'm1', signature: 'sig-b64' }));
+      expect(mockClient.sendChatMessage).toHaveBeenCalledWith('test-room', expect.objectContaining({ id: 'm1', signature: 'sig-b64', content: 'ct-b64', encIv: 'iv-b64', encKeys: { 'peer-2': 'wk-b64' } }));
       expect(result).toEqual([]);
     });
 
     it('broadcasts via rtc in mesh mode and returns delivered peerIds', async () => {
-      const sign = vi.fn().mockResolvedValue('sig-b64');
-      mockSignaling.getCrypto.mockReturnValue({ sign });
+      mockCryptoAndEncryption();
       transport.join();
       captureHandlers();
       registeredHandlers.onWelcome!('me');
@@ -217,25 +232,30 @@ describe('useRoomTransport', () => {
       rtcMocks.broadcast.mockReturnValue(['peer-2', 'peer-3']);
       const msg = makeMessage('m1');
       const result = await transport.sendMessage(msg);
-      expect(rtcMocks.broadcast).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1', signature: 'sig-b64' }));
+      expect(rtcMocks.broadcast).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1', signature: 'sig-b64', content: 'ct-b64', encIv: 'iv-b64' }));
       expect(result).toEqual(['peer-2', 'peer-3']);
     });
 
     it('signs message with crypto when available', async () => {
       const sign = vi.fn().mockResolvedValue('sig-b64');
-      mockSignaling.getCrypto.mockReturnValue({ sign });
+      const encrypt = vi.fn().mockResolvedValue({ content: 'ct-b64', encIv: 'iv-b64', encKeys: {} });
+      mockCryptoAndEncryption({ sign, encrypt });
       transport.join();
       captureHandlers();
+      registeredHandlers.onWelcome!('me');
       registeredHandlers.onTransportMode!('test-room', TransportMode.Relay);
       const msg = makeMessage('m1');
       await transport.sendMessage(msg);
       expect(sign).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1', author: 'alice', content: 'hello' }));
+      expect(encrypt).toHaveBeenCalledWith('hello', 'test-room', expect.any(Array), 'me');
       expect(mockClient.sendChatMessage).toHaveBeenCalledWith('test-room', expect.objectContaining({ signature: 'sig-b64' }));
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
     });
 
     it('does not send when crypto is unavailable', async () => {
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
       transport.join();
       captureHandlers();
       registeredHandlers.onTransportMode!('test-room', TransportMode.Relay);
@@ -243,6 +263,20 @@ describe('useRoomTransport', () => {
       const result = await transport.sendMessage(msg);
       expect(mockClient.sendChatMessage).not.toHaveBeenCalled();
       expect(result).toEqual([]);
+    });
+
+    it('does not send when encryption is unavailable', async () => {
+      const sign = vi.fn().mockResolvedValue('sig-b64');
+      mockSignaling.getCrypto.mockReturnValue({ sign });
+      mockSignaling.getEncryption.mockReturnValue(null);
+      transport.join();
+      captureHandlers();
+      registeredHandlers.onTransportMode!('test-room', TransportMode.Relay);
+      const msg = makeMessage('m1');
+      const result = await transport.sendMessage(msg);
+      expect(mockClient.sendChatMessage).not.toHaveBeenCalled();
+      expect(result).toEqual([]);
+      mockSignaling.getCrypto.mockReturnValue(null);
     });
   });
 
@@ -432,12 +466,16 @@ describe('useRoomTransport', () => {
       const peer = makePeer('peer-2', 'bob');
       registeredHandlers.onPeerJoined!(peer, 'test-room', false);
       const verify = vi.fn();
+      const decrypt = vi.fn();
       mockSignaling.getCrypto.mockReturnValue({ verify });
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
       const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123 };
       registeredHandlers.onRelayBroadcast!('test-room', msg);
       await vi.waitFor(() => { expect(onMessage).not.toHaveBeenCalled(); });
       expect(verify).not.toHaveBeenCalled();
+      expect(decrypt).not.toHaveBeenCalled();
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
     });
 
     it('onRelayBroadcast ignores other rooms', async () => {
@@ -454,16 +492,20 @@ describe('useRoomTransport', () => {
       transport.setHandlers({ onMessage });
       transport.join();
       captureHandlers();
+      registeredHandlers.onWelcome!('me');
       // Add a peer with a public key so verification is attempted
       const peer = makePeer('peer-2', 'bob');
       registeredHandlers.onPeerJoined!(peer, 'test-room', false);
       const verify = vi.fn().mockResolvedValue(false);
+      const decrypt = vi.fn().mockResolvedValue('hi');
       mockSignaling.getCrypto.mockReturnValue({ verify });
-      const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123, signature: 'bad-sig' };
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
+      const msg = { id: 'm1', author: 'bob', content: 'ct', timestamp: 123, signature: 'bad-sig', encIv: 'iv', encKeys: { me: 'wk' } };
       registeredHandlers.onRelayBroadcast!('test-room', msg);
       await vi.waitFor(() => { expect(verify).toHaveBeenCalled(); });
       expect(onMessage).not.toHaveBeenCalled();
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
     });
 
     it('onRelayBroadcast delivers message when signature verification passes', async () => {
@@ -471,14 +513,40 @@ describe('useRoomTransport', () => {
       transport.setHandlers({ onMessage });
       transport.join();
       captureHandlers();
+      registeredHandlers.onWelcome!('me');
       const peer = makePeer('peer-2', 'bob');
       registeredHandlers.onPeerJoined!(peer, 'test-room', false);
       const verify = vi.fn().mockResolvedValue(true);
+      const decrypt = vi.fn().mockResolvedValue('hi');
       mockSignaling.getCrypto.mockReturnValue({ verify });
-      const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123, signature: 'good-sig' };
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
+      const msg = { id: 'm1', author: 'bob', content: 'ct', timestamp: 123, signature: 'good-sig', encIv: 'iv', encKeys: { me: 'wk' } };
       registeredHandlers.onRelayBroadcast!('test-room', msg);
-      await vi.waitFor(() => { expect(onMessage).toHaveBeenCalledWith(msg); });
+      await vi.waitFor(() => { expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1', author: 'bob', content: 'hi' })); });
+      expect(decrypt).toHaveBeenCalledWith({ content: 'ct', encIv: 'iv', encKeys: { me: 'wk' } }, 'test-room', peer.encPublicKey, 'me');
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
+    });
+
+    it('onRelayBroadcast drops message when decryption fails', async () => {
+      const onMessage = vi.fn();
+      transport.setHandlers({ onMessage });
+      transport.join();
+      captureHandlers();
+      registeredHandlers.onWelcome!('me');
+      const peer = makePeer('peer-2', 'bob');
+      registeredHandlers.onPeerJoined!(peer, 'test-room', false);
+      const verify = vi.fn();
+      const decrypt = vi.fn().mockResolvedValue(null);
+      mockSignaling.getCrypto.mockReturnValue({ verify });
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
+      const msg = { id: 'm1', author: 'bob', content: 'ct', timestamp: 123, signature: 'sig', encIv: 'iv', encKeys: { me: 'wk' } };
+      registeredHandlers.onRelayBroadcast!('test-room', msg);
+      await vi.waitFor(() => { expect(decrypt).toHaveBeenCalled(); });
+      expect(verify).not.toHaveBeenCalled();
+      expect(onMessage).not.toHaveBeenCalled();
+      mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
     });
 
     it('onRelayBroadcast drops message when peer has no matching publicKey', async () => {
@@ -488,11 +556,34 @@ describe('useRoomTransport', () => {
       captureHandlers();
       // No peer added — so author 'bob' has no publicKey in the peer list.
       const verify = vi.fn();
+      const decrypt = vi.fn();
       mockSignaling.getCrypto.mockReturnValue({ verify });
-      const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123, signature: 'some-sig' };
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
+      const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123, signature: 'some-sig', encIv: 'iv', encKeys: { me: 'wk' } };
       registeredHandlers.onRelayBroadcast!('test-room', msg);
       await vi.waitFor(() => { expect(onMessage).not.toHaveBeenCalled(); });
       mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
+    });
+
+    it('onRelayBroadcast drops unencrypted message (no encIv/encKeys)', async () => {
+      const onMessage = vi.fn();
+      transport.setHandlers({ onMessage });
+      transport.join();
+      captureHandlers();
+      registeredHandlers.onWelcome!('me');
+      const peer = makePeer('peer-2', 'bob');
+      registeredHandlers.onPeerJoined!(peer, 'test-room', false);
+      const verify = vi.fn().mockResolvedValue(true);
+      const decrypt = vi.fn();
+      mockSignaling.getCrypto.mockReturnValue({ verify });
+      mockSignaling.getEncryption.mockReturnValue({ decrypt });
+      const msg = { id: 'm1', author: 'bob', content: 'hi', timestamp: 123, signature: 'sig' };
+      registeredHandlers.onRelayBroadcast!('test-room', msg);
+      await vi.waitFor(() => { expect(onMessage).not.toHaveBeenCalled(); });
+      expect(decrypt).not.toHaveBeenCalled();
+      mockSignaling.getCrypto.mockReturnValue(null);
+      mockSignaling.getEncryption.mockReturnValue(null);
     });
 
     it('onTyping calls external handler', () => {

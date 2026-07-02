@@ -20,6 +20,11 @@ export interface RoomPeer {
    * Required for all peers.
    */
   publicKey: string;
+  /**
+   * Base64 SPKI DER ECDH P-256 public key for end-to-end message encryption
+   * (ADR 0003). Required for all peers.
+   */
+  encPublicKey: string;
 }
 
 /**

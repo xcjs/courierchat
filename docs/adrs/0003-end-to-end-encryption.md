@@ -1,7 +1,7 @@
 # ADR 0003: End-to-end message encryption
 
 Date: 2026-07-02
-Status: Proposed
+Status: Accepted
 
 ## Context
 
@@ -103,17 +103,23 @@ signaling server never gain access to plaintext message content.
 
 ### Message format
 
-The `ChatMessage` and `ChatMessagePayload` types gain two optional fields:
+The `ChatMessage` and `ChatMessagePayload` types gain encryption fields. On
+the wire (and after encryption), `content` holds the base64 ciphertext,
+`encIv` holds the base64 96-bit AES-GCM IV, and `encKeys` maps recipient
+`peerId` → base64 wrapped CEK (`wrapIv||wrappedCek`). On the sender side
+before encryption, `encIv`/`encKeys` are absent (like `signature`); they
+are populated during `sendMessage`. Recipients require all three fields —
+messages missing any are dropped.
 
 ```typescript
 interface ChatMessage {
   id: string;
   author: string;
-  content: string;       // plaintext on the sender side; encrypted wire format on the wire
+  content: string;       // plaintext on the sender side; base64 ciphertext on the wire
   timestamp: number;
   signature?: string;     // base64 ECDSA over plaintext canonical form (existing)
   encIv?: string;        // base64 96-bit IV for AES-GCM (new)
-  encKey?: string;        // base64 encrypted symmetric key wrapped for each recipient (new; see below)
+  encKeys?: Record<string, string>; // peerId → base64 wrapped CEK (new)
 }
 ```
 
@@ -154,7 +160,7 @@ cross-room key reuse.
 
 ### No backward compatibility
 
-The `encIv` and `encKey` fields are required on all wire-format messages once
+The `encIv` and `encKeys` fields are required on all wire-format messages once
 this ADR is implemented. Messages without them are dropped by recipients.
 There is no lenient mode — all messages must be encrypted. A recipient that
 fails to decrypt (e.g., key mismatch) drops the message.

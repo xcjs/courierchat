@@ -90,6 +90,12 @@ export interface PeerIdentity {
    * recipients to verify message signatures. Required for all connections.
    */
   publicKey: string;
+  /**
+   * Base64 SPKI DER encoding of the peer's ECDH P-256 public key. Used by
+   * senders to derive pairwise shared secrets for end-to-end message
+   * encryption (ADR 0003). Required for all connections.
+   */
+  encPublicKey: string;
 }
 
 /**
@@ -121,6 +127,12 @@ export interface HelloPayload {
    * PeerJoined. Required for all connections.
    */
   publicKey: string;
+  /**
+   * Base64 SPKI DER encoding of the client's ECDH P-256 public key. Used by
+   * other peers to derive pairwise shared secrets for end-to-end message
+   * encryption (ADR 0003). Required for all connections.
+   */
+  encPublicKey: string;
 }
 
 /**
@@ -208,11 +220,24 @@ export interface ChatMessagePayload {
   timestamp: number;
   /**
    * Base64 ECDSA signature over `${id}|${author}|${content}|${timestamp}`.
-   * Required on all wire-format messages. Recipients verify it against the
-   * author's public key (distributed via signaling) and drop the message on
-   * mismatch.
+   * Computed over the **plaintext** content before encryption. Required on
+   * all wire-format messages. Recipients verify it against the author's
+   * public key (distributed via signaling) and drop the message on mismatch.
    */
   signature: string;
+  /**
+   * Base64 96-bit initialization vector for AES-GCM-256 content encryption
+   * (ADR 0003). Required on all wire-format messages.
+   */
+  encIv: string;
+  /**
+   * Per-recipient wrapped content encryption keys (ADR 0003). Each key is
+   * the base64 AES-GCM-256 encryption of the random CEK using the pairwise
+   * ECDH-derived key for that recipient. The map key is the recipient's
+   * peerId. Required on all wire-format messages; recipients look up their
+   * peerId to unwrap the CEK and decrypt the content.
+   */
+  encKeys: Record<string, string>;
 }
 
 export interface TypingPayload {

@@ -11,4 +11,16 @@ export interface ChatMessage {
    * drop the message on mismatch.
    */
   signature?: string;
+  /**
+   * Base64 96-bit initialization vector for AES-GCM-256 content encryption
+   * (ADR 0003). Added by the transport layer before sending; absent on
+   * newly created messages prior to encryption.
+   */
+  encIv?: string;
+  /**
+   * Per-recipient wrapped content encryption keys (ADR 0003). Added by the
+   * transport layer before sending; absent on newly created messages prior
+   * to encryption. Map key is the recipient's peerId.
+   */
+  encKeys?: Record<string, string>;
 }

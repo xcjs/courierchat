@@ -60,7 +60,7 @@ describe('SignalingServer', () => {
 
   function hello (session: SignalingSession, sender: MockSender, username: string, tiers: ('minor' | 'adult')[] = ['adult']): void {
     server.handle(session, sender, JSON.stringify({
-      type: SignalingMessageType.Hello, payload: { username, tiers, publicKey: `pk-${username}` }, ts: now
+      type: SignalingMessageType.Hello, payload: { username, tiers, publicKey: `pk-${username}`, encPublicKey: `enc-${username}` }, ts: now
     }), now);
   }
 
@@ -116,7 +116,7 @@ describe('SignalingServer', () => {
     it('rejects an invalid username', () => {
       const { session, sender } = connect('p1');
       server.handle(session, sender, JSON.stringify({
-        type: 'hello', payload: { username: '', tiers: ['adult'], publicKey: 'pk' }, ts: now
+        type: 'hello', payload: { username: '', tiers: ['adult'], publicKey: 'pk', encPublicKey: 'enc' }, ts: now
       }), now);
       const err = sender.lastSent();
       expect(err.type).toBe('error');
@@ -126,7 +126,17 @@ describe('SignalingServer', () => {
     it('rejects hello without a public key', () => {
       const { session, sender } = connect('p1');
       server.handle(session, sender, JSON.stringify({
-        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'] }, ts: now
+        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'], encPublicKey: 'enc' }, ts: now
+      }), now);
+      const err = sender.lastSent();
+      expect(err.type).toBe('error');
+      expect(err.payload).toMatchObject({ code: SignalingErrorCode.UsernameInvalid });
+    });
+
+    it('rejects hello without an encryption public key', () => {
+      const { session, sender } = connect('p1');
+      server.handle(session, sender, JSON.stringify({
+        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'], publicKey: 'pk' }, ts: now
       }), now);
       const err = sender.lastSent();
       expect(err.type).toBe('error');
@@ -256,13 +266,13 @@ describe('SignalingServer', () => {
       const sessB = star.connect('p2', sb);
       const sessC = star.connect('p3', sc);
       star.handle(sessA, sa, JSON.stringify({
-        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'], publicKey: 'pk-alice' }, ts: now
+        type: SignalingMessageType.Hello, payload: { username: 'alice', tiers: ['adult'], publicKey: 'pk-alice', encPublicKey: 'enc-alice' }, ts: now
       }), now);
       star.handle(sessB, sb, JSON.stringify({
-        type: SignalingMessageType.Hello, payload: { username: 'bob', tiers: ['adult'], publicKey: 'pk-bob' }, ts: now
+        type: SignalingMessageType.Hello, payload: { username: 'bob', tiers: ['adult'], publicKey: 'pk-bob', encPublicKey: 'enc-bob' }, ts: now
       }), now);
       star.handle(sessC, sc, JSON.stringify({
-        type: SignalingMessageType.Hello, payload: { username: 'carol', tiers: ['adult'], publicKey: 'pk-carol' }, ts: now
+        type: SignalingMessageType.Hello, payload: { username: 'carol', tiers: ['adult'], publicKey: 'pk-carol', encPublicKey: 'enc-carol' }, ts: now
       }), now);
       star.handle(sessA, sa, JSON.stringify({
         type: SignalingMessageType.Join, room: 'lounge', payload: { room: 'lounge' }, ts: now

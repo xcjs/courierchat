@@ -52,6 +52,7 @@ export class SignalingClient {
   private username: string | null = null;
   private tiers: Tier[] = [];
   private publicKeyB64: string | null = null;
+  private encPublicKeyB64: string | null = null;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
@@ -118,13 +119,17 @@ export class SignalingClient {
    * Open the signaling WebSocket. Returns a promise that resolves once the
    * handshake completes and hello is sent, or rejects on error.
    *
-   * @param publicKeyB64 - Base64 SPKI DER public key to send in Hello so
+   * @param publicKeyB64 - Base64 SPKI DER ECDSA public key to send in Hello so
    *   other peers can verify message signatures. Required for all clients.
+   * @param encPublicKeyB64 - Base64 SPKI DER ECDH P-256 public key to send in
+   *   Hello so other peers can derive pairwise encryption keys (ADR 0003).
+   *   Required for all clients.
    */
-  connect (username: string, tiers: Tier[], publicKeyB64: string): Promise<void> {
+  connect (username: string, tiers: Tier[], publicKeyB64: string, encPublicKeyB64: string): Promise<void> {
     this.username = username;
     this.tiers = tiers;
     this.publicKeyB64 = publicKeyB64;
+    this.encPublicKeyB64 = encPublicKeyB64;
     this.state = SignalingConnectionState.Connecting;
     this.helloSent = false;
     this.reconnectAttempts = 0;
@@ -203,8 +208,8 @@ export class SignalingClient {
   }
 
   private sendHello (): void {
-    if (this.username === null || this.helloSent || this.publicKeyB64 === null) { return; }
-    const payload: HelloPayload = { username: this.username, tiers: this.tiers, publicKey: this.publicKeyB64 };
+    if (this.username === null || this.helloSent || this.publicKeyB64 === null || this.encPublicKeyB64 === null) { return; }
+    const payload: HelloPayload = { username: this.username, tiers: this.tiers, publicKey: this.publicKeyB64, encPublicKey: this.encPublicKeyB64 };
     this.send(SignalingMessageType.Hello, payload);
     this.helloSent = true;
   }
@@ -320,7 +325,7 @@ export class SignalingClient {
         );
         break;
       case SignalingMessageType.PeerJoined: {
-        const p = env.payload as { peer: { peerId: string; username: string; tiers: Tier[]; publicKey: string }; room: string; isHub: boolean };
+        const p = env.payload as { peer: { peerId: string; username: string; tiers: Tier[]; publicKey: string; encPublicKey: string }; room: string; isHub: boolean };
         this.handlers.onPeerJoined?.(p.peer, p.room, p.isHub);
         break;
       }
