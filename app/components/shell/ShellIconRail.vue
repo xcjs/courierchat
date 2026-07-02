@@ -11,7 +11,7 @@
         @click="$emit('create-room')"
       >
         <span
-          class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-text-content-inverted relative z-30"
+          class="w-14 h-14 rounded-full bg-background-primary flex items-center justify-center text-text-content-inverted relative z-30 shadow-courier-drop"
         >
           <Icon name="lucide:plus" size="28" />
         </span>
@@ -31,10 +31,10 @@
         :aria-current="room.name === activeRoomName ? 'true' : undefined"
       >
         <span
-          class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30 bg-background-interactive"
+          class="w-14 h-14 rounded-full flex items-center justify-center text-lg relative z-30 bg-white text-background-interactive shadow-courier-drop"
         >
           <template v-if="room.icon">
-            <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" />
+            <Icon v-if="!room.icon.startsWith('emoji:')" :name="room.icon" size="28" class="text-background-interactive" />
             <span v-else aria-hidden="true">{{ room.icon.slice(6) }}</span>
           </template>
           <img v-else src="/courierchat.svg" alt="" class="w-full h-full" />
