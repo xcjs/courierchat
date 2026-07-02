@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "pretest": "nuxt prepare",
     "test": "vitest run",
+    "pretest:coverage": "nuxt prepare",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint .",
