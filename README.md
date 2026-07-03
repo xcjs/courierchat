@@ -5,12 +5,15 @@ Ephemeral chat rooms with basic anonymity. WebRTC-based peer-to-peer messaging w
 ## Features
 
 - **P2P messaging** — WebRTC DataChannels with automatic mesh/star/relay topology selection based on room size
+- **End-to-end encryption** — AES-GCM-256 content encryption with per-recipient ECDH-wrapped keys; messages are signed (ECDSA P-256) over the plaintext canonical form and verified by recipients (ADR 0003)
 - **Direct file transfer** — chunked peer-to-peer file sending over a dedicated DataChannel with progress indicators and backpressure handling
 - **Typing indicators** — real-time "user is typing" display scoped to room membership
 - **Presence** — online/offline status broadcast across the signaling layer
 - **Message delivery status** — per-message send confirmation using `RtcManager.broadcast()` return values
 - **Toast notifications** — non-intrusive UI for signaling errors, file transfer failures, and room lifecycle events
 - **Tier-based room access** — minor/adult tier isolation enforced on room join (server-side check against client-declared tiers)
+- **Optimistic room creation** — rooms added to the sidebar immediately on create; the server reconciles via `RoomList` broadcasts, and local entries are preserved until the server confirms
+- **Join acknowledgment** — the server sends a `JoinAck` after all `PeerJoined` messages so the client knows the peer list is settled before sending, preventing first-message-after-join drops
 - **In-process STUN server** — RFC 5389 binding request/response for ICE candidate gathering
 
 ## Stack
@@ -19,7 +22,7 @@ Ephemeral chat rooms with basic anonymity. WebRTC-based peer-to-peer messaging w
 - **Language:** TypeScript (strict mode, `noUnusedLocals`, `noUnusedParameters`)
 - **State:** Pinia (cross-cutting domain state) + Nuxt `useState` (feature-local ephemeral state)
 - **Styling:** Tailwind CSS + plain CSS
-- **Testing:** Vitest (440 tests) with `@vitest/coverage-v8`
+- **Testing:** Vitest with `@vitest/coverage-v8`
 - **Linting:** ESLint (`@nuxtjs/eslint-config-typescript`)
 - **Transport:** WebRTC DataChannels (see `docs/adrs/0002-webrtc-transport-and-signaling.md`)
 - **License:** AGPL-3.0
@@ -87,6 +90,8 @@ See `docs/adrs/` for architecture decisions:
 
 - `0001-technology-stack-migration.md` — Nuxt + TypeScript + Docker migration
 - `0002-webrtc-transport-and-signaling.md` — WebRTC transport, signaling, star topology, in-process STUN
+- `0003-end-to-end-encryption.md` — E2E message encryption and signature verification
+- `0004-server-blind-coordination.md` — server-blind room coordination (proposed, not yet implemented)
 
 ## License
 
