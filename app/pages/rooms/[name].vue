@@ -3,17 +3,33 @@
     <div v-if="!room" class="flex flex-col items-center justify-center h-full text-center px-6">
       <Icon name="lucide:door-closed" size="32" class="mb-3 text-text-content/20" />
       <h2 class="text-lg font-medium text-text-content mb-1">
-        Room not found
+        Room Not Found
       </h2>
       <p class="text-sm text-text-content/50 mb-4">
         "{{ roomName }}" doesn't exist or isn't visible to your session.
       </p>
-      <NuxtLink
-        to="/rooms"
-        class="px-4 py-2 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
-      >
-        Back to Rooms
-      </NuxtLink>
+      <div class="flex gap-2">
+        <NuxtLink
+          to="/rooms"
+          class="px-4 py-2 rounded bg-surface-muted text-text-content font-medium"
+        >
+          Back to Rooms
+        </NuxtLink>
+        <button
+          type="button"
+          class="px-4 py-2 rounded bg-background-interactive text-text-content-inverted font-medium shadow-courier-drop"
+          @click="showCreate = true"
+        >
+          Create "{{ roomName }}"
+        </button>
+      </div>
+      <CreateRoomModal
+        v-if="showCreate"
+        :tiers="session.tiers"
+        :initial-name="roomName"
+        @create="onCreate"
+        @close="showCreate = false"
+      />
     </div>
 
     <RoomChat v-else :room-name="roomName" :transport="transport" />
@@ -21,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from '#imports';
 import { useRoomsStore } from '~/stores/Rooms';
 import { useSessionStore } from '~/stores/Session';
@@ -29,9 +45,12 @@ import { useConnectionStore } from '~/stores/Connection';
 import { useSignaling } from '~/features/transport/composables/useSignaling';
 import { useRoomTransport } from '~/features/transport/composables/useRoomTransport';
 import { useRoomChat } from '~/features/room/composables/useRoomChat';
+import { useCreateRoom } from '~/features/room/composables/useCreateRoom';
 import RoomChat from '~/components/rooms/RoomChat.vue';
+import CreateRoomModal from '~/components/rooms/CreateRoomModal.vue';
 import type { ChatMessage } from '#shared/types/ChatMessage';
 import type { PeerIdentity } from '#shared/types/Signaling';
+import type { Tier } from '#shared/types/Tier';
 
 definePageMeta({ layout: 'default' });
 
@@ -54,6 +73,7 @@ const room = computed(() => {
 });
 
 const transport = useRoomTransport(roomName.value);
+const showCreate = ref(false);
 
 function onIncomingMessage (message: ChatMessage): void {
   // Avoid echoing our own messages back — the sender already added locally.
@@ -100,6 +120,11 @@ async function tryJoin (): Promise<void> {
   // join() resolves once the server acknowledges the join (JoinAck) and the
   // peer list is settled, so the first message can be encrypted for all peers.
   await transport.join();
+}
+
+function onCreate (name: string, tiers: Tier[], icon?: string): void {
+  useCreateRoom().createRoom(name, tiers, icon);
+  showCreate.value = false;
 }
 
 onMounted(() => {
