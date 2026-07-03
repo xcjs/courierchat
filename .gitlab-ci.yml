@@ -64,7 +64,7 @@ Build Docker Image:
   services:
     - docker:dind
   except:
-    - main
+    - master
   tags:
     - docker
   script:
@@ -77,7 +77,7 @@ Publish Docker Image:
   services:
     - docker:dind
   only:
-    - main
+    - master
   tags:
     - docker
   before_script:
