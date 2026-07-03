@@ -137,6 +137,7 @@ export function useSignaling (): UseSignalingReturn {
     encryptionInstance.value = null;
     connectionState.value = SignalingConnectionState.Disconnected;
     usePresenceStore().reset();
+    useRoomsStore().reset();
   }
 
   /**

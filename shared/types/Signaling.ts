@@ -64,7 +64,10 @@ export enum SignalingMessageType {
   // Relay-mode broadcast (server relays chat content when no hub reachable)
   RelayBroadcast = 'relay-broadcast',
   // Server -> client: full room list snapshot (tier-filtered for the recipient)
-  RoomList = 'room-list'
+  RoomList = 'room-list',
+  // Server -> client: acknowledges a join completed and the full peer list
+  // for the room has been sent (all PeerJoined messages precede this).
+  JoinAck = 'join-ack'
 }
 
 /**
@@ -198,6 +201,16 @@ export interface PeerLeftPayload {
   room: string;
   /** True when the departed peer was the hub; a new hub may follow. */
   wasHub: boolean;
+}
+
+/**
+ * Server -> client: acknowledges that a Join completed and that all
+ * PeerJoined messages for existing room peers have been sent. Clients use
+ * this to know the peer list is settled before sending the first message,
+ * avoiding an encryption-with-no-recipients race.
+ */
+export interface JoinAckPayload {
+  room: string;
 }
 
 /**

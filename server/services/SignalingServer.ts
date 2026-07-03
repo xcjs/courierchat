@@ -24,6 +24,7 @@ import {
   type PresencePayload,
   type RoomListPayload,
   type RoomSummary,
+  type JoinAckPayload,
   type ErrorPayload
 } from '#shared/types/Signaling';
 import type { Tier } from '#shared/types/Tier';
@@ -350,6 +351,10 @@ export class SignalingServer {
     // the new room (or updated member count). Each peer receives only the
     // rooms visible to its own tiers.
     this.broadcastRoomList(now);
+
+    // Acknowledge the join: all PeerJoined messages for existing peers have
+    // been sent above. The client uses this to know the peer list is settled.
+    this.send(sender, SignalingMessageType.JoinAck, { room: roomName } satisfies JoinAckPayload, now);
 
     return { action: 'continue' };
   }

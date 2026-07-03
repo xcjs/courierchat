@@ -21,12 +21,12 @@ describe('RoomsStore', () => {
     expect(store.rooms[0]).toEqual({ name: 'general', icon: undefined, memberCount: 1, tiers: [Tier.Adult], joined: true });
   });
 
-  it('addRoom is idempotent by name', () => {
+  it('addRoom refreshes tiers on name collision', () => {
     const store = useRoomsStore();
     store.addRoom('general', [Tier.Adult]);
     store.addRoom('general', [Tier.Minor]);
     expect(store.rooms).toHaveLength(1);
-    expect(store.rooms[0]?.tiers).toEqual([Tier.Adult]);
+    expect(store.rooms[0]?.tiers).toEqual([Tier.Minor]);
   });
 
   it('addRoom accepts an optional icon', () => {

@@ -73,6 +73,7 @@ function makeTransport (overrides: Partial<UseRoomTransportReturn> = {}): UseRoo
   return {
     join: vi.fn(),
     leave: vi.fn(),
+    detach: vi.fn(),
     sendMessage: vi.fn().mockReturnValue([]) as UseRoomTransportReturn['sendMessage'],
     sendTyping: vi.fn(),
     sendFile: vi.fn().mockResolvedValue('transfer-1'),

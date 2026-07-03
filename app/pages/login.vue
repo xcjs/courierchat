@@ -26,7 +26,7 @@
             type="checkbox"
             class="w-4 h-4 accent-background-interactive"
           >
-          Create a new room
+          Create a new room <span class="text-text-content/40 text-sm">(optional)</span>
         </label>
         <input
           v-if="createRoom"
@@ -49,7 +49,7 @@
               <Icon v-else name="lucide:hash" size="16" />
             </span>
             <span class="text-xs text-text-content/50 hover:text-text-content">
-              {{ showIconPicker ? 'Hide' : 'Pick icon' }}
+              {{ showIconPicker ? 'Hide' : 'Pick icon' }} <span class="text-text-content/40">(optional)</span>
             </span>
           </button>
           <button

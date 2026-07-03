@@ -33,8 +33,13 @@ export const useRoomsStore = defineStore('rooms', () => {
   }
 
   function addRoom (name: string, tiers: Tier[], icon?: string): void {
-    if (rooms.value.some(r => r.name === name)) {
-      markJoined(name);
+    const existing = rooms.value.find(r => r.name === name);
+    if (existing) {
+      // Name collision: mark joined and refresh tiers/icon so a stale entry
+      // doesn't gate visibility on outdated metadata.
+      existing.joined = true;
+      existing.tiers = tiers;
+      if (icon !== undefined) { existing.icon = icon; }
       return;
     }
     rooms.value.push({ name, icon, memberCount: 1, tiers, joined: true });
@@ -52,17 +57,30 @@ export const useRoomsStore = defineStore('rooms', () => {
    * Replace the room list from a server RoomList payload. The server sends
    * all rooms visible to the session's tiers. The local `joined` status is
    * preserved across the replacement so the sidebar (which shows joined
-   * rooms only) stays accurate.
+   * rooms only) stays accurate. Rooms that exist locally but are absent from
+   * the server snapshot are kept (optimistic entries not yet registered
+   * server-side, e.g. immediately after createRoom) so the UI doesn't flash
+   * "Room not found" before the server broadcasts back.
    */
   function setRoomsFromServer (summaries: RoomSummary[]): void {
-    const prevJoined = new Set(rooms.value.filter(r => r.joined).map(r => r.name));
-    rooms.value = summaries.map(s => ({
-      name: s.name,
-      icon: s.icon,
-      memberCount: s.memberCount,
-      tiers: s.tiers,
-      joined: prevJoined.has(s.name)
-    }));
+    const prevByName = new Map(rooms.value.map(r => [r.name, r]));
+    rooms.value = [
+      ...summaries.map((s) => {
+        const prev = prevByName.get(s.name);
+        return {
+          name: s.name,
+          icon: s.icon,
+          memberCount: s.memberCount,
+          tiers: s.tiers,
+          joined: prev?.joined ?? false
+        };
+      }),
+      // Preserve locally-known rooms missing from the server snapshot (e.g.
+      // optimistic entries created via addRoom before the server registered
+      // them). Their server-derived metadata is unknown, so we keep prior
+      // local metadata intact.
+      ...rooms.value.filter(r => !summaries.some(s => s.name === r.name))
+    ];
   }
 
   function markJoined (name: string): void {
@@ -79,6 +97,16 @@ export const useRoomsStore = defineStore('rooms', () => {
     search.value = query;
   }
 
+  /**
+   * Clear all room state. Called on disconnect/logout so a subsequent login
+   * (potentially as a different user with different tiers) does not inherit
+   * stale rooms or joined status from the previous session.
+   */
+  function reset (): void {
+    rooms.value = [];
+    search.value = '';
+  }
+
   return {
     rooms,
     search,
@@ -92,6 +120,7 @@ export const useRoomsStore = defineStore('rooms', () => {
     setRoomsFromServer,
     markJoined,
     markLeft,
-    setSearch
+    setSearch,
+    reset
   };
 });

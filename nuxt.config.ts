@@ -52,6 +52,28 @@ export default defineNuxtConfig({
     typeCheck: true
   },
 
+  vite: {
+    plugins: [
+      {
+        name: 'suppress-json-sourcemap-warning',
+        enforce: 'post',
+        configResolved (config) {
+          const logger = config.logger;
+          const original = logger.warn.bind(logger);
+          logger.warn = (msg, ...rest) => {
+            // Vite emits a "Could not read source map for ... lucide-icons.json"
+            // warning in dev because the flat single-line JSON asset imported by
+            // IconPicker.vue has no associated source map. The warning is cosmetic
+            // (the import itself works fine), so suppress only this message and
+            // leave all other Vite warnings intact.
+            if (typeof msg === 'string' && msg.includes('lucide-icons.json')) { return; }
+            original(msg, ...rest);
+          };
+        }
+      }
+    ]
+  },
+
   css: [
     '~/assets/css/base.css',
     '~/assets/css/animations.css'

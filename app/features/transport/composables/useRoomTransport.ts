@@ -23,8 +23,9 @@ import type { ChatMessage } from '#shared/types/ChatMessage';
  * removed when `leave()` is called.
  */
 export interface UseRoomTransportReturn {
-  join: () => void;
+  join: () => Promise<void>;
   leave: () => void;
+  detach: () => void;
   sendMessage: (message: ChatMessage) => Promise<string[]>;
   sendTyping: (isTyping: boolean) => void;
   sendFile: (peerId: string, file: File) => Promise<string | null>;
@@ -63,6 +64,8 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   let metricsTimer: ReturnType<typeof setInterval> | null = null;
   let pingCounter = 0;
   const pendingPings = new Map<string, number>();
+  /** Resolves when the server acknowledges the current join (JoinAck). */
+  let joinAckResolve: (() => void) | null = null;
 
   /** Callbacks invoked when messages arrive over any transport. */
   interface RoomTransportHandlers {
@@ -201,6 +204,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         if (room !== roomName) { return; }
         useNotificationsStore().push(`Room "${room}" was destroyed`, NotificationSeverity.Info);
         leave();
+        useRoomsStore().removeRoom(room);
       },
       onTransportMode: (room, wireMode, hubId) => {
         if (room !== roomName) { return; }
@@ -258,6 +262,11 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
       onTyping: (room, username, isTyping) => {
         if (room !== roomName) { return; }
         externalHandlers.onTyping?.(username, isTyping);
+      },
+      onJoinAck: (room) => {
+        if (room !== roomName) { return; }
+        joinAckResolve?.();
+        joinAckResolve = null;
       }
     });
     handlersRegistered = true;
@@ -266,8 +275,11 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   /**
    * Join the room. Sends a join message over signaling and establishes
    * DataChannels to existing peers per the transport mode the server assigns.
+   * Resolves once the server acknowledges the join (JoinAck), meaning all
+   * PeerJoined messages for existing peers have been received and the peer
+   * list is settled.
    */
-  function join (): void {
+  async function join (): Promise<void> {
     const client = signaling.getClient();
     if (!client || !signaling.isConnected.value) { return; }
     registerSignalingHandlers();
@@ -279,14 +291,17 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     }
     joined.value = true;
     const icon = useRoomsStore().getRoom(roomName)?.icon;
+    const ackPromise = new Promise<void>((resolve) => {
+      joinAckResolve = resolve;
+    });
     client.joinRoom(roomName, icon);
     useRoomsStore().markJoined(roomName);
     startMetricsLoop();
-    // Existing peers list is populated by the peer-joined messages the server
-    // sends in response to our join (the server sends peer-joined for each
-    // existing peer to the newcomer). Connections are initiated in the
-    // onPeerJoined handler. For mesh/star we also need to connect to peers;
-    // this happens as peer-joined events arrive.
+    // Wait for the server's JoinAck so the peer list is settled before the
+    // caller allows the user to send. Existing peers are populated by the
+    // peer-joined messages the server sends in response to our join; JoinAck
+    // arrives after all of them.
+    await ackPromise;
   }
 
   /**
@@ -295,6 +310,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   function leave (): void {
     if (!joined.value) { return; }
     joined.value = false;
+    joinAckResolve = null;
     if (relayProbeTimer !== null) {
       clearTimeout(relayProbeTimer);
       relayProbeTimer = null;
@@ -308,6 +324,30 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     isHub.value = false;
     signaling.getClient()?.leaveRoom(roomName);
     useRoomsStore().markLeft(roomName);
+  }
+
+  /**
+   * Tear down local room resources (RTC, timers, peers) WITHOUT leaving the
+   * room server-side or marking it left in the store. Use this when the room
+   * page is unmounting due to navigation (e.g. to /about or /settings) but the
+   * user is still a member — the sidebar should keep showing the room as
+   * joined. A subsequent mount of the room page will re-join to repopulate
+   * peers and re-establish transport.
+   */
+  function detach (): void {
+    joinAckResolve = null;
+    if (relayProbeTimer !== null) {
+      clearTimeout(relayProbeTimer);
+      relayProbeTimer = null;
+    }
+    stopMetricsLoop();
+    rtc?.disconnectAll();
+    rtc = null;
+    peers.value = [];
+    mode.value = UiTransportMode.Offline;
+    hubPeerId.value = null;
+    isHub.value = false;
+    joined.value = false;
   }
 
   /**
@@ -451,6 +491,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   return {
     join,
     leave,
+    detach,
     sendMessage,
     sendTyping,
     sendFile,
