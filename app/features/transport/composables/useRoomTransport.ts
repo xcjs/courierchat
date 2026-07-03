@@ -201,6 +201,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
         if (room !== roomName) { return; }
         useNotificationsStore().push(`Room "${room}" was destroyed`, NotificationSeverity.Info);
         leave();
+        useRoomsStore().removeRoom(room);
       },
       onTransportMode: (room, wireMode, hubId) => {
         if (room !== roomName) { return; }
