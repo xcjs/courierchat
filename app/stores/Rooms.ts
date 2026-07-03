@@ -65,7 +65,7 @@ export const useRoomsStore = defineStore('rooms', () => {
   function setRoomsFromServer (summaries: RoomSummary[]): void {
     const prevByName = new Map(rooms.value.map(r => [r.name, r]));
     rooms.value = [
-      ...summaries.map(s => {
+      ...summaries.map((s) => {
         const prev = prevByName.get(s.name);
         return {
           name: s.name,
