@@ -25,6 +25,7 @@ import type { ChatMessage } from '#shared/types/ChatMessage';
 export interface UseRoomTransportReturn {
   join: () => void;
   leave: () => void;
+  detach: () => void;
   sendMessage: (message: ChatMessage) => Promise<string[]>;
   sendTyping: (isTyping: boolean) => void;
   sendFile: (peerId: string, file: File) => Promise<string | null>;
@@ -312,6 +313,29 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   }
 
   /**
+   * Tear down local room resources (RTC, timers, peers) WITHOUT leaving the
+   * room server-side or marking it left in the store. Use this when the room
+   * page is unmounting due to navigation (e.g. to /about or /settings) but the
+   * user is still a member — the sidebar should keep showing the room as
+   * joined. A subsequent mount of the room page will re-join to repopulate
+   * peers and re-establish transport.
+   */
+  function detach (): void {
+    if (relayProbeTimer !== null) {
+      clearTimeout(relayProbeTimer);
+      relayProbeTimer = null;
+    }
+    stopMetricsLoop();
+    rtc?.disconnectAll();
+    rtc = null;
+    peers.value = [];
+    mode.value = UiTransportMode.Offline;
+    hubPeerId.value = null;
+    isHub.value = false;
+    joined.value = false;
+  }
+
+  /**
    * Send a chat message over the appropriate transport. The message is first
    * signed (ECDSA over the plaintext canonical form) and then encrypted
    * (AES-GCM-256 with a per-message CEK wrapped for each recipient via
@@ -452,6 +476,7 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
   return {
     join,
     leave,
+    detach,
     sendMessage,
     sendTyping,
     sendFile,

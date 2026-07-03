@@ -106,13 +106,16 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  transport.leave();
+  // Detach (not leave) so navigation to /about, /settings, etc. doesn't drop
+  // the room from the sidebar — the user is still a member. Re-mounting the
+  // room page re-joins to repopulate peers/transport.
+  transport.detach();
   connection.setActiveRoom(null);
 });
 
 // Re-join if the room name changes while mounted (param navigation).
 watch(roomName, (name) => {
-  transport.leave();
+  transport.detach();
   if (name) {
     connection.setActiveRoom(name);
     tryJoin().catch(() => {});
