@@ -1,0 +1,39 @@
+:root {
+  --color-surface: 255 255 255;            /* page/card backgrounds (light) */
+  --color-surface-muted: 248 250 252;      /* subtle inset areas (light) */
+  --color-border: 51 51 51;                /* text-content rgb, used for borders via /15 */
+  --color-text: 51 51 51;                  /* primary text (light) */
+  --color-text-muted: 51 51 51;            /* same base, /50 etc applied (light) */
+}
+
+.dark {
+  --color-surface: 23 23 27;               /* page/card backgrounds (dark) */
+  --color-surface-muted: 38 38 42;          /* subtle inset areas (dark) */
+  --color-border: 255 255 255;             /* light base for borders (dark) */
+  --color-text: 245 245 245;               /* primary text (dark) */
+  --color-text-muted: 245 245 245;         /* same base (dark) */
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+}
+
+/* Force surface background on autofilled inputs (browsers default to pale yellow). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--color-surface)) inset;
+  box-shadow: 0 0 0 1000px rgb(var(--color-surface)) inset;
+  -webkit-text-fill-color: rgb(var(--color-text));
+}
+
+/* Use brand orange for input focus instead of browser default blue. */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid rgb(255, 138, 101);
+  outline-offset: -1px;
+}

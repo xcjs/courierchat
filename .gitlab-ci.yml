@@ -1,5 +1,87 @@
-build:
-    script:
-        - npm install
-        - bower install
-        - gulp build
+stages:
+  - Setup
+  - Lint
+  - Test
+  - Build
+  - Publish
+
+Install Dependencies:
+  stage: Setup
+  image: node:24
+  needs: []
+  tags:
+    - docker
+  script:
+    - npm ci
+    - npm list
+  artifacts:
+    name: node_modules
+    paths:
+      - node_modules
+    expire_in: 1 week
+
+Lint:
+  stage: Lint
+  image: node:24
+  needs: ["Install Dependencies"]
+  tags:
+    - docker
+  script:
+    - npm run lint
+
+Test:
+  stage: Test
+  image: node:24
+  needs: ["Install Dependencies"]
+  tags:
+    - docker
+  script:
+    - npm run test:coverage
+  coverage: '/All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s*([\d.]+)/'
+  artifacts:
+    name: coverage
+    paths:
+      - coverage
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    expire_in: 1 week
+
+Typecheck:
+  stage: Test
+  image: node:24
+  needs: ["Install Dependencies"]
+  tags:
+    - docker
+  script:
+    - npm run typecheck
+
+Build Docker Image:
+  stage: Build
+  image: docker:dind
+  needs: ["Install Dependencies", "Lint", "Test", "Typecheck"]
+  services:
+    - docker:dind
+  except:
+    - main
+  tags:
+    - docker
+  script:
+    - docker build --rm -t $CI_REGISTRY/xcjs/courierchat:build-$CI_JOB_ID .
+
+Publish Docker Image:
+  stage: Publish
+  image: docker:dind
+  needs: ["Install Dependencies", "Lint", "Test", "Typecheck"]
+  services:
+    - docker:dind
+  only:
+    - main
+  tags:
+    - docker
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY/xcjs/courierchat:latest .
+    - docker push $CI_REGISTRY/xcjs/courierchat:latest

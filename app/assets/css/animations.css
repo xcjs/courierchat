@@ -1,0 +1,93 @@
+/* Ported from legacy src/client/styles/courierchat/_animations.scss */
+/* Selectors updated for the icon-rail shell (legacy targeted header a:hover). */
+
+.animated.slower {
+  animation-duration: 1500ms;
+}
+
+.animated.faster {
+  animation-duration: 750ms;
+}
+
+.icon-rail a:hover span.anim-nav-hover,
+.icon-rail a:focus-visible span.anim-nav-hover,
+.icon-rail button:hover span.anim-nav-hover,
+.icon-rail button:focus-visible span.anim-nav-hover,
+.icon-rail span.anim-nav-hover.touched {
+  opacity: 1;
+  transform: none;
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: auto;
+}
+
+/* Room labels start hidden and only reveal on hover via transition. */
+.icon-rail span.anim-nav-hover {
+  opacity: 0;
+  transform: rotate3d(0, 0, 1, 90deg);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+article.login > h1 {
+  animation-delay: 50ms;
+}
+
+article.login form {
+  animation-delay: 25ms;
+}
+
+/* Login panel entrance: fade in and slide in from the left (preserved from
+   legacy animate.css fadeIn + slideInLeft combination). */
+@keyframes animLoginPanel {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+article.login {
+  animation-name: animLoginPanel;
+  animation-duration: 750ms;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated.slower,
+  .animated.faster {
+    animation-duration: 0ms;
+  }
+
+  .icon-rail a:hover span.anim-nav-hover,
+  .icon-rail a:focus-visible span.anim-nav-hover,
+  .icon-rail button:hover span.anim-nav-hover,
+  .icon-rail button:focus-visible span.anim-nav-hover,
+  .icon-rail span.anim-nav-hover.touched {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  article.login {
+    animation: none;
+  }
+
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+}
+
+/* Page transitions (subtle fade, per UI conventions) */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 200ms ease;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}

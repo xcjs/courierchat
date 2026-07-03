@@ -1,15 +1,27 @@
-# Dependency directory
-# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
-node_modules/
-bower_components/
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# Build Directories
-.tmp/
-build/
-report/
+# Node dependencies
+node_modules
 
-# Vagrant
-.vagrant/
+# Logs
+logs
+*.log
 
-# IDE/Editors
-.idea/
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Test coverage
+coverage
+
+# Local env files
+.env
+.env.*
+!.env.example
