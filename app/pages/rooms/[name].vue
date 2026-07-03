@@ -97,7 +97,9 @@ async function tryJoin (): Promise<void> {
     await new Promise<void>((resolve) => { setTimeout(resolve, 250); });
     if (!signaling.isConnected.value) { return; }
   }
-  transport.join();
+  // join() resolves once the server acknowledges the join (JoinAck) and the
+  // peer list is settled, so the first message can be encrypted for all peers.
+  await transport.join();
 }
 
 onMounted(() => {

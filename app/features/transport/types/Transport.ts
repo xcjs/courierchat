@@ -52,6 +52,7 @@ export interface SignalingHandlers {
   onTyping?: (room: string, username: string, isTyping: boolean) => void;
   onPresence?: (username: string, status: PresenceStatus) => void;
   onRoomList?: (rooms: RoomSummary[]) => void;
+  onJoinAck?: (room: string) => void;
   onError?: (code: string, message: string) => void;
 }
 

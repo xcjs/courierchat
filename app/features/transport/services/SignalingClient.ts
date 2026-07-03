@@ -390,6 +390,11 @@ export class SignalingClient {
         this.handlers.onRoomList?.(p.rooms);
         break;
       }
+      case SignalingMessageType.JoinAck: {
+        const p = env.payload as { room: string };
+        this.handlers.onJoinAck?.(p.room);
+        break;
+      }
       case SignalingMessageType.Error: {
         const p = env.payload as { code: string; message: string };
         this.handlers.onError?.(p.code, p.message);
