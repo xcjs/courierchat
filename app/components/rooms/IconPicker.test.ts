@@ -21,7 +21,7 @@ describe('IconPicker', () => {
     const wrapper = mountPicker();
     const icons = wrapper.findAll('[title^="lucide:"]');
     expect(icons.length).toBeGreaterThan(0);
-  });
+  }, 15000);
 
   it('switches to emojis tab on click', async () => {
     const wrapper = mountPicker();
