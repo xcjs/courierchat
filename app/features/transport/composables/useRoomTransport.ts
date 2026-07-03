@@ -271,6 +271,12 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     const client = signaling.getClient();
     if (!client || !signaling.isConnected.value) { return; }
     registerSignalingHandlers();
+    // The Welcome message arrives on connect (before join), so the
+    // onWelcome handler may not have fired yet. Read the peerId from the
+    // client directly to ensure localPeerId is set.
+    if (!localPeerId.value) {
+      localPeerId.value = client.getPeerId();
+    }
     joined.value = true;
     const icon = useRoomsStore().getRoom(roomName)?.icon;
     client.joinRoom(roomName, icon);
@@ -337,7 +343,8 @@ export function useRoomTransport (roomName: string): UseRoomTransportReturn {
     // Encrypt the plaintext content for all known peers (ADR 0003).
     const encryption = signaling.getEncryption();
     if (!encryption) { return []; }
-    const localId = localPeerId.value ?? 'unknown';
+    const localId = localPeerId.value;
+    if (!localId) { return []; }
     let encrypted;
     try {
       encrypted = await encryption.encrypt(message.content, roomName, peers.value, localId);

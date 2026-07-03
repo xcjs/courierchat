@@ -74,7 +74,8 @@ const mockClient = {
   sendIceCandidate: vi.fn(),
   sendRequestRelay: vi.fn(),
   sendPing: vi.fn(),
-  sendPeerMetrics: vi.fn()
+  sendPeerMetrics: vi.fn(),
+  getPeerId: vi.fn().mockReturnValue(null)
 };
 
 function makePeer (peerId: string, username = peerId): PeerIdentity {
@@ -214,6 +215,7 @@ describe('useRoomTransport', () => {
       mockCryptoAndEncryption();
       transport.join();
       captureHandlers();
+      registeredHandlers.onWelcome!('me');
       registeredHandlers.onTransportMode!('test-room', TransportMode.Relay);
       const msg = makeMessage('m1');
       const result = await transport.sendMessage(msg);
